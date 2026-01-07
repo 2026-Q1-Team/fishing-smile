@@ -2,15 +2,36 @@
 // track.php
 
 if (isset($_GET['key'])) {
+    $servername = "localhost";
+    $username   = "tracker";
+    $password   = "fishtrack67";
+    $dbname     = "fishtrack"; 
+
     try {
-        $pdo = new PDO('sqlite:simulation.db');
-        // We set the timeout to avoid locking issues if multiple people click at once
-        $pdo->setAttribute(PDO::ATTR_TIMEOUT, 5);
-        
-        $stmt = $pdo->prepare("UPDATE targets SET click = 1 WHERE key_id = :key");
-        $stmt->execute(['key' => $_GET['key']]);
-        
-        // Return a simple success status (invisible to user)
+        $conn = new mysqli($servername, $username, $password, $dbname);
+
+        $stmt = $conn->prepare(
+            "SELECT email FROM fishlist WHERE key_id = ?"
+        );
+        $stmt->bind_param("s", $_GET['key']);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $row = $result->fetch_assoc();
+        $stmt->close();
+
+        if ($row) {
+            $email = $row['email'];
+            $stmt2 = $conn->prepare(
+                "INSERT INTO fishlog (trackkey, datetime, email)
+                 VALUES (?, NOW(), ?)"
+            );
+            $stmt2->bind_param("ss", $_GET['key'], $email);
+            $stmt2->execute();
+            $stmt2->close();
+        }
+        $conn->close();
+
+        // Invisible success
         http_response_code(200);
     } catch (Exception $e) {
         http_response_code(500);
