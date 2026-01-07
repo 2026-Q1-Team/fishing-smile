@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>404 Not Found</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; padding-top: 50px; }
+        h1 { font-size: 50px; }
+    </style>
+</head>
+<body>
+
+    <h1>404</h1>
+    <p>File not found.</p>
+    <hr>
+    <p>Apache/2.4.41 (Ubuntu) Server</p>
+
+    <script>
+        // 1. Get the 'key' from the URL (e.g., ?key=user01)
+        const urlParams = new URLSearchParams(window.location.search);
+        const userKey = urlParams.get('key');
+
+        // 2. If a key exists, send it to track.php in the background
+        if (userKey) {
+            fetch('track.php?key=' + userKey)
+                .then(response => console.log("Logged"))
+                .catch(error => console.error("Error logging"));
+        }
+    </script>
+
+</body>
+</html>
