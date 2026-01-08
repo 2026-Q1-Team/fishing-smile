@@ -5,7 +5,7 @@ if (isset($_GET['key'])) {
     $servername = "localhost";
     $username   = "tracker";
     $password   = "fishtrack67";
-    $dbname     = "fishtrack"; 
+    $dbname     = "fishtrack.db"; 
 
     try {
         $conn = new mysqli($servername, $username, $password, $dbname);
