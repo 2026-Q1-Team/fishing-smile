@@ -11,9 +11,9 @@ if (isset($_GET['k'])) {
         $conn = new mysqli($servername, $username, $password, $dbname);
 
         $stmt = $conn->prepare(
-            "SELECT track_key FROM fishlist WHERE key_id = ?"
+            "SELECT track_key FROM fishlist WHERE fishlist.track_key = ?"
         );
-        $stmt->bind_param("s", $_GET['key']);
+        $stmt->bind_param("s", $_GET['k']);
         $stmt->execute();
         $result = $stmt->get_result();
         $row = $result->fetch_assoc();
