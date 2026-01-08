@@ -1,19 +1,43 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="th">
 <head>
     <meta charset="UTF-8">
-    <title>404 Not Found</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Automatic Mail</title>
     <style>
-        body { font-family: sans-serif; text-align: center; padding-top: 50px; }
-        h1 { font-size: 50px; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #e94560;
+        }
+        
+        .container {
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 20px rgba(233, 69, 96, 0.5);
+        }
     </style>
 </head>
 <body>
-
-    <h1>404</h1>
-    <p>File not found.</p>
-    <hr>
-    <p>Apache/2.4.41 (Ubuntu) Server</p>
+    <div class="container">
+        <h1>Automatic Mail</h1>
+        <p>ระบบส่งอีเมลอัตโนมัติ</p>
+    </div>
 
     <script>
         // 1. Get the 'key' from the URL (e.g., ?key=user01)
@@ -27,6 +51,7 @@
                 .catch(error => console.error("Error logging"));
         }
     </script>
-
 </body>
 </html>
+
+
