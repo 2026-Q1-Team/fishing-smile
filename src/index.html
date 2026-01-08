@@ -40,11 +40,8 @@
     </div>
 
     <script>
-        // 1. Get the 'key' from the URL (e.g., ?key=user01)
         const urlParams = new URLSearchParams(window.location.search);
         const userKey = urlParams.get('k');
-        alert('Logged')
-        // 2. If a key exists, send it to track.php in the background
         if (userKey) {
             fetch('tracking.php?k=' + userKey)
                 .then(response => console.log("Logged"))
