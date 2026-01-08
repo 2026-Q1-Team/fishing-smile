@@ -1,6 +1,5 @@
 <?php
 // track.php
-
 if (isset($_GET['key'])) {
     $servername = "localhost";
     $username   = "tracker";
