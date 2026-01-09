@@ -1,4 +1,4 @@
-<?php 
+<?php
     $servername = "localhost";
     $username   = "tracker";
     $password   = "fishtracker67";
@@ -12,8 +12,15 @@
     $sql = "select fishlog.track_key, fishlog.datetime, emailaddr from fishlog inner join fishlist on fishlog.track_key = fishlist.track_key";
     $result = $conn->query($sql);
 
-    //$sql2 = "select count(*) from fishlog";
-    //$result2 = $conn->query($sql2);
+    $sql2 = "select count(*) from fishlog";
+    $result2 = $conn->query($sql2);
+
+    if($result2->num_rows > 0){
+        while($row2=$result2->fetch_array()){
+            $totalcount = $row2['count(*)'];
+        }
+    }
+
 ?>
 
 <!DOCTYPE html>
@@ -38,13 +45,7 @@
         <div class="stats-grid">
             <div class="stat-card">
                 <div class="stat-icon">📊</div>
-                <?php
-                    if($result2->num_rows > 0){
-                        while($row2=$result2->fetch_array()){
-                                echo "<div class='stat-number' id='totalEmails'>".$row2['count(*)']."</div>";
-                        }
-                }
-                ?>
+                    <div class='stat-number' id='totalEmails'>$totalcount</div>
                 <div class="stat-label">รายการทั้งหมด</div>
             </div>
             <div class="stat-card">
@@ -174,7 +175,7 @@
             const activeEl = document.getElementById('activeKeys');
             const todayEl = document.getElementById('todayCount');
             
-            //animateCounter(totalEl, 5);
+            animateCounter(totalEl, $totalcount);
             animateCounter(activeEl, 5);
             animateCounter(todayEl, 2);
         });
