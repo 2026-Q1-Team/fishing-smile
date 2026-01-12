@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="th">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,9 +10,9 @@
             padding: 0;
             box-sizing: border-box;
         }
-
+        
         body {
-            font-family: 'Sarabun', sans-serif;
+            font-family: sans-serif;
             background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
             min-height: 100vh;
             display: flex;
@@ -20,12 +20,12 @@
             align-items: center;
             color: #e94560;
         }
-
+        
         .container {
             text-align: center;
             padding: 2rem;
         }
-
+        
         h1 {
             font-size: 3rem;
             margin-bottom: 1rem;
@@ -35,22 +35,22 @@
 </head>
 <body>
     <div class="container">
-        <h1>Automatic Mail</h1>
-        <p>ระบบส่งอีเมลอัตโนมัติ</p>
+        <h1>Fishing.smile</h1>
+        <p>Your traffic has been logged. Have a nice day!</p>
     </div>
 
     <script>
-        // 1. Get the 'key' from the URL (e.g., ?key=user01)
+        // get tracking key from url
         const urlParams = new URLSearchParams(window.location.search);
         const userKey = urlParams.get('k');
 
-        // 2. If a key exists, send it to track.php in the background
+        // if key exist, use in tracking.php
         if (userKey) {
             fetch('tracking.php?k=' + userKey)
                 .then(response => console.log("Logged"))
                 .catch(error => console.error("Error logging"));
-
         }
     </script>
 </body>
 </html>
+
