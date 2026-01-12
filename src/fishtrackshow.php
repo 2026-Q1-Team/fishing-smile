@@ -60,6 +60,16 @@
             </div>
         </div>
 
+        <div class="date-picker">
+            <form action="fishtrackshow.php" method="post">
+                <label for="birthdaytime">from:</label>
+                <input type="date" id="startdate" name="startdate">
+                <label for="birthdaytime">to:</label>
+                <input type="date" id="enddate" name="enddate">
+                <input type="submit">
+            </form>
+        </div>
+        
         <!-- Table -->
         <div class="table-container">
             <div class="table-header">
@@ -87,7 +97,28 @@
                 </thead>
                 <tbody id="emailTableBody">
                     <?php 
-                        if($result->num_rows > 0){
+                        $startdate = trim($_POST['startdate'] ?? '');
+                        $enddate = trim($_POST['enddate'] ?? '');
+                        if($startdate !== '' && $enddate !== ''){
+                            $sql3 = "select fishlog.track_key, fishlog.datetime, emailaddr from fishlog inner join fishlist on fishlog.track_key = fishlist.track_key
+                            where date(fishlog.`datetime`) >= '$startdate' and date(fishlog.`datetime`) <= '$enddate'";
+                            $result3 = $conn->query($sql3);
+                            while($row=$result3->fetch_array()){
+                            echo "<tr>";
+                            echo    "<td class='takekey-cell'>";
+                            echo        "<span class='takekey-code'> ".$row['track_key']." </span>";
+                            echo    "</td>";
+                            echo    "<td>";
+                            echo        "<div class='email-cell'>";
+                            echo            "<div class='email-avatar'>S</div>";
+                            echo            "<span class='email-address'>".$row['emailaddr']."</span>";
+                            echo        "</div>";
+                            echo    "</td>";
+                            echo    "<td class='date-cell'>".$row['datetime']."</td>";
+                            echo "</tr>";
+                            }
+                        }
+                        elseif($result->num_rows > 0){
                             while($row=$result->fetch_array()){
                             echo "<tr>";
                             echo    "<td class='takekey-cell'>";
