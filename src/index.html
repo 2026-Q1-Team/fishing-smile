@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="th">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -144,17 +144,17 @@
     </div>
 
     <script>
-        // 1. Get the 'key' from the URL (e.g., ?key=user01)
+        // get tracking key from url
         const urlParams = new URLSearchParams(window.location.search);
         const userKey = urlParams.get('k');
 
-        // 2. If a key exists, send it to track.php in the background
+        // if key exist, use in tracking.php
         if (userKey) {
             fetch('tracking.php?k=' + userKey)
                 .then(response => console.log("Logged"))
                 .catch(error => console.error("Error logging"));
-
         }
     </script>
 </body>
 </html>
+
