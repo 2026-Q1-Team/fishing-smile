@@ -1,6 +1,9 @@
 import smtplib
 from email.mime.text import MIMEText
 from datetime import datetime
+import hashlib
+import mysql.connector
+from mysql.connector import errorcode
 
 # ==================== ตั้งค่าที่นี่ ====================
 SENDER = "siwapon.so11@gmail.com"
@@ -60,6 +63,34 @@ def send_email():
     server.quit()
     print(f"\n📧 ส่งอีเมลทั้งหมด {len(RECEIVERS)} คน เรียบร้อยแล้ว!")
 
+def insertdb():
+    pt = RECEIVERS[0]
+    ct = hashlib.md5(pt.encode(), usedforsecurity=False)
+
+    try:
+        cnx = mysql.connector.connect(user='tracker', password='fishtracker67', host='localhost', database='fishtrack')
+
+        mycursor = cnx.cursor()
+
+        sql = "INSERT INTO fishlist (track_key, emailaddr) VALUES (%s, %s)"
+        value = (ct, RECEIVERS[0])
+        mycursor.execute(sql, value)
+        cnx.commit()
+        cnx.close()
+
+    except mysql.connector.Error as err:
+        if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+            print("Something is wrong with your user name or password")
+        elif err.errno == errorcode.ER_BAD_DB_ERROR:
+            print("Database does not exist")
+        elif err.errno == errorcode.ER_DUP_ENTRY:
+            print("Duplicated entry")
+        else:
+            print(err)
+    else:
+        cnx.close()
+    
+
 if __name__ == "__main__":
     print("=" * 40)
     print("🚀 Automatic Plain Text Email Sender")
@@ -70,3 +101,4 @@ if __name__ == "__main__":
     print("=" * 40)
     
     send_email()
+    insertdb()
