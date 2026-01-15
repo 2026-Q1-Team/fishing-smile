@@ -2,8 +2,8 @@ import smtplib
 from email.mime.text import MIMEText
 from datetime import datetime
 import hashlib
-import mysql.connector
-from mysql.connector import errorcode
+import pymysql
+from pymysql.err import MySQLError
 
 # ==================== ตั้งค่าที่นี่ ====================
 SENDER = "siwapon.so11@gmail.com"
@@ -68,28 +68,18 @@ def insertdb():
     ct = hashlib.md5(pt.encode(), usedforsecurity=False)
 
     try:
-        cnx = mysql.connector.connect(user='tracker', password='fishtracker67', host='localhost', database='fishtrack')
+        con = pymysql.connect(user='tracker', password='fishtracker67', host='localhost', database='fishtrack')
 
-        mycursor = cnx.cursor()
+        mycursor = con.cursor()
 
         sql = "INSERT INTO fishlist (track_key, emailaddr) VALUES (%s, %s)"
-        value = (ct, RECEIVERS[0])
+        value = (ct.hexdigest(), RECEIVERS[0])
         mycursor.execute(sql, value)
-        cnx.commit()
-        cnx.close()
+        con.commit()
+        con.close()
 
-    except mysql.connector.Error as err:
-        if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
-            print("Something is wrong with your user name or password")
-        elif err.errno == errorcode.ER_BAD_DB_ERROR:
-            print("Database does not exist")
-        elif err.errno == errorcode.ER_DUP_ENTRY:
-            print("Duplicated entry")
-        else:
-            print(err)
-    else:
-        cnx.close()
-    
+    except pymysql.Error as e:
+        print("could not close connection error pymysql %d: %s" %(e.args[0], e.args[1]))
 
 if __name__ == "__main__":
     print("=" * 40)
