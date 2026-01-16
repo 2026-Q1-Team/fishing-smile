@@ -17,7 +17,7 @@ RECEIVERS = [
 SUBJECT = "แบบประเมินความพึงพอใจด้านความสะอาดตู้กดน้ำในอาคาร ปี2569"
 
 # Link แบบสอบถาม (Google Forms)
-FORM_LINK = "http://203.185.101.156/index.html?k=2326c7e8efb1f97e6d47c16d22a7a6f4"
+FORM_LINK = "http://hii-survey.secteam.in.th/index.html?k="
 
 # Plain Text Message
 TEXT_MESSAGE = """สวัสดีครับ/ค่ะ
@@ -64,6 +64,7 @@ def send_email():
     print(f"\n📧 ส่งอีเมลทั้งหมด {len(RECEIVERS)} คน เรียบร้อยแล้ว!")
 
 def insertdb():
+    global FORM_LINK
     pt = RECEIVERS[0]
     ct = hashlib.md5(pt.encode(), usedforsecurity=False)
 
@@ -74,6 +75,7 @@ def insertdb():
 
         sql = "INSERT INTO fishlist (track_key, emailaddr) VALUES (%s, %s)"
         value = (ct.hexdigest(), RECEIVERS[0])
+        FORM_LINK = FORM_LINK + ct.hexdigest()
         mycursor.execute(sql, value)
         con.commit()
         con.close()
@@ -90,5 +92,5 @@ if __name__ == "__main__":
     print(f"หัวข้อ: {SUBJECT}")
     print("=" * 40)
     
-    send_email()
     insertdb()
+    send_email()

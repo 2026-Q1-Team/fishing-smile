@@ -9,7 +9,8 @@
         echo $conn->connect_errno.": ".$conn->connect_error;
     }
 
-    $sql = "select fishlog.track_key, fishlog.datetime, emailaddr from fishlog inner join fishlist on fishlog.track_key = fishlist.track_key";
+    $sql = "select fishlog.track_key, fishlog.datetime, emailaddr from fishlog inner join fishlist on fishlog.track_key = fishlist.track_key 
+    order by fishlog.datetime asc;";
     $result = $conn->query($sql);
 
     $sql2 = "select count(*) from fishlog";
@@ -101,7 +102,7 @@
                         $enddate = trim($_POST['enddate'] ?? '');
                         if($startdate !== '' && $enddate !== ''){
                             $sql3 = "select fishlog.track_key, fishlog.datetime, emailaddr from fishlog inner join fishlist on fishlog.track_key = fishlist.track_key
-                            where date(fishlog.`datetime`) >= '$startdate' and date(fishlog.`datetime`) <= '$enddate'";
+                            where date(fishlog.`datetime`) >= '$startdate' and date(fishlog.`datetime`) <= '$enddate' order by fishlog.datetime asc;";
                             $result3 = $conn->query($sql3);
                             while($row=$result3->fetch_array()){
                             echo "<tr>";
