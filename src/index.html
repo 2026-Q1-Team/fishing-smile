@@ -14,7 +14,7 @@
         
         body {
             font-family: 'Prompt', sans-serif;
-            background: #f5f7fa;
+            background: linear-gradient(135deg, rgb(0, 147, 187) 0%, rgb(121, 188, 121) 100%);
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -32,7 +32,7 @@
         }
         
         .logo {
-            margin-bottom: 1.5rem;
+            margin-bottom: 0.8rem;
             text-align: center;
         }
         
@@ -74,23 +74,34 @@
         
         .input-wrapper {
             position: relative;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: #fff;
+            transition: all 0.2s ease;
+        }
+        
+        .input-wrapper:focus-within {
+            border-color: #1a73a7;
+            box-shadow: 0 0 0 2px rgba(26, 115, 167, 0.1);
         }
         
         .form-group input {
             width: 100%;
             padding: 0.9rem 1rem;
-            padding-right: 45px;
-            border: 1.5px solid #ddd;
-            border-radius: 10px;
+            padding-right: 80px;
+            border: none;
+            border-radius: 8px;
             font-size: 1rem;
             font-family: 'Prompt', sans-serif;
-            transition: all 0.3s ease;
+            background: transparent;
         }
         
         .form-group input:focus {
             outline: none;
-            border-color: #1a73a7;
-            box-shadow: 0 0 0 3px rgba(26, 115, 167, 0.1);
+        }
+        
+        .form-group input::placeholder {
+            color: #bbb;
         }
         
         .toggle-password {
@@ -101,13 +112,17 @@
             background: none;
             border: none;
             cursor: pointer;
-            color: #888;
+            color: #1a73a7;
             padding: 5px;
-            font-size: 1.1rem;
+            font-size: 0.85rem;
+            font-family: 'Prompt', sans-serif;
+            display: flex;
+            align-items: center;
+            gap: 4px;
         }
         
         .toggle-password:hover {
-            color: #1a73a7;
+            color: #0d5a8a;
         }
         
         .password-strength {
@@ -233,6 +248,40 @@
             margin-bottom: 1rem;
             display: none;
         }
+        
+        .info-box {
+            background: #e8f5e9;
+            border-radius: 8px;
+            padding: 1rem 1.2rem;
+            margin-bottom: 1.5rem;
+            text-align: left;
+            line-height: 1.7;
+        }
+        
+        .info-box .info-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+        
+        .info-box .icon {
+            font-size: 1.1rem;
+        }
+        
+        .info-box .content {
+            color: #333;
+            font-size: 0.9rem;
+        }
+        
+        .info-box .content strong {
+            font-weight: 600;
+        }
+        
+        .info-box p {
+            color: #555;
+            font-size: 0.85rem;
+            margin: 0.3rem 0 0 1.6rem;
+        }
     </style>
 </head>
 <body>
@@ -240,7 +289,6 @@
         <div class="logo">
             <img src="thumbnail-ci-Photoroom.png" alt="สถาบันสารสนเทศทรัพยากรน้ำ">
         </div>
-        
         <h1>เปลี่ยนรหัสผ่าน</h1>
         <p class="subtitle">กรุณากรอกข้อมูลเพื่อเปลี่ยนรหัสผ่านของคุณ</p>
         
@@ -253,7 +301,7 @@
                 <label>รหัสผ่านปัจจุบัน <span class="required">*</span></label>
                 <div class="input-wrapper">
                     <input type="password" id="currentPassword" placeholder="กรอกรหัสผ่านปัจจุบัน" required>
-                    <button type="button" class="toggle-password" onclick="togglePassword('currentPassword', this)">👁</button>
+                    <button type="button" class="toggle-password" onclick="togglePassword('currentPassword', this)">แสดง 👁</button>
                 </div>
                 <p class="error-message" id="currentPasswordError">กรุณากรอกรหัสผ่านปัจจุบัน</p>
             </div>
@@ -262,7 +310,7 @@
                 <label>รหัสผ่านใหม่ <span class="required">*</span></label>
                 <div class="input-wrapper">
                     <input type="password" id="newPassword" placeholder="กรอกรหัสผ่านใหม่" required oninput="checkPasswordStrength()">
-                    <button type="button" class="toggle-password" onclick="togglePassword('newPassword', this)">👁</button>
+                    <button type="button" class="toggle-password" onclick="togglePassword('newPassword', this)">แสดง 👁</button>
                 </div>
                 <div class="password-strength">
                     <div class="password-strength-bar" id="strengthBar"></div>
@@ -275,7 +323,7 @@
                 <label>ยืนยันรหัสผ่านใหม่ <span class="required">*</span></label>
                 <div class="input-wrapper">
                     <input type="password" id="confirmPassword" placeholder="กรอกรหัสผ่านใหม่อีกครั้ง" required oninput="checkPasswordMatch()">
-                    <button type="button" class="toggle-password" onclick="togglePassword('confirmPassword', this)">👁</button>
+                    <button type="button" class="toggle-password" onclick="togglePassword('confirmPassword', this)">แสดง 👁</button>
                 </div>
                 <p class="error-message" id="confirmPasswordError">รหัสผ่านไม่ตรงกัน</p>
             </div>
@@ -306,10 +354,10 @@
             const input = document.getElementById(inputId);
             if (input.type === 'password') {
                 input.type = 'text';
-                button.textContent = '🙈';
+                button.textContent = 'ซ่อน 🙈';
             } else {
                 input.type = 'password';
-                button.textContent = '👁';
+                button.textContent = 'แสดง 👁';
             }
         }
         
@@ -409,21 +457,13 @@
             }
             
             if (isValid) {
-                // Show success message (in real app, send to server)
+                // Show success message
                 document.getElementById('successMessage').style.display = 'block';
-                this.reset();
-                document.getElementById('strengthBar').style.width = '0%';
-                document.getElementById('strengthText').textContent = '';
                 
-                // Reset requirement indicators
-                document.querySelectorAll('.password-requirements li').forEach(li => {
-                    li.classList.remove('valid');
-                });
-                
-                // Hide success message after 3 seconds
+                // Redirect to Changepwd.html after 2 seconds
                 setTimeout(() => {
-                    document.getElementById('successMessage').style.display = 'none';
-                }, 3000);
+                    window.location.href = 'Changepwd.html';
+                }, 2000);
             }
         });
     </script>
