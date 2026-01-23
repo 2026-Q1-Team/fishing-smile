@@ -2,8 +2,8 @@ import smtplib
 from email.mime.text import MIMEText
 from datetime import datetime
 import hashlib
-import mysql.connector
-from mysql.connector import errorcode
+import pymysql
+from pymysql.err import MySQLError
 
 # ==================== ตั้งค่าที่นี่ ====================
 SENDER = "siwapon.so11@gmail.com"
@@ -17,7 +17,7 @@ RECEIVERS = [
 SUBJECT = "แบบประเมินความพึงพอใจด้านความสะอาดตู้กดน้ำในอาคาร ปี2569"
 
 # Link แบบสอบถาม (Google Forms)
-FORM_LINK = "http://203.185.101.156/index.html?k=2326c7e8efb1f97e6d47c16d22a7a6f4"
+FORM_LINK = "http://hii-survey.secteam.in.th/index.html?k="
 
 # Plain Text Message
 TEXT_MESSAGE = """สวัสดีครับ/ค่ะ
@@ -64,32 +64,24 @@ def send_email():
     print(f"\n📧 ส่งอีเมลทั้งหมด {len(RECEIVERS)} คน เรียบร้อยแล้ว!")
 
 def insertdb():
+    global FORM_LINK
     pt = RECEIVERS[0]
     ct = hashlib.md5(pt.encode(), usedforsecurity=False)
 
     try:
-        cnx = mysql.connector.connect(user='tracker', password='fishtracker67', host='localhost', database='fishtrack')
+        con = pymysql.connect(user='tracker', password='fishtracker67', host='localhost', database='fishtrack')
 
-        mycursor = cnx.cursor()
+        mycursor = con.cursor()
 
         sql = "INSERT INTO fishlist (track_key, emailaddr) VALUES (%s, %s)"
-        value = (ct, RECEIVERS[0])
+        value = (ct.hexdigest(), RECEIVERS[0])
+        FORM_LINK = FORM_LINK + ct.hexdigest()
         mycursor.execute(sql, value)
-        cnx.commit()
-        cnx.close()
+        con.commit()
+        con.close()
 
-    except mysql.connector.Error as err:
-        if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
-            print("Something is wrong with your user name or password")
-        elif err.errno == errorcode.ER_BAD_DB_ERROR:
-            print("Database does not exist")
-        elif err.errno == errorcode.ER_DUP_ENTRY:
-            print("Duplicated entry")
-        else:
-            print(err)
-    else:
-        cnx.close()
-    
+    except pymysql.Error as e:
+        print("could not close connection error pymysql %d: %s" %(e.args[0], e.args[1]))
 
 if __name__ == "__main__":
     print("=" * 40)
@@ -100,5 +92,5 @@ if __name__ == "__main__":
     print(f"หัวข้อ: {SUBJECT}")
     print("=" * 40)
     
-    send_email()
     insertdb()
+    send_email()
