@@ -11,6 +11,7 @@ PASSWORD = "ajnr ulsc hxey tcnp"
 # Receiver matrix. Use ['email','name']. TODO add Thai name column
 MList = [
     ['siwapon.so11@gmail.com', 'Siwapon'],
+    ['siwaaltmail@gmail.com','Siwanon']
 ]
 # Email subject.
 SUBJECT = "Please change your Organization account password."
@@ -71,4 +72,4 @@ if __name__ == "__main__":
         key = insert2db(e[0])
         send_email(e[0],e[1],key)
         sent_count += 1
-        print("Sent to "+sent_count+" email(s).")
+    print("Sent to ",sent_count," email(s).")
