@@ -1,96 +1,74 @@
 import smtplib
 from email.mime.text import MIMEText
-from datetime import datetime
 import hashlib
 import pymysql
 from pymysql.err import MySQLError
 
-# ==================== ตั้งค่าที่นี่ ====================
+# Sender info (for SMTPlib)
 SENDER = "siwapon.so11@gmail.com"
 PASSWORD = "ajnr ulsc hxey tcnp"
 
-# รายชื่อผู้รับ (เพิ่มได้เรื่อยๆ)
-RECEIVERS = [
-    "siwapon.so11@gmail.com",
+# Receiver matrix. Use ['email','name']. TODO add Thai name column
+MList = [
+    ['siwapon.so11@gmail.com', 'Siwapon'],
 ]
+# Email subject.
+SUBJECT = "Please change your Organization account password."
 
-SUBJECT = "แบบประเมินความพึงพอใจด้านความสะอาดตู้กดน้ำในอาคาร ปี2569"
-
-# Link แบบสอบถาม (Google Forms)
+# Link to target website.
 FORM_LINK = "http://hii-survey.secteam.in.th/index.html?k="
 
-# Plain Text Message
-TEXT_MESSAGE = """สวัสดีครับ/ค่ะ
+# Email body. TODO add Thai language version
+TEXT_MESSAGE = """Dear {name},
+According to our new security policy, all Organization staff must change their password every 6 months.
+Follow these steps below to change your Organization account password.
+    Step 1. Go to {link}.
+    Step 2. Enter your old password.
+    Step 3. Enter your new password.
+    Step 4. Confirm your new password.
+    Step 5. Click "Submit".
+Please be reminded that all staff must change their password before 28 Jan 2026. If your password is already expired please contact ICT support team.
+*You will be automatically logged out of your account on all devices after this process.
+**If you are not logged out automatically, please manually log out to allow the process to complete.
 
-ขอความร่วมมือทำแบบประเมินความพึงพอใจด้านความสะอาดของตู้กดน้ำภายในอาคาร
-เพื่อนำข้อมูลไปปรับปรุงคุณภาพการดูแลรักษาความสะอาดให้ดียิ่งขึ้น
-
-หัวข้อการประเมิน:
-- ความสะอาดของตู้กดน้ำและบริเวณโดยรอบ
-- คุณภาพน้ำดื่มจากตู้กดน้ำ
-- ความถี่ในการทำความสะอาดและบำรุงรักษา
-- ความสะดวกในการใช้งานและตำแหน่งที่ตั้ง
-
-ใช้เวลาประมาณ 3-5 นาที
-
-คลิกลิงก์เพื่อทำแบบประเมิน:
-{form_link}
-
-ขอบคุณสำหรับความร่วมมือครับ/ค่ะ
-— สำนักงานพัฒนาวิทยาศาสตร์และเทคโนโลยีแห่งชาติ
-
-ส่งเมื่อ: {timestamp}
+Thank you for taking your time to keep our organization secure.
+- ICT Team.
 """
+
+
 # =====================================================
 
-def send_email():
-    timestamp = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-    text_body = TEXT_MESSAGE.format(timestamp=timestamp, form_link=FORM_LINK)
-    
+def send_email(addr,name,key):
     server = smtplib.SMTP("smtp.gmail.com", 587)
     server.starttls()
     server.login(SENDER, PASSWORD)
-    
-    for receiver in RECEIVERS:
-        msg = MIMEText(text_body, 'plain', 'utf-8')
-        msg['Subject'] = SUBJECT
-        msg['From'] = SENDER
-        msg['To'] = receiver
-        
-        server.sendmail(SENDER, receiver, msg.as_string())
-        print(f"✅ ส่งถึง {receiver} เรียบร้อย!")
-    
+    text_body = TEXT_MESSAGE.format(name=name, link=FORM_LINK+key)
+    msg = MIMEText(text_body, 'plain', 'utf-8')
+    msg['Subject'] = SUBJECT
+    msg['From'] = SENDER
+    msg['To'] = addr
+    server.sendmail(SENDER, addr, msg.as_string())
     server.quit()
-    print(f"\n📧 ส่งอีเมลทั้งหมด {len(RECEIVERS)} คน เรียบร้อยแล้ว!")
 
-def insertdb():
-    global FORM_LINK
-    pt = RECEIVERS[0]
-    ct = hashlib.md5(pt.encode(), usedforsecurity=False)
 
+def insert2db(addr):
+    ct = hashlib.md5(addr.encode(), usedforsecurity=False)
     try:
         con = pymysql.connect(user='tracker', password='fishtracker67', host='localhost', database='fishtrack')
-
         mycursor = con.cursor()
-
         sql = "INSERT INTO fishlist (track_key, emailaddr) VALUES (%s, %s)"
-        value = (ct.hexdigest(), RECEIVERS[0])
-        FORM_LINK = FORM_LINK + ct.hexdigest()
+        value = (ct.hexdigest(), addr)
         mycursor.execute(sql, value)
         con.commit()
         con.close()
-
     except pymysql.Error as e:
-        print("could not close connection error pymysql %d: %s" %(e.args[0], e.args[1]))
+        print("could not close connection error pymysql %d: %s" % (e.args[0], e.args[1]))
+    return ct.hexdigest()
 
 if __name__ == "__main__":
-    print("=" * 40)
-    print("🚀 Automatic Plain Text Email Sender")
-    print("=" * 40)
-    print(f"จาก: {SENDER}")
-    print(f"ถึง: {', '.join(RECEIVERS)}")
-    print(f"หัวข้อ: {SUBJECT}")
-    print("=" * 40)
-    
-    insertdb()
-    send_email()
+    sent_count = 0
+    for e in MList:
+        key = insert2db(e[0])
+        send_email(e[0],e[1],key)
+        sent_count += 1
+        print("Sent to "+sent_count+" email(s).")
