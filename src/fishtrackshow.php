@@ -98,7 +98,7 @@
                     <tr>
                         <th>Datetime</th>
                         <th>Email</th>
-                        <th>TakeKey</th>
+                        <th>Tracking Key</th>
                     </tr>
                 </thead>
                 <tbody id="emailTableBody">
@@ -138,7 +138,7 @@
                                 order by fishlogpwd.datetime asc;";
                                 $result = $conn->query($sql);
                                 if($conn-> connect_errno){
-                                        die($conn->connect_errno.": ".$conn->connect_error);
+                                    die($conn->connect_errno.": ".$conn->connect_error);
                                 }
                                 while($row=$result->fetch_array()){
                                     echo "<tr>";
