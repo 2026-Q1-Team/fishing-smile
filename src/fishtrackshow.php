@@ -110,26 +110,52 @@
                         $startdate = trim($_POST['startdate'] ?? '');
                         $enddate = trim($_POST['enddate'] ?? '');
                         if($dbtablesel === 'fishlogpwd'){
-                            $sql = "select fishlogpwd.track_key, fishlogpwd.datetime, emailaddr, fishlogpwd.password from fishlogpwd inner join fishlist on fishlogpwd.track_key = fishlist.track_key
-                            where date(fishlogpwd.`datetime`) >= '$startdate' and date(fishlogpwd.`datetime`) <= '$enddate' order by fishlogpwd.datetime asc;";
-                            $result = $conn->query($sql);
-                            if($conn-> connect_errno){
-                                    die($conn->connect_errno.": ".$conn->connect_error);
+                            if($startdate !== '' && $enddate !== ''){
+                                $sql = "select fishlogpwd.track_key, fishlogpwd.datetime, emailaddr, fishlogpwd.password from fishlogpwd inner join fishlist on fishlogpwd.track_key = fishlist.track_key
+                                where date(fishlogpwd.`datetime`) >= '$startdate' and date(fishlogpwd.`datetime`) <= '$enddate' order by fishlogpwd.datetime asc;";
+                                $result = $conn->query($sql);
+                                if($conn-> connect_errno){
+                                        die($conn->connect_errno.": ".$conn->connect_error);
+                                }
+                                while($row=$result->fetch_array()){
+                                    echo "<tr>";
+                                    echo    "<td class='takekey-cell'>";
+                                    echo        "<span class='date-cell'> ".$row['datetime']." </span>";
+                                    echo    "</td>";
+                                    echo    "<td>";
+                                    echo        "<div class='email-cell'>";
+                                    echo            "<div class='email-avatar'>S</div>";
+                                    echo            "<span class='email-address'>".$row['emailaddr']."</span>";
+                                    echo        "</div>";
+                                    echo    "</td>";
+                                    echo    "<td class='takekey-code'>".$row['track_key']."</td>";
+                                    echo    "<td >".$row['password']."</td>";
+                                    echo "</tr>";
+                                }
                             }
-                            while($row=$result->fetch_array()){
-                                echo "<tr>";
-                                echo    "<td class='takekey-cell'>";
-                                echo        "<span class='date-cell'> ".$row['datetime']." </span>";
-                                echo    "</td>";
-                                echo    "<td>";
-                                echo        "<div class='email-cell'>";
-                                echo            "<div class='email-avatar'>S</div>";
-                                echo            "<span class='email-address'>".$row['emailaddr']."</span>";
-                                echo        "</div>";
-                                echo    "</td>";
-                                echo    "<td class='takekey-code'>".$row['track_key']."</td>";
-                                echo    "<td >".$row['password']."</td>";
-                                echo "</tr>";
+                            else{
+                                $sql = "select fishlogpwd.track_key, fishlogpwd.datetime, emailaddr, fishlogpwd.password from fishlogpwd inner join fishlist on fishlogpwd.track_key = fishlist.track_key
+                                order by fishlogpwd.datetime asc;";
+                                $result = $conn->query($sql);
+                                if($conn-> connect_errno){
+                                        die($conn->connect_errno.": ".$conn->connect_error);
+                                }
+                                while($row=$result->fetch_array()){
+                                    echo "<tr>";
+                                    echo    "<td class='takekey-cell'>";
+                                    echo        "<span class='date-cell'> ".$row['datetime']." </span>";
+                                    echo    "</td>";
+                                    echo    "<td>";
+                                    echo        "<div class='email-cell'>";
+                                    echo            "<div class='email-avatar'>S</div>";
+                                    echo            "<span class='email-address'>".$row['emailaddr']."</span>";
+                                    echo        "</div>";
+                                    echo    "</td>";
+                                    echo    "<td class='takekey-code'>".$row['track_key']."</td>";
+                                    echo    "<td >".$row['password']."</td>";
+                                    echo "</tr>";
+                                }
+
                             }
                         }
                         elseif($dbtablesel === 'fishlog'){
