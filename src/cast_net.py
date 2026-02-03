@@ -73,6 +73,7 @@ if __name__ == "__main__":
     sent_count = 0
     key_batch = datetime.datetime.now()
     # Receiver matrix. Should be [['email','name_TH','name_EN']] when printed.
+    # File input should be in .csv format.
     mailingList = get_target(input("Enter filepath:"))
     for e in mailingList:
         k = insert2db(e[0])
