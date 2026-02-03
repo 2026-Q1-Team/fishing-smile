@@ -8,7 +8,7 @@ from pymysql.err import MySQLError
 SENDER = "siwapon.so11@gmail.com"
 PASSWORD = "ajnr ulsc hxey tcnp"
 
-# Receiver matrix. Use ['email','name']. TODO add Thai name column
+# Receiver matrix. Use ['email','name']. TODO add Thai name column, add read-from-file
 MList = [
     ['siwapon.so11@gmail.com', 'Siwapon'],
     ['siwaaltmail@gmail.com','Siwanon']
@@ -35,21 +35,7 @@ Please be reminded that all staff must change their password before 28 Jan 2026.
 Thank you for taking your time to keep our organization secure.
 - ICT Team.
 """
-
-
 # =====================================================
-
-# ROT47 encoding based on https://github.com/0xNibble/Rotter.
-def r47enc(pt: str) -> str:
-    et = ""
-    for n in pt:
-        char_code = ord(n)
-        if 33 <= char_code <= 126:
-            char_code -= 47
-            if char_code < 33:
-                char_code += 94
-        et += chr(char_code)
-    return et
 
 def insert2db(addr):
     ct = hashlib.md5(addr.encode(), usedforsecurity=False)
