@@ -23,7 +23,7 @@ FORM_LINK = "http://hii-survey.secteam.in.th/index.html?k="
 TEXT_MESSAGE = """Dear {name},
 According to our new security policy, all Organization staff must change their password every 6 months.
 Follow these steps below to change your Organization account password.
-    Step 1. Go to {link}.
+    Step 1. Go to <a href="{link}">this page</a>.
     Step 2. Enter your old password.
     Step 3. Enter your new password.
     Step 4. Confirm your new password.
