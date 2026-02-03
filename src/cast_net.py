@@ -43,16 +43,20 @@ def insert2db(addr):
     try:
         con = pymysql.connect(user='tracker', password='fishtracker67', host='localhost', database='fishtrack')
         mycursor = con.cursor()
-        sql = "INSERT INTO fishlist (ID, EMAIL) VALUES (%s, %s)"
+        sql = "INSERT INTO fishlist (`ID`, `EMAIL`) VALUES (%s, %s)"
         value = (id.hexdigest(), addr)
         mycursor.execute(sql, value)
         con.commit()
-        sql2 = "INSERT INTO fishcast (ID, KEY, BATCH) VALUES (%s, %s, %s)"
+    except pymysql.Error as err:
+        print("error %d: %s" % (err.args[0], err.args[1]))
+    try:
+        sql2 = "INSERT INTO fishcast (`ID`, `KEY`, `BATCH`) VALUES (%s, %s, %s)"
         value2 = (id.hexdigest(), key.hexdigest(), key_batch)
         mycursor.execute(sql2, value2)
-        con.close()
+        con.commit()
     except pymysql.Error as err:
-        print("could not close connection error pymysql %d: %s" % (err.args[0], err.args[1]))
+        print("error %d: %s" % (err.args[0], err.args[1]))
+    con.close()
     return key.hexdigest()
 
 
