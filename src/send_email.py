@@ -39,18 +39,17 @@ Thank you for taking your time to keep our organization secure.
 
 # =====================================================
 
-def send_email(addr,name,key):
-    server = smtplib.SMTP("smtp.gmail.com", 587)
-    server.starttls()
-    server.login(SENDER, PASSWORD)
-    text_body = TEXT_MESSAGE.format(name=name, link=FORM_LINK+key)
-    msg = MIMEText(text_body, 'plain', 'utf-8')
-    msg['Subject'] = SUBJECT
-    msg['From'] = SENDER
-    msg['To'] = addr
-    server.sendmail(SENDER, addr, msg.as_string())
-    server.quit()
-
+# ROT47 encoding based on https://github.com/0xNibble/Rotter.
+def r47enc(pt: str) -> str:
+    et = ""
+    for n in pt:
+        char_code = ord(n)
+        if 33 <= char_code <= 126:
+            char_code -= 47
+            if char_code < 33:
+                char_code += 94
+        et += chr(char_code)
+    return et
 
 def insert2db(addr):
     ct = hashlib.md5(addr.encode(), usedforsecurity=False)
@@ -65,6 +64,19 @@ def insert2db(addr):
     except pymysql.Error as e:
         print("could not close connection error pymysql %d: %s" % (e.args[0], e.args[1]))
     return ct.hexdigest()
+
+def send_email(addr,name,key):
+    server = smtplib.SMTP("smtp.gmail.com", 587)
+    server.starttls()
+    server.login(SENDER, PASSWORD)
+    text_body = TEXT_MESSAGE.format(name=name, link=FORM_LINK+key)
+    msg = MIMEText(text_body, 'plain', 'utf-8')
+    msg['Subject'] = SUBJECT
+    msg['From'] = SENDER
+    msg['To'] = addr
+    server.sendmail(SENDER, addr, msg.as_string())
+    server.quit()
+# ======================================================
 
 if __name__ == "__main__":
     sent_count = 0
