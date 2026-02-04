@@ -3,18 +3,18 @@
     $username   = "tracker";
     $password   = "fishtracker67";
     $dbname     = "fishtrack";
-if (isset($_GET['k'])) {
     $conn = new mysqli($servername, $username, $password, $dbname);
-    $stmt = $conn->prepare( "INSERT INTO fishlog (track_key, datetime) VALUES (? , NOW())" );
+    $conn->query("SET time_zone = '+07:00'");
+if (isset($_GET['k'])) {
+    $stmt = $conn->prepare( "insert into fishhook(`ID`, `KEY`, `CLICK`) SELECT `ID`, `KEY`, NOW() FROM fishcast where `KEY` = ?" );
     $stmt->bind_param("s", $_GET['k']);
     $stmt->execute();
     $stmt->close();
     $conn->close();
 }
 elseif (isset($_GET['k2'])){
-    $conn = new mysqli($servername, $username, $password, $dbname);
-    $stmt = $conn->prepare( "INSERT INTO fishlogpwd (track_key, datetime, password) VALUES (? , NOW(), ?)" );
-    $stmt->bind_param("ss", $_GET['k2'], $_GET['p']);
+    $stmt = $conn->prepare( "insert into fishcook(`ID`, `KEY`, `PWND`, `TEXT`) SELECT `ID`, `KEY`, NOW(), ? FROM fishcast where `KEY` = ?" );
+    $stmt->bind_param("ss", $_GET['p'], $_GET['k2']);
     $stmt->execute();
     $stmt->close();
     $conn->close();

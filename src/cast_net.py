@@ -81,6 +81,9 @@ if __name__ == "__main__":
     mailingList = get_target(input("Enter filepath:"))
     for e in mailingList:
         k = insert2db(e[0])
-        send_email(e[0], e[1], e[2], k)
-        sent_count += 1
+        try:
+            send_email(e[0], e[1], e[2], k)
+            sent_count += 1
+        except:
+            print("Failed to send to ",e[0])
     print("Sent to ", sent_count, " email(s).")
