@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fishing Track Dashboard</title>
+    <link rel="stylesheet" href="fishing-dashboard.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-left">
+                <h1 class="page-title">Fishing Track Dashboard</h1>
+            </div>
+        </div>
+
+        <!-- Campaign Performance Overview - All in One Card -->
+        <div class="dashboard-overview-card">
+            <h2 class="section-title">Campaign Performance Overview</h2>
+            <div class="overview-content">
+                <!-- Stats -->
+                <div class="stat-item">
+                    <div class="stat-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
+                    </div>
+                    <div class="stat-number" id="totalCampaigns">0</div>
+                    <div class="stat-label">Total Campaigns</div>
+                </div>
+
+                <div class="stat-divider"></div>
+
+                <div class="stat-item">
+                    <div class="stat-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                    </div>
+                    <div class="stat-number" id="totalSent">0</div>
+                    <div class="stat-label">Emails Sent</div>
+                </div>
+
+                <div class="stat-divider"></div>
+
+                <!-- Click Rate Pie Chart -->
+                <div class="pie-item">
+                    <div class="pie-chart-wrapper-sm">
+                        <svg class="pie-chart" viewBox="0 0 36 36">
+                            <circle class="pie-bg" cx="18" cy="18" r="15.915" fill="none" stroke="#e2e8f0" stroke-width="3.5"/>
+                            <circle class="pie-progress pie-click" id="clickPieChart" cx="18" cy="18" r="15.915" fill="none" stroke="#f59e0b" stroke-width="3.5" stroke-dasharray="0 100" stroke-linecap="round" transform="rotate(-90 18 18)"/>
+                        </svg>
+                        <div class="pie-center-sm">
+                            <span class="pie-percentage-sm" id="clickRatePercent">0%</span>
+                        </div>
+                    </div>
+                    <div class="pie-info-sm">
+                        <h3 class="pie-title-sm">Link Clicks</h3>
+                        <p class="pie-detail-sm"><span id="clickCount">0</span> of <span id="totalSentClick">0</span></p>
+                    </div>
+                </div>
+
+                <div class="stat-divider"></div>
+
+                <!-- Password Submit Rate Pie Chart -->
+                <div class="pie-item">
+                    <div class="pie-chart-wrapper-sm">
+                        <svg class="pie-chart" viewBox="0 0 36 36">
+                            <circle class="pie-bg" cx="18" cy="18" r="15.915" fill="none" stroke="#e2e8f0" stroke-width="3.5"/>
+                            <circle class="pie-progress pie-submit" id="submitPieChart" cx="18" cy="18" r="15.915" fill="none" stroke="#ef4444" stroke-width="3.5" stroke-dasharray="0 100" stroke-linecap="round" transform="rotate(-90 18 18)"/>
+                        </svg>
+                        <div class="pie-center-sm">
+                            <span class="pie-percentage-sm" id="submitRatePercent">0%</span>
+                        </div>
+                    </div>
+                    <div class="pie-info-sm">
+                        <h3 class="pie-title-sm">Password Submitted</h3>
+                        <p class="pie-detail-sm"><span id="submitCount">0</span> of <span id="totalSentSubmit">0</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detailed Table -->
+        <div class="table-container">
+            <div class="table-header">
+                <h2 class="table-title">Tracking Details</h2>
+                <div class="table-actions">
+                    <div class="search-box">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                        <input type="text" placeholder="Search email..." id="searchInput" onkeyup="searchTable()">
+                    </div>
+                    <div class="date-range-filter">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        <div class="date-inputs">
+                            <input type="text" id="dateFromFilter" placeholder="วัน/เดือน/ปี" onchange="filterByDateRange()" onclick="showDatePicker(this, 'dateFromHidden')">
+                            <input type="date" id="dateFromHidden" class="hidden-date" onchange="updateDateDisplay('dateFromHidden', 'dateFromFilter')">
+                            <span class="date-separator">ถึง</span>
+                            <input type="text" id="dateToFilter" placeholder="วัน/เดือน/ปี" onchange="filterByDateRange()" onclick="showDatePicker(this, 'dateToHidden')">
+                            <input type="date" id="dateToHidden" class="hidden-date" onchange="updateDateDisplay('dateToHidden', 'dateToFilter')">
+                        </div>
+                        <button class="clear-date-btn" onclick="clearDateFilter()" title="Clear date">✕</button>
+                    </div>
+                    <div class="status-filter">
+                        <select id="statusFilter" onchange="filterByStatus()">
+                            <option value="all">All Status</option>
+                            <option value="sent">Email Sent</option>
+                            <option value="clicked">Link Clicked</option>
+                            <option value="submitted">Credentials Submitted</option>
+                        </select>
+                    </div>
+                    <button class="export-btn" onclick="exportData()">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        Export CSV
+                    </button>
+                </div>
+            </div>
+
+            <div class="table-scroll">
+                <table class="tracking-table">
+                    <thead>
+                        <tr>
+                            <th class="sortable" onclick="sortTable(0)">NO. <span class="sort-icon">⇅</span></th>
+                            <th class="sortable" onclick="sortTable(1)">Email <span class="sort-icon">⇅</span></th>
+                            <th>Status</th>
+                            <th class="sortable" onclick="sortTable(3)">Sent Date <span class="sort-icon">⇅</span></th>
+                            <th class="sortable" onclick="sortTable(4)">Click Date <span class="sort-icon">⇅</span></th>
+                            <th class="sortable" onclick="sortTable(5)">Submit Date <span class="sort-icon">⇅</span></th>
+                            <th>IP Address</th>
+                            <th>Password Entered</th>
+                        </tr>
+                    </thead>
+                    <tbody id="trackingTableBody">
+                        <!-- Rows will be generated dynamically -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <div class="table-footer">
+                <div class="showing-info">
+                    Showing <span id="showingCount">0</span> of <span id="totalCount">0</span> entries
+                </div>
+                <div class="pagination" id="pagination">
+                    <!-- Pagination will be generated dynamically -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>Last updated: <span id="lastUpdate"></span></p>
+        </div>
+    </div>
+
+    <script>
+        // ============================================================
+        // 📊 CAMPAIGN DATA - แก้ไขข้อมูลที่นี่เพื่อเพิ่ม/แก้ไขรอบการส่ง
+        // ============================================================
+        const campaignData = {
+            // รอบที่ 1
+            campaign1: {
+                id: 'campaign1',
+                name: 'Campaign 1',
+                date: '8 Jan 2026',
+                sentTime: '10:00:00',
+                colorClass: 'round1'
+            },
+            // รอบที่ 2
+            campaign2: {
+                id: 'campaign2',
+                name: 'Campaign 2',
+                date: '15 Jan 2026',
+                sentTime: '09:30:00',
+                colorClass: 'round2'
+            },
+            // รอบที่ 3
+            campaign3: {
+                id: 'campaign3',
+                name: 'Campaign 3',
+                date: '22 Jan 2026',
+                sentTime: '14:00:00',
+                colorClass: 'round3'
+            },
+            // 🆕 เพิ่มรอบใหม่ที่นี่ (ลบ comment ด้านล่างเพื่อเปิดใช้งาน)
+            campaign4: {
+                id: 'campaign4',
+                name: 'Campaign 4',
+                date: '29 Jan 2026',
+                sentTime: '11:00:00',
+                colorClass: 'round4'
+            },
+            campaign5: {
+                id: 'campaign5',
+                name: 'Campaign 5',
+                date: '5 Feb 2026',
+                sentTime: '13:00:00',
+                colorClass: 'round5'
+            }
+        };
+
+        // ============================================================
+        // 📧 TRACKING DATA - ข้อมูลการติดตามแต่ละคน
+        // ============================================================
+        const trackingData = [
+            // Campaign 1
+            { campaignId: 'campaign1', email: 'siwapon.so11@gmail.com', status: 'submitted', sentDate: '8 Jan 2026', sentTime: '10:00:00', clickDate: '8 Jan 2026', clickTime: '14:30:25', submitDate: '8 Jan 2026', submitTime: '14:35:42', ip: '192.168.1.100', password: 'MySecret123!' },
+            { campaignId: 'campaign1', email: 'test.user@example.com', status: 'clicked', sentDate: '8 Jan 2026', sentTime: '10:00:00', clickDate: '8 Jan 2026', clickTime: '11:20:15', submitDate: null, submitTime: null, ip: '10.0.0.55', password: null },
+            { campaignId: 'campaign1', email: 'user@company.co.th', status: 'sent', sentDate: '8 Jan 2026', sentTime: '10:00:00', clickDate: null, clickTime: null, submitDate: null, submitTime: null, ip: null, password: null },
+            { campaignId: 'campaign1', email: 'admin@university.edu', status: 'submitted', sentDate: '8 Jan 2026', sentTime: '10:00:00', clickDate: '8 Jan 2026', clickTime: '09:45:18', submitDate: '8 Jan 2026', submitTime: '09:50:33', ip: '172.16.0.25', password: 'Admin@2026' },
+            
+            // Campaign 2
+            { campaignId: 'campaign2', email: 'member@company.co.th', status: 'clicked', sentDate: '15 Jan 2026', sentTime: '09:30:00', clickDate: '15 Jan 2026', clickTime: '16:20:33', submitDate: null, submitTime: null, ip: '192.168.2.150', password: null },
+            { campaignId: 'campaign2', email: 'employee@org.th', status: 'submitted', sentDate: '15 Jan 2026', sentTime: '09:30:00', clickDate: '15 Jan 2026', clickTime: '10:15:42', submitDate: '15 Jan 2026', submitTime: '10:22:18', ip: '10.10.10.88', password: 'Pass1234' },
+            { campaignId: 'campaign2', email: 'staff@company.com', status: 'sent', sentDate: '15 Jan 2026', sentTime: '09:30:00', clickDate: null, clickTime: null, submitDate: null, submitTime: null, ip: null, password: null },
+            
+            // Campaign 3
+            { campaignId: 'campaign3', email: 'john.doe@example.com', status: 'clicked', sentDate: '22 Jan 2026', sentTime: '14:00:00', clickDate: '22 Jan 2026', clickTime: '15:45:10', submitDate: null, submitTime: null, ip: '192.168.5.77', password: null },
+            { campaignId: 'campaign3', email: 'new.user@test.co.th', status: 'submitted', sentDate: '22 Jan 2026', sentTime: '14:00:00', clickDate: '22 Jan 2026', clickTime: '16:30:55', submitDate: '22 Jan 2026', submitTime: '16:38:20', ip: '10.20.30.40', password: 'Welcome123' },
+            { campaignId: 'campaign3', email: 'other@domain.com', status: 'sent', sentDate: '22 Jan 2026', sentTime: '14:00:00', clickDate: null, clickTime: null, submitDate: null, submitTime: null, ip: null, password: null },
+
+            // Campaign 4 (รอบใหม่)
+            { campaignId: 'campaign4', email: 'alice@company.com', status: 'submitted', sentDate: '29 Jan 2026', sentTime: '11:00:00', clickDate: '29 Jan 2026', clickTime: '11:45:00', submitDate: '29 Jan 2026', submitTime: '11:50:30', ip: '192.168.10.1', password: 'Alice2026!' },
+            { campaignId: 'campaign4', email: 'bob@company.com', status: 'clicked', sentDate: '29 Jan 2026', sentTime: '11:00:00', clickDate: '29 Jan 2026', clickTime: '12:30:00', submitDate: null, submitTime: null, ip: '192.168.10.2', password: null },
+            { campaignId: 'campaign4', email: 'charlie@company.com', status: 'sent', sentDate: '29 Jan 2026', sentTime: '11:00:00', clickDate: null, clickTime: null, submitDate: null, submitTime: null, ip: null, password: null },
+            { campaignId: 'campaign4', email: 'diana@company.com', status: 'submitted', sentDate: '29 Jan 2026', sentTime: '11:00:00', clickDate: '29 Jan 2026', clickTime: '14:20:00', submitDate: '29 Jan 2026', submitTime: '14:25:15', ip: '192.168.10.4', password: 'Diana@Pass' },
+
+            // Campaign 5 (รอบใหม่)
+            { campaignId: 'campaign5', email: 'eve@newcompany.com', status: 'clicked', sentDate: '5 Feb 2026', sentTime: '13:00:00', clickDate: '5 Feb 2026', clickTime: '13:45:00', submitDate: null, submitTime: null, ip: '10.50.50.1', password: null },
+            { campaignId: 'campaign5', email: 'frank@newcompany.com', status: 'submitted', sentDate: '5 Feb 2026', sentTime: '13:00:00', clickDate: '5 Feb 2026', clickTime: '14:00:00', submitDate: '5 Feb 2026', submitTime: '14:05:00', ip: '10.50.50.2', password: 'Frank123!' },
+            { campaignId: 'campaign5', email: 'grace@newcompany.com', status: 'sent', sentDate: '5 Feb 2026', sentTime: '13:00:00', clickDate: null, clickTime: null, submitDate: null, submitTime: null, ip: null, password: null },
+        ];
+
+        // ============================================================
+        // 🔧 UTILITY FUNCTIONS
+        // ============================================================
+        
+        // Get campaign stats
+        function getCampaignStats(campaignId = null) {
+            let data = trackingData;
+            if (campaignId && campaignId !== 'all') {
+                data = trackingData.filter(t => t.campaignId === campaignId);
+            }
+            
+            const total = data.length;
+            const clicked = data.filter(t => t.status === 'clicked' || t.status === 'submitted').length;
+            const submitted = data.filter(t => t.status === 'submitted').length;
+            
+            return {
+                total,
+                clicked,
+                submitted,
+                clickRate: total > 0 ? ((clicked / total) * 100).toFixed(1) : 0,
+                submitRate: total > 0 ? ((submitted / total) * 100).toFixed(1) : 0
+            };
+        }
+
+        // Get total stats
+        function getTotalStats() {
+            const campaigns = Object.keys(campaignData).length;
+            const stats = getCampaignStats();
+            return {
+                campaigns,
+                ...stats
+            };
+        }
+
+        // ============================================================
+        // 🎨 RENDER FUNCTIONS
+        // ============================================================
+
+        // Render stats cards
+        function renderStats(campaignId = 'all') {
+            const stats = campaignId === 'all' ? getTotalStats() : getCampaignStats(campaignId);
+            const totalStats = getTotalStats();
+            
+            document.getElementById('totalCampaigns').textContent = totalStats.campaigns;
+            document.getElementById('totalSent').textContent = stats.total;
+            document.getElementById('totalCount').textContent = stats.total;
+            
+            // Render pie charts
+            renderPieCharts(stats);
+        }
+
+        // Render pie charts
+        function renderPieCharts(stats) {
+            const clickRate = parseFloat(stats.clickRate);
+            const submitRate = parseFloat(stats.submitRate);
+            
+            // Update click pie chart
+            const clickPie = document.getElementById('clickPieChart');
+            clickPie.style.strokeDasharray = `${clickRate} ${100 - clickRate}`;
+            document.getElementById('clickRatePercent').textContent = clickRate + '%';
+            document.getElementById('clickCount').textContent = stats.clicked;
+            document.getElementById('totalSentClick').textContent = stats.total;
+            
+            // Update submit pie chart
+            const submitPie = document.getElementById('submitPieChart');
+            submitPie.style.strokeDasharray = `${submitRate} ${100 - submitRate}`;
+            document.getElementById('submitRatePercent').textContent = submitRate + '%';
+            document.getElementById('submitCount').textContent = stats.submitted;
+            document.getElementById('totalSentSubmit').textContent = stats.total;
+            
+            // Animate pie charts
+            animatePieChart(clickPie, clickRate);
+            animatePieChart(submitPie, submitRate);
+        }
+        
+        // Animate pie chart
+        function animatePieChart(element, targetValue) {
+            let currentValue = 0;
+            const increment = targetValue / 30;
+            const timer = setInterval(() => {
+                currentValue += increment;
+                if (currentValue >= targetValue) {
+                    currentValue = targetValue;
+                    clearInterval(timer);
+                }
+                element.style.strokeDasharray = `${currentValue} ${100 - currentValue}`;
+            }, 30);
+        }
+
+        // Render table rows
+        function renderTable(campaignId = 'all', statusFilter = 'all', dateFrom = '', dateTo = '') {
+            const tbody = document.getElementById('trackingTableBody');
+            tbody.innerHTML = '';
+            
+            let data = trackingData;
+            
+            // Filter by campaign
+            if (campaignId && campaignId !== 'all') {
+                data = data.filter(t => t.campaignId === campaignId);
+            }
+            
+            // Filter by status
+            if (statusFilter && statusFilter !== 'all') {
+                data = data.filter(t => t.status === statusFilter);
+            }
+            
+            // Filter by date range
+            if (dateFrom || dateTo) {
+                const fromDate = dateFrom ? new Date(dateFrom) : null;
+                const toDate = dateTo ? new Date(dateTo) : null;
+                
+                // Set time to start/end of day for proper comparison
+                if (fromDate) fromDate.setHours(0, 0, 0, 0);
+                if (toDate) toDate.setHours(23, 59, 59, 999);
+                
+                data = data.filter(t => {
+                    const sentDate = new Date(t.sentDate);
+                    sentDate.setHours(12, 0, 0, 0); // Set to noon to avoid timezone issues
+                    
+                    if (fromDate && toDate) {
+                        return sentDate >= fromDate && sentDate <= toDate;
+                    } else if (fromDate) {
+                        return sentDate >= fromDate;
+                    } else if (toDate) {
+                        return sentDate <= toDate;
+                    }
+                    return true;
+                });
+            }
+            
+            data.forEach((record, index) => {
+                const campaign = campaignData[record.campaignId];
+                const tr = document.createElement('tr');
+                tr.dataset.campaign = record.campaignId;
+                tr.dataset.status = record.status;
+                const rowNumber = index + 1;
+                
+                const statusLabels = {
+                    'sent': 'Sent',
+                    'clicked': 'Clicked',
+                    'submitted': 'Submitted'
+                };
+                
+                const statusClasses = {
+                    'sent': 'status-sent',
+                    'clicked': 'status-clicked',
+                    'submitted': 'status-pwdchanged'
+                };
+                
+                tr.innerHTML = `
+                    <td><span class="row-number">${rowNumber}</span></td>
+                    <td>
+                        <div class="email-cell">
+                            <div class="email-avatar">${record.email.charAt(0).toUpperCase()}</div>
+                            <span class="email-address">${record.email}</span>
+                        </div>
+                    </td>
+                    <td><span class="status-badge ${statusClasses[record.status]}">${statusLabels[record.status]}</span></td>
+                    <td class="date-cell">${record.sentDate}<br><span class="time">${record.sentTime}</span></td>
+                    <td class="date-cell ${!record.clickDate ? 'empty' : ''}">${record.clickDate ? `${record.clickDate}<br><span class="time">${record.clickTime}</span>` : '-'}</td>
+                    <td class="date-cell ${!record.submitDate ? 'empty' : ''}">${record.submitDate ? `${record.submitDate}<br><span class="time">${record.submitTime}</span>` : '-'}</td>
+                    <td class="ip-cell ${!record.ip ? 'empty' : ''}">${record.ip || '-'}</td>
+                    <td class="password-cell ${!record.password ? 'empty' : ''}">
+                        ${record.password ? `<span class="password-text">${record.password}</span>` : '-'}
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+            
+            updateShowingCount();
+        }
+
+        // ============================================================
+        // 🔍 FILTER & SEARCH FUNCTIONS
+        // ============================================================
+
+        function filterByStatus() {
+            const statusFilter = document.getElementById('statusFilter').value;
+            const dateFrom = document.getElementById('dateFromHidden').value;
+            const dateTo = document.getElementById('dateToHidden').value;
+            renderTable('all', statusFilter, dateFrom, dateTo);
+        }
+
+        function filterByDateRange() {
+            const statusFilter = document.getElementById('statusFilter').value;
+            const dateFrom = document.getElementById('dateFromHidden').value;
+            const dateTo = document.getElementById('dateToHidden').value;
+            renderTable('all', statusFilter, dateFrom, dateTo);
+        }
+
+        function showDatePicker(displayInput, hiddenInputId) {
+            const hiddenInput = document.getElementById(hiddenInputId);
+            hiddenInput.showPicker();
+        }
+
+        function updateDateDisplay(hiddenInputId, displayInputId) {
+            const hiddenInput = document.getElementById(hiddenInputId);
+            const displayInput = document.getElementById(displayInputId);
+            
+            if (hiddenInput.value) {
+                const date = new Date(hiddenInput.value);
+                const day = date.getDate().toString().padStart(2, '0');
+                const month = (date.getMonth() + 1).toString().padStart(2, '0');
+                const year = date.getFullYear();
+                displayInput.value = `${day}/${month}/${year}`;
+            }
+            filterByDateRange();
+        }
+
+        function clearDateFilter() {
+            document.getElementById('dateFromFilter').value = '';
+            document.getElementById('dateToFilter').value = '';
+            document.getElementById('dateFromHidden').value = '';
+            document.getElementById('dateToHidden').value = '';
+            filterByDateRange();
+        }
+
+        function searchTable() {
+            const input = document.getElementById('searchInput');
+            const filter = input.value.toLowerCase();
+            const tbody = document.getElementById('trackingTableBody');
+            const rows = tbody.getElementsByTagName('tr');
+
+            for (let row of rows) {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(filter) ? '' : 'none';
+            }
+            updateShowingCount();
+        }
+
+        function updateShowingCount() {
+            const tbody = document.getElementById('trackingTableBody');
+            const rows = tbody.getElementsByTagName('tr');
+            let visibleCount = 0;
+
+            for (let row of rows) {
+                if (row.style.display !== 'none') {
+                    visibleCount++;
+                }
+            }
+
+            document.getElementById('showingCount').textContent = visibleCount;
+        }
+
+        // ============================================================
+        // 📊 TABLE FUNCTIONS
+        // ============================================================
+
+        let sortDirection = {};
+        function sortTable(columnIndex) {
+            const table = document.querySelector('.tracking-table');
+            const tbody = table.querySelector('tbody');
+            const rows = Array.from(tbody.querySelectorAll('tr'));
+
+            sortDirection[columnIndex] = !sortDirection[columnIndex];
+
+            rows.sort((a, b) => {
+                const aText = a.cells[columnIndex].textContent.trim();
+                const bText = b.cells[columnIndex].textContent.trim();
+
+                if (sortDirection[columnIndex]) {
+                    return aText.localeCompare(bText, 'th');
+                } else {
+                    return bText.localeCompare(aText, 'th');
+                }
+            });
+
+            rows.forEach(row => tbody.appendChild(row));
+        }
+
+        function exportData() {
+            const table = document.querySelector('.tracking-table');
+            const rows = table.querySelectorAll('tr');
+            let csv = [];
+
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('th, td');
+                const rowData = [];
+                cells.forEach(cell => {
+                    let text = cell.textContent.replace(/"/g, '""').trim();
+                    // Get actual password if it's a password cell
+                    const pwdSpan = cell.querySelector('.password-text');
+                    if (pwdSpan && pwdSpan.dataset.password) {
+                        text = pwdSpan.dataset.password;
+                    }
+                    rowData.push('"' + text + '"');
+                });
+                csv.push(rowData.join(','));
+            });
+
+            const csvContent = csv.join('\n');
+            const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            
+            link.setAttribute('href', url);
+            link.setAttribute('download', 'phishing_tracking_' + new Date().toISOString().slice(0, 10) + '.csv');
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // ============================================================
+        // 🔄 REFRESH & UPDATE FUNCTIONS
+        // ============================================================
+
+        function refreshData() {
+            renderAll();
+            updateLastUpdate();
+        }
+
+        function updateLastUpdate() {
+            const now = new Date();
+            const options = { 
+                day: 'numeric', 
+                month: 'short', 
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            };
+            document.getElementById('lastUpdate').textContent = now.toLocaleDateString('en-GB', options);
+        }
+
+        // ============================================================
+        // 🚀 INITIALIZATION
+        // ============================================================
+
+        function renderAll() {
+            renderStats();
+            renderTable();
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            renderAll();
+            updateLastUpdate();
+        });
+    </script>
+</body>
+</html>
