@@ -1,0 +1,5 @@
+# Ignore junk files specific to OS or editor.
+# TODO: Devs who uses these file should set their user-level gitignore file instead.
+# See https://git-scm.com/docs/gitignore
+.DS_Store
+.vscode
