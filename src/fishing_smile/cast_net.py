@@ -3,7 +3,7 @@ import hashlib
 import smtplib
 from email.mime.text import MIMEText
 
-import numpy
+import pandas as pd
 import pymysql
 
 from fishing_smile.settings import get_settings
@@ -15,7 +15,7 @@ PASSWORD = "ajnr ulsc hxey tcnp"
 # Email subject.
 SUBJECT = "Please change your Organization account password."
 # Email body. TODO add Thai language version
-TEXT_MESSAGE = """Dear {name1},
+TEXT_MESSAGE = """Dear {name_en},
 According to our new security policy, all Organization staff must change their password every 6 months.
 Follow these steps below to change your Organization account password.
     Step 1. Go to <a href="{link}">this page</a>.
@@ -34,9 +34,11 @@ Thank you for taking your time to keep our organization secure.
 FORM_LINK = "http://hii-survey.secteam.in.th/index.html?k="
 
 
-def get_target(filename):
-    tm = numpy.genfromtxt(filename, delimiter=',', dtype=str)
-    return tm
+def get_targets(filename):
+    return pd.read_csv(
+        filename,
+        usecols = ['email', 'name_th', 'name_en'],
+    )
 
 
 def insert2db(addr, key_batch):
@@ -62,32 +64,33 @@ def insert2db(addr, key_batch):
     return key.hexdigest()
 
 
-def send_email(addr, name_th, name_en, key):
+def send_email(target, key):
     server = smtplib.SMTP("smtp.gmail.com", 587)
     server.starttls()
     server.login(SENDER, PASSWORD)
-    text_body = TEXT_MESSAGE.format(name1=name_th, name2=name_en, link=FORM_LINK + key)
+    text_body = TEXT_MESSAGE.format(
+        **target._asdict(),
+        link = FORM_LINK + key,
+    )
     msg = MIMEText(text_body, 'html')
     msg['Subject'] = SUBJECT
     msg['From'] = SENDER
-    msg['To'] = addr
-    server.sendmail(SENDER, addr, msg.as_string())
+    msg['To'] = target.email
+    server.sendmail(SENDER, target.email, msg.as_string())
     server.quit()
 
 
 def main():
     sent_count = 0
     key_batch = datetime.datetime.now()
-    # Receiver matrix. Should be [['email','name_TH','name_EN']] when printed.
-    # File input should be in .csv format.
-    mailingList = get_target(input("Enter filepath:"))
-    for e in mailingList:
-        k = insert2db(e[0], key_batch)
+    targets = get_targets(input('Enter filepath: '))
+    for target in targets.itertuples():
+        k = insert2db(target.email, key_batch)
         try:
-            send_email(e[0], e[1], e[2], k)
+            send_email(target, k)
             sent_count += 1
         except:
-            print("Failed to send to ",e[0])
+            print("Failed to send to", target.email)
     print("Sent to ", sent_count, " email(s).")
 
 
