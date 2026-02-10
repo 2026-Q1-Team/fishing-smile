@@ -73,7 +73,7 @@ def send_email(addr, name_th, name_en, key):
     server.quit()
 
 
-if __name__ == "__main__":
+def main():
     sent_count = 0
     key_batch = datetime.datetime.now()
     # Receiver matrix. Should be [['email','name_TH','name_EN']] when printed.
@@ -87,3 +87,7 @@ if __name__ == "__main__":
         except:
             print("Failed to send to ",e[0])
     print("Sent to ", sent_count, " email(s).")
+
+
+if __name__ == "__main__":
+    main()
