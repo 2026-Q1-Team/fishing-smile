@@ -1,9 +1,10 @@
+import logging
+_logger = logging.getLogger(__name__)
 import datetime
 import hashlib
 import smtplib
 from email.mime.text import MIMEText
 
-import pandas as pd
 import pymysql
 
 from fishing_smile.settings import get_settings
@@ -32,13 +33,6 @@ Thank you for taking your time to keep our organization secure.
 """
 # Link to target website. TODO Change site URL.
 FORM_LINK = "http://hii-survey.secteam.in.th/index.html?k="
-
-
-def get_targets(filename):
-    return pd.read_csv(
-        filename,
-        usecols = ['email', 'name_th', 'name_en'],
-    )
 
 
 def insert2db(addr, key_batch):
@@ -80,11 +74,10 @@ def send_email(target, key):
     server.quit()
 
 
-def main():
+def cast_net(targets):
     sent_count = 0
     key_batch = datetime.datetime.now()
-    targets = get_targets(input('Enter filepath: '))
-    for target in targets.itertuples():
+    for target in targets:
         k = insert2db(target.email, key_batch)
         try:
             send_email(target, k)
@@ -92,7 +85,3 @@ def main():
         except:
             print("Failed to send to", target.email)
     print("Sent to ", sent_count, " email(s).")
-
-
-if __name__ == "__main__":
-    main()

@@ -21,6 +21,6 @@ ENV PATH="/opt/app/.venv/bin:$PATH"
 # Switch to non-root executing user
 USER 1000:1000
 WORKDIR /opt/app/workdir
-ENTRYPOINT ["cast-net"]
+ENTRYPOINT ["fishing-smile"]
 CMD []
 
