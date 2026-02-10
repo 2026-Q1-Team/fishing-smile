@@ -6,6 +6,8 @@ from email.mime.text import MIMEText
 import numpy
 import pymysql
 
+from fishing_smile.settings import get_settings
+
 # Sender info (for SMTPlib)
 SENDER = "siwapon.so11@gmail.com"
 PASSWORD = "ajnr ulsc hxey tcnp"
@@ -41,12 +43,7 @@ def insert2db(addr, key_batch):
     id = hashlib.md5(addr.encode(), usedforsecurity=False)
     key = hashlib.md5(''.join([addr, str(key_batch)]).encode(), usedforsecurity=False)
     try:
-        con = pymysql.connect(
-            user = 'fish_app',
-            password = 'db_password_for_local_test',
-            host = 'db',
-            database = 'fishtrack',
-        )
+        con = pymysql.connect(**get_settings().db.model_dump())
         mycursor = con.cursor()
         sql = "INSERT INTO fishlist (`ID`, `EMAIL`) VALUES (%s, %s)"
         value = (id.hexdigest(), addr)

@@ -47,6 +47,8 @@ services:
     pull_policy: never
     build:
       context: ../..
+    env_file:
+    - env/database.env
     entrypoint:
     - sh
     # Mount for live editing while dev
