@@ -26,3 +26,11 @@ Go to `http://localhost:8091` and use
 
 - username: `fish_app`
 - password: `db_password_for_local_test`
+
+## Using the CLI
+
+```shell
+docker compose run --build --rm cli
+```
+
+For now, only `cast-net` command is available.

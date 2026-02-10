@@ -42,6 +42,23 @@ services:
     - 8091:80
     links:
     - db
+  cli:
+    image: fishing-smile
+    pull_policy: never
+    build:
+      context: ../..
+    entrypoint:
+    - sh
+    # Mount for live editing while dev
+    volumes:
+      - type: bind
+        source: ../../src
+        target: /opt/app/src
+    depends_on:
+      db:
+        condition: service_healthy
+    profiles:
+    - cli
 
 volumes:
     mysql:

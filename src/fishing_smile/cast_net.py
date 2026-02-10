@@ -37,11 +37,16 @@ def get_target(filename):
     return tm
 
 
-def insert2db(addr):
+def insert2db(addr, key_batch):
     id = hashlib.md5(addr.encode(), usedforsecurity=False)
     key = hashlib.md5(''.join([addr, str(key_batch)]).encode(), usedforsecurity=False)
     try:
-        con = pymysql.connect(user='tracker', password='fishtracker67', host='localhost', database='fishtrack')
+        con = pymysql.connect(
+            user = 'fish_app',
+            password = 'db_password_for_local_test',
+            host = 'db',
+            database = 'fishtrack',
+        )
         mycursor = con.cursor()
         sql = "INSERT INTO fishlist (`ID`, `EMAIL`) VALUES (%s, %s)"
         value = (id.hexdigest(), addr)
@@ -80,7 +85,7 @@ def main():
     # File input should be in .csv format.
     mailingList = get_target(input("Enter filepath:"))
     for e in mailingList:
-        k = insert2db(e[0])
+        k = insert2db(e[0], key_batch)
         try:
             send_email(e[0], e[1], e[2], k)
             sent_count += 1

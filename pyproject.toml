@@ -13,7 +13,7 @@ dependencies = [
 ]
 
 [project.scripts]
-fishing-smile = "fishing_smile.cast_net:main"
+cast-net = "fishing_smile.cast_net:main"
 
 [build-system]
 requires = ["uv_build>=0.9.16,<0.10.0"]
