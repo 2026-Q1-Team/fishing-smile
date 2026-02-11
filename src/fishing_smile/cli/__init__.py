@@ -4,6 +4,7 @@ from pathlib import Path
 
 import click
 import pandas as pd
+import uvicorn
 
 from fishing_smile.core.cast_net import cast_net as core_cast_net
 
@@ -30,6 +31,27 @@ def cast_net(targets_csv_file):
         usecols = ['email', 'name_th', 'name_en'],
     )
     return core_cast_net(targets.itertuples())
+
+
+@cli.command()
+def deploy_fykes():
+    """Start server handling interactions from phish targets.
+
+    Endpoints created depends on what on-going attacks needs. For example,
+
+    \b
+    - tracking interaction
+    - or serving next-stage payload
+    """
+    # TODO: Add option to serve only specific attack schemes.
+    uvicorn.run(
+        'fishing_smile.core.fyke_hub:app',
+        host = '0.0.0.0',
+        port = 8000,
+        # TODO: disable reload in production
+        reload = True,
+        reload_dirs = ['/opt/app/src'],
+    )
 
 
 def main():
