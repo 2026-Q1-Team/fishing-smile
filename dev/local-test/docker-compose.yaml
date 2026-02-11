@@ -73,6 +73,7 @@ services:
     <<: *fishing-smile-common-config
     command:
     - deploy-fykes
+    - --reload
     ports:
     - "80:8000"
 

@@ -34,7 +34,12 @@ def cast_net(targets_csv_file):
 
 
 @cli.command()
-def deploy_fykes():
+@click.option(
+    '--reload',
+    is_flag = True,
+    help = 'Reload server when source code is modified. Useful for development.',
+)
+def deploy_fykes(reload):
     """Start server handling interactions from phish targets.
 
     Endpoints created depends on what on-going attacks needs. For example,
@@ -44,13 +49,17 @@ def deploy_fykes():
     - or serving next-stage payload
     """
     # TODO: Add option to serve only specific attack schemes.
+    extra_args = {}
+    if reload:
+        extra_args.update(
+            reload = True,
+            reload_dirs = ['/opt/app/src'],
+        )
     uvicorn.run(
         'fishing_smile.core.fyke_hub:app',
         host = '0.0.0.0',
         port = 8000,
-        # TODO: disable reload in production
-        reload = True,
-        reload_dirs = ['/opt/app/src'],
+        **extra_args,
     )
 
 
