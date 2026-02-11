@@ -55,3 +55,17 @@ uv add --no-sync PACKAGE
 where `PACKAGE` should be replaced by the name of the package you want to add to
 the dependencies list. After that, you should shutdown the CLI container and
 rebuild it.
+
+## Run automated test
+
+To run all tests via pytest,
+go into CLI container shell and run:
+
+```shell
+pytest ..
+
+# or if current direactory has been changed,
+# where pyproject.toml is explicitly.
+pytest /opt/app
+```
+
