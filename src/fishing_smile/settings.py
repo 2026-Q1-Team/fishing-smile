@@ -14,6 +14,11 @@ class DatabaseSettings(BaseModel):
     database: str
 
 
+class CastNetSettings(BaseModel):
+    sender: str
+    password: str
+    url: str
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_prefix = 'FISHING_SMILE_',
@@ -21,6 +26,7 @@ class Settings(BaseSettings):
     )
 
     db: DatabaseSettings
+    cast: CastNetSettings
 
 
 @cache

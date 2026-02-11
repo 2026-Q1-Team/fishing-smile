@@ -9,13 +9,17 @@ import pymysql
 
 from fishing_smile.settings import get_settings
 
+settings = get_settings()
+
 # Sender info (for SMTPlib)
-SENDER = "siwapon.so11@gmail.com"
-PASSWORD = "ajnr ulsc hxey tcnp"
+# TODO -- remove this unnecessary declaration
+SENDER = settings.cast.sender
+PASSWORD = settings.cast.password
 
 # Email subject.
 SUBJECT = "Please change your Organization account password."
-# Email body. TODO add Thai language version
+# Email body.
+#TODO -- add Thai language version
 TEXT_MESSAGE = """Dear {name_en},
 According to our new security policy, all Organization staff must change their password every 6 months.
 Follow these steps below to change your Organization account password.
@@ -31,8 +35,8 @@ Please be reminded that all staff must change their password before 28 Jan 2026.
 Thank you for taking your time to keep our organization secure.
 - ICT Team.
 """
-# Link to target website. TODO Change site URL.
-FORM_LINK = "http://hii-survey.secteam.in.th/index.html?k="
+# Link to target website.
+URL = f"{settings.cast.url}/index.html?k="
 
 
 def insert2db(addr, key_batch):
@@ -64,7 +68,7 @@ def send_email(target, key):
     server.login(SENDER, PASSWORD)
     text_body = TEXT_MESSAGE.format(
         **target._asdict(),
-        link = FORM_LINK + key,
+        link=URL + key,
     )
     msg = MIMEText(text_body, 'html')
     msg['Subject'] = SUBJECT
