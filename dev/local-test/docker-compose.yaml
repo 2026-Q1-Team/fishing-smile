@@ -1,22 +1,22 @@
 name: local-test-fish
 
 x-fishing-smile-common-config: &fishing-smile-common-config
-    image: fishing-smile
-    pull_policy: never
-    build:
-      context: ../..
-    env_file:
-    - env/database.env
-    volumes:
-    # Mount python source code for live editing during development
-    - ../../src:/opt/app/src
-    # Mount uv-managed files for dependency updates using
-    # `uv add --no-sync PACKAGE` or `uv lock`
-    - ../../pyproject.toml:/opt/app/pyproject.toml
-    - ../../uv.lock:/opt/app/uv.lock
-    depends_on:
-      db:
-        condition: service_healthy
+  image: fishing-smile:local-dev
+  pull_policy: never
+  build:
+    context: ../..
+  env_file:
+  - env/database.env
+  volumes:
+  # Mount python source code for live editing during development
+  - ../../src:/opt/app/src
+  # Mount uv-managed files for dependency updates using
+  # `uv add --no-sync PACKAGE` or `uv lock`
+  - ../../pyproject.toml:/opt/app/pyproject.toml
+  - ../../uv.lock:/opt/app/uv.lock
+  depends_on:
+    db:
+      condition: service_healthy
 
 services:
   db:
