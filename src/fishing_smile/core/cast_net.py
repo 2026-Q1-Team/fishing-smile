@@ -35,25 +35,18 @@ URL = f"{settings.cast.url}/index.html?k="
 
 
 def insert2db(addr, key_batch):
+    # TODO -- change id/key-gen method
     id = hashlib.md5(addr.encode(), usedforsecurity=False)
     key = hashlib.md5(''.join([addr, str(key_batch)]).encode(), usedforsecurity=False)
-    try:
-        con = pymysql.connect(**get_settings().db.model_dump())
-        mycursor = con.cursor()
-        sql = "INSERT INTO fishlist (`ID`, `EMAIL`) VALUES (%s, %s)"
-        value = (id.hexdigest(), addr)
-        mycursor.execute(sql, value)
-        con.commit()
-    except pymysql.Error as err:
-        print("error %d: %s" % (err.args[0], err.args[1]))
-    try:
-        sql2 = "INSERT INTO fishcast (`ID`, `KEY`, `BATCH`) VALUES (%s, %s, %s)"
-        value2 = (id.hexdigest(), key.hexdigest(), key_batch)
-        mycursor.execute(sql2, value2)
-        con.commit()
-    except pymysql.Error as err:
-        print("error %d: %s" % (err.args[0], err.args[1]))
-    con.close()
+    # TODO -- change sql query to match new db
+    with pymysql.connect(settings().db.model_dump()) as connection:
+        with connection.cursor() as cursor:
+            sql = """
+                  INSERT INTO fishlist (`ID`, `EMAIL`)
+                  VALUES (%s, %s) \
+                  """
+            cursor.execute(id.hexdigest(), addr)
+        connection.commit()
     return key.hexdigest()
 
 
