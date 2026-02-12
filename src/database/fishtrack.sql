@@ -5,10 +5,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: db
--- Generation Time: Feb 12, 2026 at 06:22 AM
+-- Generation Time: Feb 12, 2026 at 07:53 AM
 -- Server version: 9.6.0
 -- PHP Version: 8.3.30
-
 
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -30,7 +29,7 @@ USE `fishtrack`;
 
 CREATE TABLE IF NOT EXISTS `Attack` (
   `uid` int NOT NULL,
-  `UniqueRandomCode` varchar(32),
+  `UniqueRandomCode` varchar(32) DEFAULT NULL,
   `scheme` varchar(32) NOT NULL,
   `target` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -44,7 +43,7 @@ CREATE TABLE IF NOT EXISTS `Attack` (
 CREATE TABLE IF NOT EXISTS `Event` (
   `uid` int NOT NULL,
   `atk_id` int NOT NULL,
-  `kind` varchar(64),
+  `kind` varchar(64) DEFAULT NULL,
   `ts` datetime NOT NULL,
   `detail` json NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -118,14 +117,13 @@ ALTER TABLE `Target Profile`
 -- Constraints for table `Attack`
 --
 ALTER TABLE `Attack`
-  ADD CONSTRAINT `Attack_ibfk_1` FOREIGN KEY (`uid`) REFERENCES `Target Profile` (`uid`) ON DELETE CASCADE;
+  ADD CONSTRAINT `Attack_ibfk_1` FOREIGN KEY (`target`) REFERENCES `Target Profile` (`uid`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `Event`
 --
 ALTER TABLE `Event`
   ADD CONSTRAINT `Event_ibfk_1` FOREIGN KEY (`atk_id`) REFERENCES `Attack` (`uid`) ON DELETE CASCADE;
-
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
