@@ -45,6 +45,6 @@ class Event(BaseModel):
 
 class Attack(BaseModel):
     id: Optional[str] = Field(None, alias="UniqueID")
-    unique_random_code: str
+    unique_random_code: str #kk
     scheme: str  # AttackScheme
     target: str  # TargetProfile?
