@@ -18,6 +18,12 @@ docker compose up
 
 Wait for a bit and all the servers should become online.
 
+# Config
+
+## SMTP account
+
+TODO: https://github.com/2026-Q1-Team/fishing-smile/issues/8
+
 # Usage
 
 ## Accessing phpMyAdmin
@@ -64,8 +70,8 @@ go into CLI container shell and run:
 ```shell
 pytest ..
 
-# or if current direactory has been changed,
-# where pyproject.toml is explicitly.
+# Or if current directory has been changed,
+# give location of pyproject.toml explicitly.
 pytest /opt/app
 ```
 
