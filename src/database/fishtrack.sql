@@ -32,6 +32,7 @@ CREATE TABLE `fishcast` (
   PRIMARY KEY (`KEY`),
   KEY `fk_ID1` (`ID`),
   CONSTRAINT `fk_ID1` FOREIGN KEY (`ID`) REFERENCES `fishlist` (`ID`)
+    ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -59,8 +60,10 @@ CREATE TABLE `fishcook` (
   `TEXT` varchar(64) DEFAULT NULL,
   KEY `fk_key2` (`KEY`),
   KEY `fk_ID3` (`ID`),
-  CONSTRAINT `fk_ID3` FOREIGN KEY (`ID`) REFERENCES `fishlist` (`ID`),
+  CONSTRAINT `fk_ID3` FOREIGN KEY (`ID`) REFERENCES `fishlist` (`ID`)
+    ON DELETE CASCADE,
   CONSTRAINT `fk_key2` FOREIGN KEY (`KEY`) REFERENCES `fishcast` (`KEY`)
+    ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -87,8 +90,10 @@ CREATE TABLE `fishhook` (
   `CLICK` datetime NOT NULL,
   KEY `fk_key1` (`KEY`),
   KEY `fk_ID2` (`ID`),
-  CONSTRAINT `fk_ID2` FOREIGN KEY (`ID`) REFERENCES `fishlist` (`ID`),
+  CONSTRAINT `fk_ID2` FOREIGN KEY (`ID`) REFERENCES `fishlist` (`ID`)
+    ON DELETE CASCADE,
   CONSTRAINT `fk_key1` FOREIGN KEY (`KEY`) REFERENCES `fishcast` (`KEY`)
+    ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
