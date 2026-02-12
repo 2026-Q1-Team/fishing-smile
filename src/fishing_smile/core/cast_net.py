@@ -11,11 +11,6 @@ from fishing_smile.settings import get_settings
 
 settings = get_settings()
 
-# Sender info (for SMTPlib)
-# TODO -- remove this unnecessary declaration
-SENDER = settings.cast.sender
-PASSWORD = settings.cast.password
-
 # Email subject.
 SUBJECT = "Please change your Organization account password."
 # Email body.
@@ -65,14 +60,14 @@ def insert2db(addr, key_batch):
 def send_email(target, key):
     server = smtplib.SMTP("smtp.gmail.com", 587)
     server.starttls()
-    server.login(SENDER, PASSWORD)
+    server.login(settings.cast.sender, settings.cast.password)
     text_body = TEXT_MESSAGE.format(
         **target._asdict(),
         link=URL + key,
     )
     msg = MIMEText(text_body, 'html')
     msg['Subject'] = SUBJECT
-    msg['From'] = SENDER
+    msg['From'] = settings.cast.sender
     msg['To'] = target.email
     server.sendmail(SENDER, target.email, msg.as_string())
     server.quit()
