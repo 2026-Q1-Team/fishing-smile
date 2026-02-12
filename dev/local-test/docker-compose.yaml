@@ -6,7 +6,7 @@ x-fishing-smile-common-config: &fishing-smile-common-config
   build:
     context: ../..
   env_file:
-  - env/database.env
+    - env/local-test.env
   volumes:
   # Mount python source code for live editing during development
   - ../../src:/opt/app/src
