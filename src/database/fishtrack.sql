@@ -28,7 +28,7 @@ USE `fishtrack`;
 -- Table structure for table `Attack`
 --
 
-CREATE TABLE `Attack` (
+CREATE TABLE IF NOT EXISTS `Attack` (
   `uid` int NOT NULL,
   `UniqueRandomCode` varchar(32),
   `scheme` varchar(32) NOT NULL,
@@ -41,7 +41,7 @@ CREATE TABLE `Attack` (
 -- Table structure for table `Event`
 --
 
-CREATE TABLE `Event` (
+CREATE TABLE IF NOT EXISTS `Event` (
   `uid` int NOT NULL,
   `atk_id` int NOT NULL,
   `kind` varchar(64),
@@ -55,7 +55,7 @@ CREATE TABLE `Event` (
 -- Table structure for table `Target Profile`
 --
 
-CREATE TABLE `Target Profile` (
+CREATE TABLE IF NOT EXISTS `Target Profile` (
   `uid` int NOT NULL,
   `name` varchar(64) NOT NULL,
   `email` varchar(64) NOT NULL,
