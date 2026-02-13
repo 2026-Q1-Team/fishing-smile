@@ -41,7 +41,7 @@ CREATE TABLE IF NOT EXISTS `Event` (
   `id` int NOT NULL AUTO_INCREMENT,
   `parent_attack` int DEFAULT NULL,
   -- Matches `COMPONENT.KIND` pattern where
-  -- - `COMPONENT` matches python AttackComponet.kind value.
+  -- - `COMPONENT` matches python AttackComponet.name value.
   -- - `KIND` matches python describe event type associated with that AttackComponent.
   `kind` varchar(64) NOT NULL,
   `time` datetime NOT NULL,

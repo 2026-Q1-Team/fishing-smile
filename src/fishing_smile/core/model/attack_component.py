@@ -22,6 +22,12 @@ class EmailComponent(AttackComponent):
     email_template: str
 
 
+# NOTE: Maybe we should have a `handler` property that
+# evaluates to a FastAPI endpoint definition.
+# The `handler` could be populated through naming python module
+# or ...
+# NOTE: And if we have `handler` property,
+# both HTML and API can be handled the same way.
 class HTMLComponent(AttackComponent):
     kind: Literal['html']
     url: str

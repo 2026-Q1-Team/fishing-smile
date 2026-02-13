@@ -24,5 +24,6 @@ AnyAttackComponent = Annotated[
 
 
 class AttackScheme(BaseModel):
-    name: str
+    name: str = Field(description = 'short, snake_case, unique name')
+    description: str | None = Field(None, description = 'longer, human readable explanation')
     components: List[AnyAttackComponent] = []
