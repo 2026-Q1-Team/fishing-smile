@@ -12,3 +12,8 @@ class Event(BaseModel):
     kind: str
     timestamp: datetime = Field(default_factory = datetime.now)
     details: Optional[dict] = None
+
+    @staticmethod
+    def lookup(id: int):
+        # TODO: lookup from database
+        raise NotImplementedError

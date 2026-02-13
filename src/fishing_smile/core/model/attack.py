@@ -11,3 +11,8 @@ class Attack(BaseModel):
     unique_random_code: str
     scheme: str  # AttackScheme
     target: str  # TargetProfile?
+
+    @staticmethod
+    def lookup(id: int):
+        # TODO: lookup from database
+        raise NotImplementedError
