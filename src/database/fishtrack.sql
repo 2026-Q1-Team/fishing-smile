@@ -23,10 +23,11 @@ CREATE TABLE IF NOT EXISTS `TargetProfile` (
 
 CREATE TABLE IF NOT EXISTS `Attack` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `external_id` varchar(32) DEFAULT NULL,
+  `external_id` char(32) NOT NULL,
   `scheme` varchar(32) NOT NULL,
   `target` int NOT NULL,
   PRIMARY KEY (`id`),
+  UNIQUE KEY (`external_id`),
   FOREIGN KEY (`target`) REFERENCES `TargetProfile` (`id`)
     ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
