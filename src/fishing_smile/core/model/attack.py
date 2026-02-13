@@ -1,5 +1,3 @@
-from typing import Optional
-
 from pydantic import (
     BaseModel,
     Field,
@@ -7,8 +5,8 @@ from pydantic import (
 
 
 class Attack(BaseModel):
-    id: Optional[str] = Field(None, alias="UniqueID")
-    unique_random_code: str
+    id: str | None = None
+    external_id: str
     scheme: str  # AttackScheme
     target: str  # TargetProfile?
 

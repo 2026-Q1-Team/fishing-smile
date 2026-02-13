@@ -7,11 +7,11 @@ from pydantic import (
 
 
 class Event(BaseModel):
-    id: Optional[str] = Field(None, alias = "UniqueID")
-    part_of_which_attack: str
+    id: str | None = None
+    parent_attack: str
     kind: str
-    timestamp: datetime = Field(default_factory = datetime.now)
-    details: Optional[dict] = None
+    time: datetime = Field(default_factory = datetime.now)
+    detail: dict | None = None
 
     @staticmethod
     def lookup(id: int):

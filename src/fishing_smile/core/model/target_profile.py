@@ -1,5 +1,3 @@
-from typing import Optional
-
 from pydantic import (
     BaseModel,
     Field,
@@ -7,10 +5,10 @@ from pydantic import (
 )
 
 class TargetProfile(BaseModel):
-    id: Optional[str] = Field(None, alias = "UniqueID")
+    id: str | None = None
     name: str
     email: EmailStr
-    phone_number: str | None = None
+    phone: str | None = None
     company: str | None = None
     job_title: str | None = None
 
