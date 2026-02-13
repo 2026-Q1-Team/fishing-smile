@@ -1,4 +1,8 @@
-from typing import List, Optional, Union, Any
+from typing import (
+    List,
+    Optional,
+    Union,
+)
 from datetime import datetime
 
 from pydantic import (
@@ -16,7 +20,7 @@ class RedFlag(BaseModel):
 class AttackComponent(BaseModel):
     kind: str
     name: str
-    red_flags: List[RedFlag] = Field(default_factory = list)
+    red_flags: List[RedFlag] = []
 
 
 class EmailComponent(AttackComponent):
@@ -34,4 +38,4 @@ class APIComponent(AttackComponent):
 
 class AttackScheme(BaseModel):
     name: str
-    components: List[Union[EmailComponent, HTMLComponent, APIComponent]] = Field(default_factory=list)
+    components: List[Union[EmailComponent, HTMLComponent, APIComponent]] = []
