@@ -1,22 +1,14 @@
 from typing import (
-    Annotated,
     List,
     Literal,
-    Optional,
-    Union,
 )
-from datetime import datetime
 
 from pydantic import (
     BaseModel,
     Field,
 )
 
-
-class RedFlag(BaseModel):
-    kind: str
-    name: str
-    explanation: str
+from .red_flag import RedFlag
 
 
 class AttackComponent(BaseModel):
@@ -39,14 +31,3 @@ class HTMLComponent(AttackComponent):
 class APIComponent(AttackComponent):
     kind: Literal['api']
     url: str
-
-
-AnyAttackComponent = Annotated[
-    Union[EmailComponent, HTMLComponent, APIComponent],
-    Field(discriminator = 'kind'),
-]
-
-
-class AttackScheme(BaseModel):
-    name: str
-    components: List[AnyAttackComponent] = []
