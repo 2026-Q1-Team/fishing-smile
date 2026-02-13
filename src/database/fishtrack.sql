@@ -1,23 +1,11 @@
--- This SQL file is used only to create database and tables.
-
--- phpMyAdmin SQL Dump
--- version 5.2.3
--- https://www.phpmyadmin.net/
---
--- Host: db
--- Generation Time: Feb 12, 2026 at 07:53 AM
--- Server version: 9.6.0
--- PHP Version: 8.3.30
-
+-- This SQL file defines schema for `fishtrack` database
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8mb4 */;
 
---
--- Database: `fishtrack`
---
+
 CREATE DATABASE IF NOT EXISTS `fishtrack`;
 USE `fishtrack`;
 
