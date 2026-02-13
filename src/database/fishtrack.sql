@@ -28,7 +28,8 @@ CREATE TABLE IF NOT EXISTS `Target Profile` (
   `email` varchar(64) NOT NULL,
   `phone` varchar(16) NOT NULL,
   `company` varchar(64) NOT NULL,
-  `JobTitle` varchar(64) NOT NULL
+  `JobTitle` varchar(64) NOT NULL,
+  PRIMARY KEY (`uid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
@@ -36,7 +37,8 @@ CREATE TABLE IF NOT EXISTS `Attack` (
   `uid` int NOT NULL,
   `UniqueRandomCode` varchar(32) DEFAULT NULL,
   `scheme` varchar(32) NOT NULL,
-  `target` int NOT NULL
+  `target` int NOT NULL,
+  PRIMARY KEY (`uid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 
@@ -45,7 +47,8 @@ CREATE TABLE IF NOT EXISTS `Event` (
   `atk_id` int NOT NULL,
   `kind` varchar(64) DEFAULT NULL,
   `ts` datetime NOT NULL,
-  `detail` json NOT NULL
+  `detail` json NOT NULL,
+  PRIMARY KEY (`uid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 
@@ -57,21 +60,13 @@ CREATE TABLE IF NOT EXISTS `Event` (
 -- Indexes for table `Attack`
 --
 ALTER TABLE `Attack`
-  ADD PRIMARY KEY (`uid`),
   ADD KEY `fk_target1` (`target`);
 
 --
 -- Indexes for table `Event`
 --
 ALTER TABLE `Event`
-  ADD PRIMARY KEY (`uid`),
   ADD KEY `fk_atk_id1` (`atk_id`);
-
---
--- Indexes for table `Target Profile`
---
-ALTER TABLE `Target Profile`
-  ADD PRIMARY KEY (`uid`);
 
 --
 -- AUTO_INCREMENT for dumped tables
