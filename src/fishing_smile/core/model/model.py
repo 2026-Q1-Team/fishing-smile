@@ -1,5 +1,7 @@
 from typing import (
+    Annotated,
     List,
+    Literal,
     Optional,
     Union,
 )
@@ -24,18 +26,27 @@ class AttackComponent(BaseModel):
 
 
 class EmailComponent(AttackComponent):
+    kind: Literal['email']
     email_template: str
 
 
 class HTMLComponent(AttackComponent):
+    kind: Literal['html']
     url: str
     html_template: str
 
 
 class APIComponent(AttackComponent):
+    kind: Literal['api']
     url: str
+
+
+AnyAttackComponent = Annotated[
+    Union[EmailComponent, HTMLComponent, APIComponent],
+    Field(discriminator = 'kind'),
+]
 
 
 class AttackScheme(BaseModel):
     name: str
-    components: List[Union[EmailComponent, HTMLComponent, APIComponent]] = []
+    components: List[AnyAttackComponent] = []
