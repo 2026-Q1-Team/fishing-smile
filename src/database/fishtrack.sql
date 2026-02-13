@@ -21,38 +21,6 @@
 CREATE DATABASE IF NOT EXISTS `fishtrack`;
 USE `fishtrack`;
 
--- --------------------------------------------------------
-
---
--- Table structure for table `Attack`
---
-
-CREATE TABLE IF NOT EXISTS `Attack` (
-  `uid` int NOT NULL,
-  `UniqueRandomCode` varchar(32) DEFAULT NULL,
-  `scheme` varchar(32) NOT NULL,
-  `target` int NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `Event`
---
-
-CREATE TABLE IF NOT EXISTS `Event` (
-  `uid` int NOT NULL,
-  `atk_id` int NOT NULL,
-  `kind` varchar(64) DEFAULT NULL,
-  `ts` datetime NOT NULL,
-  `detail` json NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `Target Profile`
---
 
 CREATE TABLE IF NOT EXISTS `Target Profile` (
   `uid` int NOT NULL,
@@ -62,6 +30,24 @@ CREATE TABLE IF NOT EXISTS `Target Profile` (
   `company` varchar(64) NOT NULL,
   `JobTitle` varchar(64) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+CREATE TABLE IF NOT EXISTS `Attack` (
+  `uid` int NOT NULL,
+  `UniqueRandomCode` varchar(32) DEFAULT NULL,
+  `scheme` varchar(32) NOT NULL,
+  `target` int NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+CREATE TABLE IF NOT EXISTS `Event` (
+  `uid` int NOT NULL,
+  `atk_id` int NOT NULL,
+  `kind` varchar(64) DEFAULT NULL,
+  `ts` datetime NOT NULL,
+  `detail` json NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 
 --
 -- Indexes for dumped tables
