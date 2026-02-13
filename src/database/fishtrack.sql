@@ -10,36 +10,36 @@ CREATE DATABASE IF NOT EXISTS `fishtrack`;
 USE `fishtrack`;
 
 
-CREATE TABLE IF NOT EXISTS `Target Profile` (
-  `uid` int NOT NULL AUTO_INCREMENT,
+CREATE TABLE IF NOT EXISTS `TargetProfile` (
+  `id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(64) NOT NULL,
   `email` varchar(64) NOT NULL,
   `phone` varchar(16) NOT NULL,
   `company` varchar(64) NOT NULL,
-  `JobTitle` varchar(64) NOT NULL,
-  PRIMARY KEY (`uid`)
+  `job_title` varchar(64) NOT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
 CREATE TABLE IF NOT EXISTS `Attack` (
-  `uid` int NOT NULL AUTO_INCREMENT,
-  `UniqueRandomCode` varchar(32) DEFAULT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
+  `external_id` varchar(32) DEFAULT NULL,
   `scheme` varchar(32) NOT NULL,
   `target` int NOT NULL,
-  PRIMARY KEY (`uid`),
-  FOREIGN KEY (`target`) REFERENCES `Target Profile` (`uid`)
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`target`) REFERENCES `TargetProfile` (`id`)
     ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
 CREATE TABLE IF NOT EXISTS `Event` (
-  `uid` int NOT NULL AUTO_INCREMENT,
-  `atk_id` int NOT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
+  `parent_attack` int NOT NULL,
   `kind` varchar(64) DEFAULT NULL,
-  `ts` datetime NOT NULL,
+  `time` datetime NOT NULL,
   `detail` json NOT NULL,
-  PRIMARY KEY (`uid`),
-  FOREIGN KEY (`atk_id`) REFERENCES `Attack` (`uid`)
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`parent_attack`) REFERENCES `Attack` (`id`)
     ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
