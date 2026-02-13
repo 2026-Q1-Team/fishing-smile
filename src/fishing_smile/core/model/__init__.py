@@ -2,6 +2,9 @@ from typing import List, Optional, Union, Any
 from pydantic import BaseModel, Field, EmailStr
 from datetime import datetime
 
+
+#Python Classes
+
 class RedFlag(BaseModel):
     kind: str
     name: str
@@ -28,13 +31,15 @@ class AttackScheme(BaseModel):
     components: List[Union[EmailComponent, HTMLComponent, APIComponent]] = Field(default_factory=list)
 
 
+#Database Tables
+
 class TargetProfile(BaseModel):
     id: Optional[str] = Field(None, alias="UniqueID")
     name: str
     email: EmailStr
-    phone_number: str
-    company: str
-    job_title: str
+    phone_number: str | None = None
+    company: str | None = None
+    job_title: str | None = None
 
 class Event(BaseModel):
     id: Optional[str] = Field(None, alias="UniqueID")
