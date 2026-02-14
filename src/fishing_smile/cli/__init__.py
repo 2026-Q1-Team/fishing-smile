@@ -6,7 +6,7 @@ import click
 import pandas as pd
 import uvicorn
 
-from fishing_smile.database import initialize_database
+from fishing_smile.database.init import initialize_database
 from fishing_smile.core.cast_net import cast_net as core_cast_net
 
 
