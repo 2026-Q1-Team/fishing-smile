@@ -1,10 +1,7 @@
-from sqlmodel import (
-    Field,
-    SQLModel,
-)
-from pydantic import (
-    EmailStr,
-)
+from sqlmodel import Field
+from pydantic import EmailStr
+
+from fishing_smile.database.sqlmodel import SQLModel
 
 
 class TargetProfile(SQLModel):
