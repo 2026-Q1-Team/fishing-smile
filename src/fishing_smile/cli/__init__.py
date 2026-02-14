@@ -6,6 +6,7 @@ import click
 import pandas as pd
 import uvicorn
 
+from fishing_smile.database import initialize_database
 from fishing_smile.core.cast_net import cast_net as core_cast_net
 
 
@@ -13,6 +14,12 @@ from fishing_smile.core.cast_net import cast_net as core_cast_net
 def cli():
     """Tools for anti-phish training"""
     pass
+
+
+@cli.command()
+def init():
+    """Initialize fishing_smile database"""
+    initialize_database()
 
 
 @cli.command()

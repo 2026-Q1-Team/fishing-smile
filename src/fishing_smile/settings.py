@@ -8,16 +8,20 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class DatabaseSettings(BaseModel):
-    user: str
+    """Matches arguments of `sqlalchemy.engine.URL.create`"""
+    drivername: str = 'mysql+pymysql'
+    username: str = 'fish_app'
     password: str
-    host: str
-    database: str
+    host: str = None
+    port: int = None
+    database: str = 'fishtrack'
 
 
 class CastNetSettings(BaseModel):
     sender: str
     password: str
     url: str
+
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(

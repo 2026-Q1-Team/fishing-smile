@@ -1,18 +1,34 @@
-from pydantic import (
-    BaseModel,
+from sqlmodel import (
     Field,
+    SQLModel,
+)
+from pydantic import (
     EmailStr,
 )
 
-class TargetProfile(BaseModel):
-    id: str | None = None
-    name: str
-    email: EmailStr
-    phone: str | None = None
-    company: str | None = None
-    job_title: str | None = None
 
-    @staticmethod
-    def lookup(id: int):
-        # TODO: lookup from database
-        raise NotImplementedError
+class TargetProfile(SQLModel, table = True):
+    id: int | None = Field(
+        default = None,
+        primary_key = True,
+    )
+    name: str = Field(
+        index = True,
+        max_length = 64,
+    )
+    email: EmailStr = Field(
+        index = True,
+        max_length = 64,
+    )
+    phone: str | None = Field(
+        default = None,
+        max_length = 16,
+    )
+    company: str | None = Field(
+        default = None,
+        max_length = 64,
+    )
+    job_title: str | None = Field(
+        default = None,
+        max_length = 64,
+    )
