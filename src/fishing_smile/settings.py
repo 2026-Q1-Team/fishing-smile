@@ -1,4 +1,5 @@
 from functools import cache
+from typing import Literal
 
 from pydantic import (
     BaseModel,
@@ -29,6 +30,7 @@ class Settings(BaseSettings):
         env_nested_delimiter = '__',
     )
 
+    deployment_mode: Literal['development', 'production'] = 'production'
     db: DatabaseSettings
     cast: CastNetSettings
 

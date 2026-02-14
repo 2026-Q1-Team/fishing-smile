@@ -6,6 +6,7 @@ import click
 import pandas as pd
 import uvicorn
 
+from fishing_smile.settings import get_settings
 from fishing_smile.database.init import initialize_database
 from fishing_smile.core.cast_net import cast_net as core_cast_net
 
@@ -75,4 +76,6 @@ def main():
         format = '%(asctime)s %(name)s %(levelname)s: %(message)s',
         level = logging.INFO,
     )
+    if get_settings().deployment_mode == 'development':
+        logging.getLogger("sqlalchemy.engine").setLevel(logging.INFO)
     cli()
