@@ -7,24 +7,24 @@ from sqlmodel import (
 from pydantic import ValidationError
 
 from fishing_smile.database.engine import engine
-from .target_profile import TargetProfile
+from .target_profile import TargetProfile, TargetProfileTable
 
 
 def test_create_search_delete():
     with Session(engine) as session:
-        session.exec(delete(TargetProfile))
+        session.exec(delete(TargetProfileTable))
         before = session.exec(
-            select(TargetProfile)
+            select(TargetProfileTable)
         ).all()
         assert len(before) == 0
-        profile = TargetProfile(
+        profile = TargetProfileTable(
             name = 'Jon Snow',
             email = 'jon.snow@nowhere.westeros.org',
         )
         assert profile.name == 'Jon Snow'
         session.add(profile)
         results = session.exec(
-            select(TargetProfile).where(TargetProfile.name == 'Jon Snow')
+            select(TargetProfileTable).where(TargetProfileTable.name == 'Jon Snow')
         ).all()
         assert len(results) == 1
         assert results[0].email == 'jon.snow@nowhere.westeros.org'

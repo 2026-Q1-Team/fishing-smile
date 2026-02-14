@@ -7,7 +7,7 @@ from pydantic import (
 )
 
 
-class TargetProfile(SQLModel, table = True):
+class TargetProfile(SQLModel):
     id: int | None = Field(
         default = None,
         primary_key = True,
@@ -32,3 +32,7 @@ class TargetProfile(SQLModel, table = True):
         default = None,
         max_length = 64,
     )
+
+
+class TargetProfileTable(TargetProfile, table = True):
+    pass
