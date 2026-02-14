@@ -26,7 +26,7 @@ class CastNetSettings(BaseModel):
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_prefix = 'FISHING_SMILE_',
-        env_nested_delimiter = '_',
+        env_nested_delimiter = '__',
     )
 
     db: DatabaseSettings
