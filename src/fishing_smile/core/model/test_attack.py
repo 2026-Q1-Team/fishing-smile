@@ -9,9 +9,7 @@ from fishing_smile.database.engine import engine
 from .target_profile import TargetProfile, TargetProfileTable
 from .attack import Attack, AttackTable
 
-from pprint import pprint
-
-def test_create_refresh_cascade_delete():
+def test_create_search_cascade_delete():
     with Session(engine) as session:
         session.exec(delete(TargetProfileTable))
         session.exec(delete(AttackTable))
