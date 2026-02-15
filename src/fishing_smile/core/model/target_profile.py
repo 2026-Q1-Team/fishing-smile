@@ -1,4 +1,4 @@
-from sqlmodel import Field
+from sqlmodel import Field, Relationship
 from pydantic import EmailStr
 
 from fishing_smile.database.sqlmodel import SQLModel
@@ -32,4 +32,4 @@ class TargetProfile(SQLModel):
 
 
 class TargetProfileTable(TargetProfile, table = True):
-    pass
+    attacks: list["AttackTable"] = Relationship(back_populates = 'target')

@@ -1,16 +1,36 @@
-from pydantic import (
-    BaseModel,
-    Field,
-)
+from sqlmodel import Field, Relationship
+
+from fishing_smile.database.sqlmodel import SQLModel
+from .attack_scheme import AttackScheme
 
 
-class Attack(BaseModel):
-    id: str | None = None
-    external_id: str
-    scheme: str  # AttackScheme
-    target: str  # TargetProfile?
+class Attack(SQLModel):
+    id: int | None = Field(
+        default = None,
+        primary_key = True,
+    )
+    external_id: str = Field(
+        unique = True,
+        # TODO: try to force fixed length char type in database
+        min_length = 32,
+        max_length = 32,
+    )
+    scheme_name: str = Field(
+        max_length = 32,
+        index = True,
+    )
+    # TODO: should be able to create in-memeory Attack
+    # referencing in-memory target without ID
+    target_id: int = Field(
+        foreign_key = 'target_profile.id',
+        ondelete = 'CASCADE',
+    )
 
-    @staticmethod
-    def lookup(id: int):
-        # TODO: lookup from database
+    @property
+    def scheme(self) -> AttackScheme:
+        # TODO: Look up available subclasses of AttackScheme
         raise NotImplementedError
+
+
+class AttackTable(Attack, table = True):
+    target: "TargetProfileTable" = Relationship(back_populates = 'attacks')
