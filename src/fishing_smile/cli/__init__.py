@@ -38,10 +38,9 @@ def cast_net(targets_csv_file):
         targets_csv_file,
         usecols=['name', 'email', 'phone', 'company', 'job_title'],
     )
+    # TODO -- Add scheme param, consider separating th_name and en_name.
     return core_cast_net(targets.itertuples())
 
-
-# TODO -- Add scheme param, consider separating th_name and en_name.
 
 @cli.command()
 @click.option(
