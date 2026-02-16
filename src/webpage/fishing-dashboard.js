@@ -1,80 +1,67 @@
-// ============================================================
-        // 📊 CAMPAIGN DATA - แก้ไขข้อมูลที่นี่เพื่อเพิ่ม/แก้ไขรอบการส่ง
-        // ============================================================
-        const campaignData = {
-            // รอบที่ 1
-            campaign1: {
-                id: 'campaign1',
-                name: 'Campaign 1',
-                date: '8 Jan 2026',
-                sentTime: '10:00:00',
-                colorClass: 'round1'
-            },
-            // รอบที่ 2
-            campaign2: {
-                id: 'campaign2',
-                name: 'Campaign 2',
-                date: '15 Jan 2026',
-                sentTime: '09:30:00',
-                colorClass: 'round2'
-            },
-            // รอบที่ 3
-            campaign3: {
-                id: 'campaign3',
-                name: 'Campaign 3',
-                date: '22 Jan 2026',
-                sentTime: '14:00:00',
-                colorClass: 'round3'
-            },
-            // 🆕 เพิ่มรอบใหม่ที่นี่ (ลบ comment ด้านล่างเพื่อเปิดใช้งาน)
-            campaign4: {
-                id: 'campaign4',
-                name: 'Campaign 4',
-                date: '29 Jan 2026',
-                sentTime: '11:00:00',
-                colorClass: 'round4'
-            },
-            campaign5: {
-                id: 'campaign5',
-                name: 'Campaign 5',
-                date: '5 Feb 2026',
-                sentTime: '13:00:00',
-                colorClass: 'round5'
-            }
-        };
+let campaignData = {};
+let trackingData = [];
+const API_BASE = 'http://localhost:8001';
 
-        // ============================================================
-        // 📧 TRACKING DATA - ข้อมูลการติดตามแต่ละคน
-        // ============================================================
-        const trackingData = [
-            // Campaign 1
-            { campaignId: 'campaign1', email: 'siwapon.so11@gmail.com', status: 'submitted', sentDate: '8 Jan 2026', sentTime: '10:00:00', clickDate: '8 Jan 2026', clickTime: '14:30:25', submitDate: '8 Jan 2026', submitTime: '14:35:42', ip: '192.168.1.100', password: 'MySecret123!' },
-            { campaignId: 'campaign1', email: 'test.user@example.com', status: 'clicked', sentDate: '8 Jan 2026', sentTime: '10:00:00', clickDate: '8 Jan 2026', clickTime: '11:20:15', submitDate: null, submitTime: null, ip: '10.0.0.55', password: null },
-            { campaignId: 'campaign1', email: 'user@company.co.th', status: 'sent', sentDate: '8 Jan 2026', sentTime: '10:00:00', clickDate: null, clickTime: null, submitDate: null, submitTime: null, ip: null, password: null },
-            { campaignId: 'campaign1', email: 'admin@university.edu', status: 'submitted', sentDate: '8 Jan 2026', sentTime: '10:00:00', clickDate: '8 Jan 2026', clickTime: '09:45:18', submitDate: '8 Jan 2026', submitTime: '09:50:33', ip: '172.16.0.25', password: 'Admin@2026' },
-            
-            // Campaign 2
-            { campaignId: 'campaign2', email: 'member@company.co.th', status: 'clicked', sentDate: '15 Jan 2026', sentTime: '09:30:00', clickDate: '15 Jan 2026', clickTime: '16:20:33', submitDate: null, submitTime: null, ip: '192.168.2.150', password: null },
-            { campaignId: 'campaign2', email: 'employee@org.th', status: 'submitted', sentDate: '15 Jan 2026', sentTime: '09:30:00', clickDate: '15 Jan 2026', clickTime: '10:15:42', submitDate: '15 Jan 2026', submitTime: '10:22:18', ip: '10.10.10.88', password: 'Pass1234' },
-            { campaignId: 'campaign2', email: 'staff@company.com', status: 'sent', sentDate: '15 Jan 2026', sentTime: '09:30:00', clickDate: null, clickTime: null, submitDate: null, submitTime: null, ip: null, password: null },
-            
-            // Campaign 3
-            { campaignId: 'campaign3', email: 'john.doe@example.com', status: 'clicked', sentDate: '22 Jan 2026', sentTime: '14:00:00', clickDate: '22 Jan 2026', clickTime: '15:45:10', submitDate: null, submitTime: null, ip: '192.168.5.77', password: null },
-            { campaignId: 'campaign3', email: 'new.user@test.co.th', status: 'submitted', sentDate: '22 Jan 2026', sentTime: '14:00:00', clickDate: '22 Jan 2026', clickTime: '16:30:55', submitDate: '22 Jan 2026', submitTime: '16:38:20', ip: '10.20.30.40', password: 'Welcome123' },
-            { campaignId: 'campaign3', email: 'other@domain.com', status: 'sent', sentDate: '22 Jan 2026', sentTime: '14:00:00', clickDate: null, clickTime: null, submitDate: null, submitTime: null, ip: null, password: null },
+async function fetchDashboardData() {
+    try {
+        const response = await fetch(`${API_BASE}/api/dashboard`);
+        if (!response.ok) {
+            throw new Error(`API error: ${response.status} ${response.statusText}`);
+        }
+        const data = await response.json();
+        campaignData = {};
+        data.campaigns.forEach((c, index) => {
+            const key = `campaign${index + 1}`;
+            campaignData[key] = {
+                id: key,
+                name: c.scheme || `Campaign ${index + 1}`,
+                colorClass: `round${index + 1}`,
+            };
+        });
 
-            // Campaign 4 (รอบใหม่)
-            { campaignId: 'campaign4', email: 'alice@company.com', status: 'submitted', sentDate: '29 Jan 2026', sentTime: '11:00:00', clickDate: '29 Jan 2026', clickTime: '11:45:00', submitDate: '29 Jan 2026', submitTime: '11:50:30', ip: '192.168.10.1', password: 'Alice2026!' },
-            { campaignId: 'campaign4', email: 'bob@company.com', status: 'clicked', sentDate: '29 Jan 2026', sentTime: '11:00:00', clickDate: '29 Jan 2026', clickTime: '12:30:00', submitDate: null, submitTime: null, ip: '192.168.10.2', password: null },
-            { campaignId: 'campaign4', email: 'charlie@company.com', status: 'sent', sentDate: '29 Jan 2026', sentTime: '11:00:00', clickDate: null, clickTime: null, submitDate: null, submitTime: null, ip: null, password: null },
-            { campaignId: 'campaign4', email: 'diana@company.com', status: 'submitted', sentDate: '29 Jan 2026', sentTime: '11:00:00', clickDate: '29 Jan 2026', clickTime: '14:20:00', submitDate: '29 Jan 2026', submitTime: '14:25:15', ip: '192.168.10.4', password: 'Diana@Pass' },
+        trackingData = data.tracking.map(t => ({
+            campaignId: 'campaign${t.attack_uid}',
+            email: t.email,
+            status: t.status,
+            sentDate: t.sent_date ? formatDate(t.sent_date) : null,
+            sentTime: t.sent_date ? formatTime(t.sent_date) : null,
+            clickDate: t.click_date ? formatDate(t.click_date) : null,
+            clickTime: t.click_date ? formatTime(t.click_date) : null,
+            submitDate: t.submit_date ? formatDate(t.submit_date) : null,
+            submitTime: t.submit_date ? formatTime(t.submit_date) : null,
+            ip: t.datail?.ip || null,
+            password: t.datail?.password || null,
+        }));
+        
+        return true;
 
-            // Campaign 5 (รอบใหม่)
-            { campaignId: 'campaign5', email: 'eve@newcompany.com', status: 'clicked', sentDate: '5 Feb 2026', sentTime: '13:00:00', clickDate: '5 Feb 2026', clickTime: '13:45:00', submitDate: null, submitTime: null, ip: '10.50.50.1', password: null },
-            { campaignId: 'campaign5', email: 'frank@newcompany.com', status: 'submitted', sentDate: '5 Feb 2026', sentTime: '13:00:00', clickDate: '5 Feb 2026', clickTime: '14:00:00', submitDate: '5 Feb 2026', submitTime: '14:05:00', ip: '10.50.50.2', password: 'Frank123!' },
-            { campaignId: 'campaign5', email: 'grace@newcompany.com', status: 'sent', sentDate: '5 Feb 2026', sentTime: '13:00:00', clickDate: null, clickTime: null, submitDate: null, submitTime: null, ip: null, password: null },
-        ];
+    } catch (error) {
+        console.error('Failed to fetch dashboard data:', error);
+        showError('`ไม่สามารถโหลดข้อมูลได้: ${error.message}`');
+        return false;
+    }
+}
 
+function formatTime(toISOString) {
+    const d = new Date(toISOString);
+    const day =d.getDate();
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    return '${day} ${months[d.getMonth()]} ${d.getFullYear()}';
+    
+}
+
+function showError(message) {
+    const tbody = document.getElementById('trackingTableBody');
+    if (tbody) {
+        tbody.innerHTML = `
+        <tr>
+            <td colspan="8" style="text-align:center; color:#ef4444; padding:2rem;">
+                ${message}
+            </td>
+        </tr>
+    `;
+    }
+}
         // ============================================================
         // 🔧 UTILITY FUNCTIONS
         // ============================================================
@@ -382,7 +369,8 @@
         // 🔄 REFRESH & UPDATE FUNCTIONS
         // ============================================================
 
-        function refreshData() {
+        async function refreshData() {
+            await fetchDashboardData();
             renderAll();
             updateLastUpdate();
         }
@@ -409,7 +397,10 @@
             renderTable();
         }
 
-        document.addEventListener('DOMContentLoaded', function() {
-            renderAll();
+        document.addEventListener('DOMContentLoaded', async function() {
+            const success = await fetchDashboardData();
+            if(success) {
+                renderAll();
+            }
             updateLastUpdate();
         });

@@ -62,6 +62,32 @@ def deploy_fykes(reload):
         **extra_args,
     )
 
+@cli.command()
+@click.option(
+    '--reload',
+    is_flag = True,
+    help = 'Reload server when source code is modified. Useful for development.',
+)
+@click.option(
+    '--port',
+    default = 8001,
+    help = 'Port number for the server.',
+)
+def deploy_dashboard(reload, port):
+    """Start Fish Eye server providing data for dashboards and external consumers."""
+    extra_args = {}
+    if reload:
+        extra_args.update(
+            reload = True,
+            reload_dirs = ['/opt/app/src'],
+        )
+    uvicorn.run(
+        'fishing_smile.core.fish_eye:app',
+        host = '0.0.0.0',
+        port = port,
+        **extra_args,
+    )
+     
 
 def main():
     logging.basicConfig(

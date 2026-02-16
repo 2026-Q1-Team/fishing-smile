@@ -77,5 +77,13 @@ services:
     ports:
     - "80:8000"
 
+  dashboard:
+    <<: *fishing-smile-common-config
+    command:
+    - deploy-dashboard
+    - --reload
+    ports:
+    - "8001:8001"
+
 volumes:
   mysql:
