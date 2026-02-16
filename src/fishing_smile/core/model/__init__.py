@@ -8,6 +8,6 @@ from .attack_component import (
     APIComponent,
 )
 from .attack_scheme import AttackScheme
-from .target_profile import TargetProfile
+from .target_profile import TargetProfile, TargetProfileTable
 #from .event import Event
-from .attack import Attack
+from .attack import Attack, AttackTable
