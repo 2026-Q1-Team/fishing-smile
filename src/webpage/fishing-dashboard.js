@@ -14,13 +14,13 @@ async function fetchDashboardData() {
             const key = `campaign${index + 1}`;
             campaignData[key] = {
                 id: key,
-                name: c.scheme || `Campaign ${index + 1}`,
+                name: c.scheme_name || `Campaign ${index + 1}`,
                 colorClass: `round${index + 1}`,
             };
         });
 
         trackingData = data.tracking.map(t => ({
-            campaignId: `campaign${t.attack_uid}`,
+            campaignId: `campaign${t.attack_id}`,
             email: t.email,
             status: t.status,
             sentDate: t.sent_ts ? formatDate(t.sent_ts) : null,

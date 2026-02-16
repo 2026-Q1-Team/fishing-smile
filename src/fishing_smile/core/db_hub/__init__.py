@@ -20,13 +20,13 @@ app.add_middleware(
 
 
 class CampaignResponse(BaseModel):
-    uid: int
-    scheme: str
+    id: int
+    scheme_name: str
     targeted_count: int
 
 
 class TrackingResponse(BaseModel):
-    attack_uid: int
+    attack_id: int
     email: str
     status: str
     sent_ts: datetime | None = None
@@ -53,27 +53,27 @@ async def get_tracking():
         with conn.cursor() as cur:
             cur.execute("""
                 SELECT
-                    a.uid            AS attack_uid,
-                    tp.email         AS email,
-                    a.scheme         AS scheme,
-                    e_sent.ts        AS sent_ts,
-                    e_click.ts       AS click_ts,
-                    e_submit.ts      AS submit_ts,
-                    e_submit.detail  AS detail,
+                    a.id              AS attack_id,
+                    tp.email          AS email,
+                    a.scheme_name     AS scheme_name,
+                    e_sent.time       AS sent_ts,
+                    e_click.time      AS click_ts,
+                    e_submit.time     AS submit_ts,
+                    e_submit.detail   AS detail,
                     CASE
-                        WHEN e_submit.uid IS NOT NULL THEN 'submitted'
-                        WHEN e_click.uid  IS NOT NULL THEN 'clicked'
+                        WHEN e_submit.id IS NOT NULL THEN 'submitted'
+                        WHEN e_click.id  IS NOT NULL THEN 'clicked'
                         ELSE 'sent'
                     END AS status
-                FROM `Attack` a
-                JOIN `Target Profile` tp ON a.target = tp.uid
-                LEFT JOIN `Event` e_sent
-                    ON e_sent.atk_id = a.uid AND e_sent.kind = 'sent'
-                LEFT JOIN `Event` e_click
-                    ON e_click.atk_id = a.uid AND e_click.kind = 'click'
-                LEFT JOIN `Event` e_submit
-                    ON e_submit.atk_id = a.uid AND e_submit.kind = 'submit'
-                ORDER BY a.uid
+                FROM attack a
+                JOIN target_profile tp ON a.target_id = tp.id
+                LEFT JOIN event e_sent
+                    ON e_sent.parent_attack_id = a.id AND e_sent.kind = 'sent'
+                LEFT JOIN event e_click
+                    ON e_click.parent_attack_id = a.id AND e_click.kind = 'click'
+                LEFT JOIN event e_submit
+                    ON e_submit.parent_attack_id = a.id AND e_submit.kind = 'submit'
+                ORDER BY a.id
             """)
             rows = cur.fetchall()
     return rows
@@ -85,11 +85,11 @@ async def get_campaigns():
         with conn.cursor() as cur:
             cur.execute("""
                 SELECT
-                    a.uid,
-                    a.scheme,
+                    a.id,
+                    a.scheme_name,
                     COUNT(*) AS targeted_count
-                FROM `Attack` a
-                GROUP BY a.uid, a.scheme
+                FROM attack a
+                GROUP BY a.id, a.scheme_name
             """)
             rows = cur.fetchall()
     return rows
