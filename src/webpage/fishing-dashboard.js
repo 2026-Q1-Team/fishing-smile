@@ -20,34 +20,39 @@ async function fetchDashboardData() {
         });
 
         trackingData = data.tracking.map(t => ({
-            campaignId: 'campaign${t.attack_uid}',
+            campaignId: `campaign${t.attack_uid}`,
             email: t.email,
             status: t.status,
-            sentDate: t.sent_date ? formatDate(t.sent_date) : null,
-            sentTime: t.sent_date ? formatTime(t.sent_date) : null,
-            clickDate: t.click_date ? formatDate(t.click_date) : null,
-            clickTime: t.click_date ? formatTime(t.click_date) : null,
-            submitDate: t.submit_date ? formatDate(t.submit_date) : null,
-            submitTime: t.submit_date ? formatTime(t.submit_date) : null,
-            ip: t.datail?.ip || null,
-            password: t.datail?.password || null,
+            sentDate: t.sent_ts ? formatDate(t.sent_ts) : null,
+            sentTime: t.sent_ts ? formatTime(t.sent_ts) : null,
+            clickDate: t.click_ts ? formatDate(t.click_ts) : null,
+            clickTime: t.click_ts ? formatTime(t.click_ts) : null,
+            submitDate: t.submit_ts ? formatDate(t.submit_ts) : null,
+            submitTime: t.submit_ts ? formatTime(t.submit_ts) : null,
+            ip: t.detail?.ip || null,
+            password: t.detail?.password || null,
         }));
         
         return true;
 
     } catch (error) {
         console.error('Failed to fetch dashboard data:', error);
-        showError('`ไม่สามารถโหลดข้อมูลได้: ${error.message}`');
+        showError(`ไม่สามารถโหลดข้อมูลได้: ${error.message}`);
         return false;
     }
 }
 
-function formatTime(toISOString) {
-    const d = new Date(toISOString);
-    const day =d.getDate();
-    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-    return '${day} ${months[d.getMonth()]} ${d.getFullYear()}';
-    
+function formatDate(isoString) {
+    const d = new Date(isoString);
+    const day = d.getDate();
+    const months = ['Jan','Feb','Mar','Apr','May','Jun',
+                    'Jul','Aug','Sep','Oct','Nov','Dec'];
+    return `${day} ${months[d.getMonth()]} ${d.getFullYear()}`;
+}
+
+function formatTime(isoString) {
+    const d = new Date(isoString);
+    return d.toTimeString().split(' ')[0];
 }
 
 function showError(message) {

@@ -17,13 +17,16 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-class CampignResponse(BaseModel):
+
+
+class CampaignResponse(BaseModel):
     uid: int
     scheme: str
-    targeted_count: str
+    targeted_count: int
+
 
 class TrackingResponse(BaseModel):
-    uid: int
+    attack_uid: int
     email: str
     status: str
     sent_ts: datetime | None = None
@@ -31,9 +34,11 @@ class TrackingResponse(BaseModel):
     submit_ts: datetime | None = None
     detail: dict | None = None
 
+
 class DashboardResponse(BaseModel):
-    campaigns: list[CampignResponse]
-    trackings: list[TrackingResponse]
+    campaigns: list[CampaignResponse]
+    tracking: list[TrackingResponse]
+
 
 def _get_connection():
     return pymysql.connect(
@@ -41,39 +46,40 @@ def _get_connection():
         cursorclass=pymysql.cursors.DictCursor,
     )
 
-@app.get('/api/tracking', response_model=DashboardResponse)
+
+@app.get('/api/tracking', response_model=list[TrackingResponse])
 async def get_tracking():
     with _get_connection() as conn:
         with conn.cursor() as cur:
             cur.execute("""
-                    SELECT
-                    a.uid               AS attack_uid,
-                    tp.email            AS email,
-                    a.scheme            AS scheme,
-                    e_status.status     AS status,
-                    e_click.click_ts    AS click_ts,
-                    e_submit.submit_ts  AS submit_ts,
-                    e_submit.detail     AS detail
-                    
-                    case 
+                SELECT
+                    a.uid            AS attack_uid,
+                    tp.email         AS email,
+                    a.scheme         AS scheme,
+                    e_sent.ts        AS sent_ts,
+                    e_click.ts       AS click_ts,
+                    e_submit.ts      AS submit_ts,
+                    e_submit.detail  AS detail,
+                    CASE
                         WHEN e_submit.uid IS NOT NULL THEN 'submitted'
                         WHEN e_click.uid  IS NOT NULL THEN 'clicked'
-                        else 'sent'
+                        ELSE 'sent'
                     END AS status
-                FROM `Attack` AS a
-                JOIN `Targeted_Profile` tp No a.target = tp.uid
-                LEFT JOIN `Event` e_status
-                    ON e_set.atk_id = a.uid AND e_sent.kind = 'sent'
+                FROM `Attack` a
+                JOIN `Target Profile` tp ON a.target = tp.uid
+                LEFT JOIN `Event` e_sent
+                    ON e_sent.atk_id = a.uid AND e_sent.kind = 'sent'
                 LEFT JOIN `Event` e_click
                     ON e_click.atk_id = a.uid AND e_click.kind = 'click'
                 LEFT JOIN `Event` e_submit
                     ON e_submit.atk_id = a.uid AND e_submit.kind = 'submit'
-                Order BY a.uid 
-        """)
+                ORDER BY a.uid
+            """)
             rows = cur.fetchall()
     return rows
 
-@app.get('/api/campaigns', response_model=list[CampignResponse])
+
+@app.get('/api/campaigns', response_model=list[CampaignResponse])
 async def get_campaigns():
     with _get_connection() as conn:
         with conn.cursor() as cur:
@@ -88,11 +94,12 @@ async def get_campaigns():
             rows = cur.fetchall()
     return rows
 
+
 @app.get('/api/dashboard')
 async def get_dashboard_data():
     campaigns = await get_campaigns()
-    trackings = await get_tracking()
-    return{
+    tracking = await get_tracking()
+    return {
         'campaigns': campaigns,
-        'trackings': trackings,
+        'tracking': tracking,
     }

@@ -90,7 +90,7 @@ def deploy_dashboard(reload, port):
             reload_dirs = ['/opt/app/src'],
         )
     uvicorn.run(
-        'fishing_smile.core.fish_eye:app',
+        'fishing_smile.core.db_hub:app',
         host = '0.0.0.0',
         port = port,
         **extra_args,
