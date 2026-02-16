@@ -14,6 +14,8 @@ x-fishing-smile-common-config: &fishing-smile-common-config
   # `uv add --no-sync PACKAGE` or `uv lock`
   - ../../pyproject.toml:/opt/app/pyproject.toml
   - ../../uv.lock:/opt/app/uv.lock
+  # Persist working directory
+  - ./workdir:/opt/app/workdir
   depends_on:
     init:
       condition: service_completed_successfully
