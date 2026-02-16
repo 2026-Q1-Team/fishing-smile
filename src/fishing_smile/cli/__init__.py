@@ -36,8 +36,9 @@ def cast_net(targets_csv_file):
     """Send out simulated phishing emails to targets"""
     targets = pd.read_csv(
         targets_csv_file,
-        usecols = ['email', 'name_th', 'name_en'],
+        usecols=['name', 'email', 'phone', 'company', 'job_title'],
     )
+    # TODO -- Add scheme param, consider separating th_name and en_name.
     return core_cast_net(targets.itertuples())
 
 
