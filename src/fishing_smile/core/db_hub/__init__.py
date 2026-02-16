@@ -41,8 +41,13 @@ class DashboardResponse(BaseModel):
 
 
 def _get_connection():
+    db = settings.db
     return pymysql.connect(
-        **settings.db.model_dump(),
+        host=db.host,
+        port=db.port,
+        user=db.username,
+        password=db.password,
+        database=db.database,
         cursorclass=pymysql.cursors.DictCursor,
     )
 
