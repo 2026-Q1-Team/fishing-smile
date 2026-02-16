@@ -1,3 +1,4 @@
+from sqlalchemy import CHAR
 from sqlmodel import Field, Relationship
 
 from fishing_smile.database.sqlmodel import SQLModel
@@ -11,9 +12,9 @@ class Attack(SQLModel):
     )
     external_id: str = Field(
         unique = True,
-        # TODO: try to force fixed length char type in database
         min_length = 32,
         max_length = 32,
+        sa_type = CHAR(32),
     )
     scheme_name: str = Field(
         max_length = 32,

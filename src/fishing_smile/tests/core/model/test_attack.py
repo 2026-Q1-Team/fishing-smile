@@ -3,6 +3,7 @@ from sqlmodel import (
     select,
     delete,
 )
+from pydantic import ValidationError
 
 from fishing_smile.core.model import *
 
@@ -32,3 +33,12 @@ def test_create_search_cascade_delete(session):
     results = session.exec(select(AttackTable)).all()
     assert len(results) == 0, \
         'deletion of TargetProfile should cascade to Attack'
+
+
+def test_external_id_too_short():
+    with pytest.raises(ValidationError):
+        attack = Attack(
+            external_id = '0123456789',
+            scheme_name = 'empty',
+            target_id = 1,
+        )
