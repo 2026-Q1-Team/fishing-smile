@@ -1,5 +1,3 @@
-# Tempoararily disabled other models that are not defined with SQLModel
-
 from .red_flag import RedFlag
 from .attack_component import (
     AttackComponent,
@@ -9,5 +7,5 @@ from .attack_component import (
 )
 from .attack_scheme import AttackScheme
 from .target_profile import TargetProfile, TargetProfileTable
-#from .event import Event
+from .event import Event, EventTable
 from .attack import Attack, AttackTable

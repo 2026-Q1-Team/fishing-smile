@@ -32,4 +32,4 @@ class TargetProfile(SQLModel):
 
 
 class TargetProfileTable(TargetProfile, table = True):
-    attacks: list["AttackTable"] = Relationship(back_populates = 'target')
+    attacks: list['AttackTable'] = Relationship(back_populates = 'target')

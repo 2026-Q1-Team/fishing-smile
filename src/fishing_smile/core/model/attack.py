@@ -33,4 +33,5 @@ class Attack(SQLModel):
 
 
 class AttackTable(Attack, table = True):
-    target: "TargetProfileTable" = Relationship(back_populates = 'attacks')
+    target: 'TargetProfileTable' = Relationship(back_populates = 'attacks')
+    events: list['EventTable'] = Relationship(back_populates = 'parent_attack')
