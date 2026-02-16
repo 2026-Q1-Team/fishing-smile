@@ -1,4 +1,3 @@
-# Temporarily disabled while working on sqlmodel branch
 from pathlib import Path
 
 import pytest
