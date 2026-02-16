@@ -6,7 +6,7 @@ x-fishing-smile-common-config: &fishing-smile-common-config
   build:
     context: ../..
   env_file:
-    - env/local-test.env
+  - env/local-test.env
   volumes:
   # Mount python source code for live editing during development
   - ../../src:/opt/app/src
@@ -15,8 +15,8 @@ x-fishing-smile-common-config: &fishing-smile-common-config
   - ../../pyproject.toml:/opt/app/pyproject.toml
   - ../../uv.lock:/opt/app/uv.lock
   depends_on:
-    db:
-      condition: service_healthy
+    init:
+      condition: service_completed_successfully
 
 services:
   db:
@@ -32,14 +32,6 @@ services:
     - type: volume
       source: mysql
       target: /var/lib/mysql
-    - type: bind
-      source: ../../src/database/fishtrack.sql
-      target: /opt/fish/fishtrack.sql
-      read_only: true
-    command:
-    - mysqld
-    - --init-file
-    - /opt/fish/fishtrack.sql
     ports:
     - 3306:3306
     healthcheck:
@@ -49,7 +41,7 @@ services:
       - --user=fish_app
       - --password=db_password_for_local_test
       - --database=fishtrack
-      - '--execute=DESCRIBE `Target Profile`;'
+      - '--execute=SELECT 1;'
       interval: 1s
       timeout: 15s
       retries: 10
@@ -61,6 +53,13 @@ services:
     - 8091:80
     links:
     - db
+  init:
+    <<: *fishing-smile-common-config
+    command:
+    - init
+    depends_on:
+      db:
+        condition: service_healthy
   cli:
     <<: *fishing-smile-common-config
     environment:
@@ -76,6 +75,8 @@ services:
     - --reload
     ports:
     - "80:8000"
+    profiles:
+    - temporarily-disabled
 
   dashboard:
     <<: *fishing-smile-common-config

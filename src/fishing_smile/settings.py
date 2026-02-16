@@ -1,4 +1,5 @@
 from functools import cache
+from typing import Literal
 
 from pydantic import (
     BaseModel,
@@ -8,10 +9,13 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class DatabaseSettings(BaseModel):
-    user: str
+    """Matches arguments of `sqlalchemy.engine.URL.create`"""
+    drivername: str = 'mysql+pymysql'
+    username: str = 'fish_app'
     password: str
-    host: str
-    database: str
+    host: str = None
+    port: int = None
+    database: str = 'fishtrack'
 
 
 class CastNetSettings(BaseModel):
@@ -19,12 +23,14 @@ class CastNetSettings(BaseModel):
     password: str
     url: str
 
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_prefix = 'FISHING_SMILE_',
-        env_nested_delimiter = '_',
+        env_nested_delimiter = '__',
     )
 
+    deployment_mode: Literal['development', 'production'] = 'production'
     db: DatabaseSettings
     cast: CastNetSettings
 
