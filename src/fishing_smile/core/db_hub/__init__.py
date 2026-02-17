@@ -4,8 +4,16 @@ from pydantic import BaseModel
 from datetime import datetime
 
 import pymysql
+import sqlalchemy as sa
+from sqlmodel import (
+    Session,
+    select,
+)
 
 from fishing_smile.settings import get_settings
+from fishing_smile.database.engine import engine
+from fishing_smile.core.model import *
+
 
 settings = get_settings()
 app = FastAPI(title='db hub: Data service for fishing-smile system')
@@ -84,19 +92,25 @@ async def get_tracking():
     return rows
 
 
-@app.get('/api/campaigns', response_model=list[CampaignResponse])
-async def get_campaigns():
-    with _get_connection() as conn:
-        with conn.cursor() as cur:
-            cur.execute("""
-                SELECT
-                    a.id,
-                    a.scheme_name,
-                    COUNT(*) AS targeted_count
-                FROM attack a
-                GROUP BY a.id, a.scheme_name
-            """)
-            rows = cur.fetchall()
+# TODO: Inject database session as dependency so it can be controlled while testing.
+@app.get('/api/campaigns')
+async def get_campaigns() -> list[CampaignResponse]:
+    with Session(engine) as session:
+        rows = session.exec(
+            select(
+                AttackTable.id.label('uid'),
+                AttackTable.scheme_name,
+                sa.func.count(AttackTable.id).label('targeted_count'),
+            )
+                .group_by(
+                    # FIXME: It makes no sense to group by ID which is the PRIMARY KEY of the table 
+                    # This will always result it each row being the only member of the group.
+                    AttackTable.id,
+                    AttackTable.scheme_name,
+                )
+                # TODO: Might need to add `.order_by()` to make output deterministic
+                # which will help with automated testing.
+        ).all()
     return rows
 
 
