@@ -1,4 +1,7 @@
-from fastapi import FastAPI
+from fastapi import (
+    FastAPI,
+    Depends,
+)
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from datetime import datetime
@@ -11,7 +14,7 @@ from sqlmodel import (
 )
 
 from fishing_smile.settings import get_settings
-from fishing_smile.database.engine import engine
+from fishing_smile.database.engine import get_session
 from fishing_smile.core.model import *
 
 
@@ -48,6 +51,8 @@ class DashboardResponse(BaseModel):
     tracking: list[TrackingResponse]
 
 
+# TODO: Replace usage of `_get_connection` with dependency injection of `get_session`
+# See https://sqlmodel.tiangolo.com/tutorial/fastapi/session-with-dependency/#use-the-dependency
 def _get_connection():
     db = settings.db
     return pymysql.connect(
@@ -92,25 +97,25 @@ async def get_tracking():
     return rows
 
 
-# TODO: Inject database session as dependency so it can be controlled while testing.
 @app.get('/api/campaigns')
-async def get_campaigns() -> list[CampaignResponse]:
-    with Session(engine) as session:
-        rows = session.exec(
-            select(
-                AttackTable.id.label('uid'),
+async def get_campaigns(
+    session: Session = Depends(get_session),
+) -> list[CampaignResponse]:
+    rows = session.exec(
+        select(
+            AttackTable.id.label('uid'),
+            AttackTable.scheme_name,
+            sa.func.count(AttackTable.id).label('targeted_count'),
+        )
+            .group_by(
+                # FIXME: It makes no sense to group by ID which is the PRIMARY KEY of the table 
+                # This will always result in each row being the only member of the group.
+                AttackTable.id,
                 AttackTable.scheme_name,
-                sa.func.count(AttackTable.id).label('targeted_count'),
             )
-                .group_by(
-                    # FIXME: It makes no sense to group by ID which is the PRIMARY KEY of the table 
-                    # This will always result it each row being the only member of the group.
-                    AttackTable.id,
-                    AttackTable.scheme_name,
-                )
-                # TODO: Might need to add `.order_by()` to make output deterministic
-                # which will help with automated testing.
-        ).all()
+            # TODO: Might need to add `.order_by()` to make output deterministic
+            # which will help with automated testing.
+    ).all()
     return rows
 
 
