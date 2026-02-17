@@ -77,9 +77,6 @@ services:
     - --reload
     ports:
     - "80:8000"
-    profiles:
-    - temporarily-disabled
-
   dashboard:
     <<: *fishing-smile-common-config
     command:
