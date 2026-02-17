@@ -1,11 +1,26 @@
 import pytest
 from fastapi.testclient import TestClient
 
+from fishing_smile.database.engine import get_session
 from fishing_smile.core.db_hub import app
 from fishing_smile.core.model import *
 
 
-def test_get_campaigns(session):
+@pytest.fixture(name = 'client')
+def db_hub_client(session):
+    def get_session_override():
+        return session
+
+    # NOTE: Make `db_hub` app share the same database session
+    # as the one used by test setup code to temporarily modify database.
+    app.dependency_overrides[get_session] = get_session_override
+
+    client = TestClient(app)
+    yield client
+    app.dependency_overrides.clear()
+
+
+def test_get_campaigns(session, client):
     # TODO: Please write a test case of what you actually expect /api/campaigns to do
     # 1. setup database state
     # 2. call /api/campaigns
