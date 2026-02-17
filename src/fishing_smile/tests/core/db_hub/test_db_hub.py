@@ -51,7 +51,6 @@ def test_get_campaigns(session, client):
     session.add_all(attacks)
     session.flush()
 
-    client = TestClient(app)
     response = client.get('/api/campaigns')
     expected = [
         {
