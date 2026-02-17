@@ -103,7 +103,7 @@ async def get_campaigns(
 ) -> list[CampaignResponse]:
     rows = session.exec(
         select(
-            AttackTable.id.label('uid'),
+            AttackTable.id,
             AttackTable.scheme_name,
             sa.func.count(AttackTable.id).label('targeted_count'),
         )
@@ -115,7 +115,7 @@ async def get_campaigns(
             )
             # TODO: Might need to add `.order_by()` to make output deterministic
             # which will help with automated testing.
-    ).all()
+    ).mappings().all()
     return rows
 
 
