@@ -43,12 +43,16 @@ def test_change_password_api(session):
     session = Session(engine)
     response_json = response.json()
     attack_id = json.loads(response_json)["result"]
+    print(json.loads(response_json)["detail"])
 
     result2 = session.exec(
         select(EventTable).where(EventTable.parent_attack_id == int(attack_id)).order_by(desc(EventTable.id))
     ).first()
 
-    assert result2.kind == 'Email sent, Link clicked' == json.loads(response_json)["kind"]  # test that it's the same for response and database. and it actually insert to database.
+    # test that it's the same for response and database. and it actually insert to database.
+    assert result2.kind == 'Email sent, Link clicked' == json.loads(response_json)["kind"]  
+    assert result2.parent_attack_id == json.loads(response_json)["result"]
+    assert result2.detail == json.loads(response_json)["detail"]
     #assert json.loads(response_json)["time"] == str(result2.time) There is a milisecond issue. I will find a way around it to make it usable
 
 def test_change_password_api2(session):
@@ -87,5 +91,8 @@ def test_change_password_api2(session):
         select(EventTable).where(EventTable.parent_attack_id == int(attack_id)).order_by(desc(EventTable.id))
     ).first()
 
-    assert result2.kind == 'Email sent, Link clicked, Password inserted' == json.loads(response_json)["kind"]  # test that it's the same for response and database
+    # test that it's the same for response and database. and it actually insert to database.
+    assert result2.kind == 'Email sent, Link clicked, Password inserted' == json.loads(response_json)["kind"] 
+    assert result2.parent_attack_id == json.loads(response_json)["result"]
+    assert result2.detail == json.loads(response_json)["detail"]
     #assert json.loads(response_json)["time"] == str(result2.time) There is a milisecond issue. I will find a way around it to make it usable

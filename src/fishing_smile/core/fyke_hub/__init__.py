@@ -33,7 +33,8 @@ async def change_password_ui(
                     .where(AttackTable.external_id == str(k))
             ).first()
             time = datetime.now()
-            event = EventTable(parent_attack_id=result1.id, kind="Email sent, Link clicked", time=time, detail={'ip': client_host})
+            detail_json = json.dumps({'ip': client_host})
+            event = EventTable(parent_attack_id=result1.id, kind="Email sent, Link clicked", time=time, detail=detail_json)
             session.add(event)
             session.commit()
             session.refresh(event) 
@@ -42,7 +43,8 @@ async def change_password_ui(
                 "result" : result1.id,
                 "kind" : "Email sent, Link clicked",
                 "time" : str(time),
-                "event" : str(event.model_dump())
+                "event" : str(event.model_dump()),
+                "detail" : detail_json
             })
     except Exception as e:
         return f"error: {e}"
@@ -72,7 +74,8 @@ async def change_password_api(
 
             hashed_password = hashlib.sha256(body.p.encode('utf8')) # hash password
             time = datetime.now()
-            event = EventTable(parent_attack_id=result1.id, kind="Email sent, Link clicked, Password inserted", time=time, detail=json.dumps({'ip': client_host, 'password' : hashed_password.hexdigest()}))
+            detail_json = json.dumps({'ip': client_host, 'password' : hashed_password.hexdigest()})
+            event = EventTable(parent_attack_id=result1.id, kind="Email sent, Link clicked, Password inserted", time=time, detail=detail_json)
             session.add(event)
             session.commit()
             session.refresh(event) 
@@ -81,7 +84,8 @@ async def change_password_api(
                 "result" : result1.id,
                 "kind" : "Email sent, Link clicked, Password inserted",
                 "time" : str(time),
-                "event" : str(event.model_dump())
+                "event" : str(event.model_dump()),
+                "detail" : detail_json
             })
     except Exception as e:
         return f"error: {e}"
