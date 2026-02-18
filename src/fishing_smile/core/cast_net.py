@@ -78,5 +78,5 @@ def cast_net(targets, scheme):
             send_email(target, urc)
             sent_count += 1
         except:
-            print("Failed to send to", target.email)
-    print("Sent to ", sent_count, " email(s).")
+            _logger.exception(f'Failed to send to {target.email}')
+    _logger.info(f'Sent to {sent_count} email(s).')
