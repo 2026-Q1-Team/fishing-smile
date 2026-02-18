@@ -7,6 +7,7 @@ from pydantic import BaseModel
 from datetime import datetime
 
 import pymysql
+import sqlalchemy as sa
 from sqlmodel import (
     Session,
     select,
