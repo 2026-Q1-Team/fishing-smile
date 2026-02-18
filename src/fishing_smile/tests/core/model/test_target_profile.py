@@ -32,6 +32,12 @@ def test_invalid_email():
             name = 'Jon Snow',
             email = 'invalid-because-it-does-not-have-at-sign',
         )
+    # NOTE: "Table" models does not validate in constructor, must explicitly use `.model_validate()`
+    with pytest.raises(ValidationError):
+        profile = TargetProfileTable.model_validate({
+            'name': 'Jon Snow',
+            'email': 'invalid-because-it-does-not-have-at-sign',
+        })
 
 
 def test_phone_number_too_long():
