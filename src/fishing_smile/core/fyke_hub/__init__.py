@@ -32,14 +32,16 @@ async def change_password_ui(
                 select(AttackTable)
                     .where(AttackTable.external_id == str(k))
             ).first()
-
-            event = EventTable(parent_attack_id=result1.id, kind="Email sent, Link clicked", time=datetime.now(), detail={'ip': client_host})
+            time = datetime.now()
+            event = EventTable(parent_attack_id=result1.id, kind="Email sent, Link clicked", time=time, detail={'ip': client_host})
             session.add(event)
             session.commit()
             session.refresh(event) 
             return json.dumps({
                 "k" : k,
                 "result" : result1.id,
+                "kind" : "Email sent, Link clicked",
+                "time" : str(time),
                 "event" : str(event.model_dump())
             })
     except Exception as e:
@@ -69,14 +71,16 @@ async def change_password_api(
             ).first()
 
             hashed_password = hashlib.sha256(body.p.encode('utf8')) # hash password
-
-            event = EventTable(parent_attack_id=result1.id, kind="Email sent, Link clicked, Password inserted", time=datetime.now(), detail={'ip': client_host, 'password' : hashed_password.hexdigest()})
+            time = datetime.now()
+            event = EventTable(parent_attack_id=result1.id, kind="Email sent, Link clicked, Password inserted", time=time, detail=json.dumps({'ip': client_host, 'password' : hashed_password.hexdigest()}))
             session.add(event)
             session.commit()
             session.refresh(event) 
             return json.dumps({
                 "k" : body.k,
                 "result" : result1.id,
+                "kind" : "Email sent, Link clicked, Password inserted",
+                "time" : str(time),
                 "event" : str(event.model_dump())
             })
     except Exception as e:
