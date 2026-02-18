@@ -42,12 +42,15 @@ def cast_net(targets_csv_file):
     return core_cast_net(targets.itertuples())
 
 
-@cli.command()
-@click.option(
+reload_option = click.option(
     '--reload',
     is_flag = True,
     help = 'Reload server when source code is modified. Useful for development.',
 )
+
+
+@cli.command()
+@reload_option
 def deploy_fykes(reload):
     """Start server handling interactions from phish targets.
 
@@ -71,12 +74,9 @@ def deploy_fykes(reload):
         **extra_args,
     )
 
+
 @cli.command()
-@click.option(
-    '--reload',
-    is_flag = True,
-    help = 'Reload server when source code is modified. Useful for development.',
-)
+@reload_option
 @click.option(
     '--port',
     default = 8001,
