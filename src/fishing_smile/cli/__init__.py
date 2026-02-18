@@ -32,14 +32,14 @@ def init():
         path_type = Path,
     ),
 )
-def cast_net(targets_csv_file):
+def cast_net(targets_csv_file, scheme):
     """Send out simulated phishing emails to targets"""
     targets = pd.read_csv(
         targets_csv_file,
         usecols=['name', 'email', 'phone', 'company', 'job_title'],
     )
-    # TODO -- Add scheme param, consider separating th_name and en_name.
-    return core_cast_net(targets.itertuples())
+    # TODO -- Consider separating th_name and en_name.
+    return core_cast_net(targets.itertuples(), scheme)
 
 
 reload_option = click.option(

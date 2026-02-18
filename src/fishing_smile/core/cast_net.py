@@ -1,12 +1,18 @@
 import logging
+from multiprocessing.pool import job_counter
+
+from fishing_smile.core.model import TargetProfileTable, AttackTable
+from fishing_smile.database.engine import engine
+
 _logger = logging.getLogger(__name__)
 import secrets
-import datetime
-import hashlib
 import smtplib
 from email.mime.text import MIMEText
 
-import pymysql
+from sqlmodel import (
+    Session,
+    select,
+)
 
 from fishing_smile.settings import get_settings
 
@@ -36,47 +42,54 @@ Thank you for taking your time to keep our organization secure.
 # Entire flow should probably be changed to avoid repeatedly connecting and disconnecting to the sql server.
 
 
-def update_database(target, scheme):
-    urc = secrets.token_hex(16)  # token_urlsafe returns inconsistent string length
-    with pymysql.connect(**settings.db.model_dump()) as connection:
-        with connection.cursor() as cursor:
-            insert_profile = """
-            IF NOT EXISTS (SELECT * FROM `Target Profile` WHERE `email` = %(email))
-                INSERT INTO `Target Profile` (`name`, `email`, `phone`, `company`, `job_title`)
-                VALUES (%(name)s, %(email)s, %(phone)s, %(company)s, %(job_title)s)
-            ELSE
-                UPDATE `Target Profile`
-                SET (`name`, `phone`, `company`, `job_title`) = (%(name)s, %(phone)s, %(company)s, %(job_title)s)
-                WHERE `email` = %(email)s
-            """
-            insert_attack = """
-            INSERT INTO `Attack` (`external_id`, `scheme_name`, `target_id`)
-            VALUES (%(urc)s, %(scheme)s, %(target.uid)s)
-            """
-            cursor.execute(insert_profile, (target,))
-            cursor.execute(insert_attack,
-                           (urc, scheme, target.uid))  # Unsure about what the target part should be, fix later.
-        connection.commit()
-    return urc
+def update_database(target, scheme, session):
+    ex_id = secrets.token_hex(16)  # token_urlsafe returns inconsistent string length
+    if session.exec(select(TargetProfileTable).where(TargetProfileTable.email == target.email).exists()):
+        updated_profile = TargetProfileTable(
+            name=target.name,
+            phone=target.phone,
+            company=target.company,
+            job_title=target.job_title,
+        )
+        session.add(updated_profile)
+    else:
+        new_profile = TargetProfileTable(
+            name=target.name,
+            email=target.email,
+            phone=target.phone,
+            company=target.company,
+            job_title=target.job_title,
+        )
+        session.add(new_profile)
+    t_id = session.exec(select(TargetProfileTable.id).where(TargetProfileTable.email == target.email))
+    new_attack = AttackTable(
+        external_id=ex_id,
+        scheme_name=scheme,
+        target_id=t_id,
+    )
+    session.add(new_attack)
+    session.commit()
+    return ex_id
 
 
-def send_email(target, urc):
+def send_email(target, ex_id):
     with smtplib.SMTP("smtp.gmail.com", 587).starttls() as server:
         with server.login(settings.cast.sender, settings.cast.password) as session:
-            msg = MIMEText(TEXT_MESSAGE.format(**target._asdict(), link=URL + urc, ), 'html')
+            msg = MIMEText(TEXT_MESSAGE.format(**target._asdict(), link=URL + ex_id, ), 'html')
             msg['Subject'] = SUBJECT
             msg['From'] = settings.cast.sender
             msg['To'] = target.email
             session.sendmail(settings.cast.sender, target.email, msg.as_string())
 
 
-def cast_net(targets, scheme):
+def cast_net(targets, scheme, session):
     sent_count = 0
-    for target in targets:
-        urc = update_database(target, scheme)
-        try:
-            send_email(target, urc)
-            sent_count += 1
-        except:
-            _logger.exception(f'Failed to send to {target.email}')
-    _logger.info(f'Sent to {sent_count} email(s).')
+    with Session(engine) as session:
+        for target in targets:
+            ex_id = update_database(target, scheme, session)
+            try:
+                send_email(target, ex_id)
+                sent_count += 1
+            except:
+                _logger.exception(f'Failed to send to {target.email}')
+        _logger.info(f'Sent to {sent_count} email(s).')
