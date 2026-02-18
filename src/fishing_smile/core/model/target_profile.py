@@ -14,7 +14,7 @@ class TargetProfile(SQLModel):
         max_length = 64,
     )
     email: EmailStr = Field(
-        index = True,
+        unique = True,
         max_length = 64,
     )
     phone: str | None = Field(
