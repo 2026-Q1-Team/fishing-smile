@@ -52,7 +52,7 @@ def test_phone_number_too_long():
 # TODO: Skip if engine is not using mysql or mariadb
 # NOTE: Not sure if we will use this upsert pattern, but just making sure it works.
 # - pros: use sqlmodel and execute only in single SQL statement
-# - cons: verbose, use MySQL specific interface
+# - cons: use MySQL specific interface, object not tracked by sqlmodel can be confusing
 def test_upsert_on_same_email(session):
     from sqlalchemy.dialects.mysql import insert
     old_profile = TargetProfileTable(
@@ -67,16 +67,9 @@ def test_upsert_on_same_email(session):
     )
     session.exec(
         insert(TargetProfileTable).values(
-            name = new_profile.name,
-            phone = new_profile.phone,
-            email = new_profile.email,
-            company = new_profile.company,
-            job_title = new_profile.job_title,
+            **new_profile.model_dump(exclude = ['id'])
         ).on_duplicate_key_update(
-            name = new_profile.name,
-            phone = new_profile.phone,
-            company = new_profile.company,
-            job_title = new_profile.job_title,
+            **new_profile.model_dump(exclude = ['id', 'email'])
         )
     )
 
@@ -90,10 +83,11 @@ def test_upsert_on_same_email(session):
     assert results[0] is old_profile
     assert old_profile is not new_profile
     assert old_profile != new_profile
-    # Only after the returned object is refreshed, then their content (except id) will be the same.
+    # Only after the returned object is refreshed,
+    # then their content will be the same (excluding ID since new_profile is never synced to database directly).
     session.refresh(results[0])
-    for k,v in results[0].model_dump().items():
-        if k == 'id':
-            continue
-        assert v == getattr(new_profile, k)
+    assert (
+        results[0].model_dump(exclude = ['id'])
+        == new_profile.model_dump(exclude = ['id'])
+    )
     # NOTE: new_profile can't be refreshed because it's outside of sqlmodel session management
