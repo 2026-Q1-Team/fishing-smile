@@ -7,7 +7,9 @@ import pandas as pd
 import uvicorn
 
 from fishing_smile.settings import get_settings
+from fishing_smile.database.engine import get_session
 from fishing_smile.database.init import initialize_database
+from fishing_smile.core.model import *
 from fishing_smile.core.cast_net import cast_net as core_cast_net
 
 
@@ -24,6 +26,12 @@ def init():
 
 
 @cli.command()
+@click.option(
+    '--scheme',
+    # FIXME: Use click.Choice based on actual available scheme
+    default = 'DEFAULT_SCHEME',
+    help = 'Which attack scheme to use on targets',
+)
 @click.argument(
     'targets_csv_file',
     type = click.Path(
@@ -38,8 +46,17 @@ def cast_net(targets_csv_file, scheme):
         targets_csv_file,
         usecols=['name', 'email', 'phone', 'company', 'job_title'],
     )
-    # TODO -- Consider separating th_name and en_name.
-    return core_cast_net(targets.itertuples(), scheme)
+    targets = [
+        TargetProfile(**target._asdict())
+        for target in targets.itertuples()
+    ]
+    # TODO -- Add scheme param, consider separating th_name and en_name.
+    with get_session() as session:
+        core_cast_net(
+            targets = targets,
+            scheme = scheme,
+            session = session,
+        )
 
 
 reload_option = click.option(

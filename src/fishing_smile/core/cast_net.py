@@ -1,22 +1,23 @@
 import logging
-from multiprocessing.pool import job_counter
-
-from fishing_smile.core.model import TargetProfileTable, AttackTable
-from fishing_smile.database.engine import engine
-
 _logger = logging.getLogger(__name__)
+from multiprocessing.pool import job_counter
 import secrets
 import smtplib
 from email.mime.text import MIMEText
+from collections.abc import Iterable
 
+from sqlalchemy.dialects.mysql import insert
 from sqlmodel import (
     Session,
     select,
 )
 
 from fishing_smile.settings import get_settings
+from fishing_smile.core.model import *
+
 
 settings = get_settings()
+
 
 # TODO -- change to modular email templates
 URL = f"{settings.cast.url}/index.html?k="
@@ -42,54 +43,57 @@ Thank you for taking your time to keep our organization secure.
 # Entire flow should probably be changed to avoid repeatedly connecting and disconnecting to the sql server.
 
 
-def update_database(target, scheme, session):
+def update_database(
+    target: TargetProfile,
+    scheme: str,
+    session: Session,
+):
+    if not isinstance(target, TargetProfileTable):
+        target = TargetProfileTable(**target.model_dump())
+
     ex_id = secrets.token_hex(16)  # token_urlsafe returns inconsistent string length
-    if session.exec(select(TargetProfileTable).where(TargetProfileTable.email == target.email).exists()):
-        updated_profile = TargetProfileTable(
-            name=target.name,
-            phone=target.phone,
-            company=target.company,
-            job_title=target.job_title,
+    insert_result = session.exec(
+        insert(TargetProfileTable).values(
+            **target.model_dump(exclude = ['id'])
+        ).on_duplicate_key_update(
+            **target.model_dump(exclude = ['id', 'email'])
         )
-        session.add(updated_profile)
-    else:
-        new_profile = TargetProfileTable(
-            name=target.name,
-            email=target.email,
-            phone=target.phone,
-            company=target.company,
-            job_title=target.job_title,
-        )
-        session.add(new_profile)
-    t_id = session.exec(select(TargetProfileTable.id).where(TargetProfileTable.email == target.email))
+    )
     new_attack = AttackTable(
-        external_id=ex_id,
-        scheme_name=scheme,
-        target_id=t_id,
+        external_id = ex_id,
+        scheme_name = scheme,
+        target_id = insert_result.inserted_primary_key[0],
     )
     session.add(new_attack)
     session.commit()
     return ex_id
 
 
-def send_email(target, ex_id):
+def send_email(
+    target: TargetProfile,
+    ex_id: int,
+):
     with smtplib.SMTP("smtp.gmail.com", 587).starttls() as server:
         with server.login(settings.cast.sender, settings.cast.password) as session:
-            msg = MIMEText(TEXT_MESSAGE.format(**target._asdict(), link=URL + ex_id, ), 'html')
+            msg = MIMEText(TEXT_MESSAGE.format(**target.model_dump(), link=URL + ex_id, ), 'html')
             msg['Subject'] = SUBJECT
             msg['From'] = settings.cast.sender
             msg['To'] = target.email
             session.sendmail(settings.cast.sender, target.email, msg.as_string())
 
 
-def cast_net(targets, scheme):
+def cast_net(
+    targets: Iterable[TargetProfile],
+    # TODO: Might optionally allow AttackScheme object too
+    scheme: str,
+    session: Session,
+):
     sent_count = 0
-    with Session(engine) as session:
-        for target in targets:
-            ex_id = update_database(target, scheme, session)
-            try:
-                send_email(target, ex_id)
-                sent_count += 1
-            except:
-                _logger.exception(f'Failed to send to {target.email}')
-        _logger.info(f'Sent to {sent_count} email(s).')
+    for target in targets:
+        ex_id = update_database(target, scheme, session)
+        try:
+            send_email(target, ex_id)
+            sent_count += 1
+        except:
+            _logger.exception(f'Failed to send to {target.email}')
+    _logger.info(f'Sent to {sent_count} email(s).')
