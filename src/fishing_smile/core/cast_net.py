@@ -82,7 +82,7 @@ def send_email(target, ex_id):
             session.sendmail(settings.cast.sender, target.email, msg.as_string())
 
 
-def cast_net(targets, scheme, session):
+def cast_net(targets, scheme):
     sent_count = 0
     with Session(engine) as session:
         for target in targets:
