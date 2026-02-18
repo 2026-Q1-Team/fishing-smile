@@ -66,4 +66,3 @@ def test_get_campaigns(session, client):
     ]
     assert response.status_code == 200
     assert response.json() == expected
-    
