@@ -73,7 +73,7 @@ def test_get_campaigns_empty(session, client):
     response = client.get('/api/campaigns')
     assert response.status_code == 200
     assert response.json() == []
-
+    
 
 def test_get_tracking_sent(session, client):
     profile = TargetProfileTable(
@@ -103,13 +103,13 @@ def test_get_tracking_sent(session, client):
     assert row['sent_ts'] is not None
     assert row['click_ts'] is None
     assert row['submit_ts'] is None
-
+    
 
 def test_get_tracking_empty(session, client):
     response = client.get('/api/tracking')
     assert response.status_code == 200
     assert response.json() == []
-
+    
 
 def test_get_tracking_clicked(session, client):
     profile = TargetProfileTable(
@@ -139,7 +139,7 @@ def test_get_tracking_clicked(session, client):
     assert data[0]['sent_ts'] is not None
     assert data[0]['click_ts'] is not None
     assert data[0]['submit_ts'] is None
-
+    
 
 def test_get_tracking_submitted(session, client):
     profile = TargetProfileTable(
