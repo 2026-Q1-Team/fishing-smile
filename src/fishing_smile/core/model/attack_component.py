@@ -6,12 +6,15 @@ from typing import (
 from pydantic import (
     BaseModel,
     Field,
+    ConfigDict,
 )
 
 from .red_flag import RedFlag
 
 
 class AttackComponent(BaseModel):
+    model_config = ConfigDict(extra = 'allow')
+
     kind: str
     name: str
     red_flags: List[RedFlag] = []
