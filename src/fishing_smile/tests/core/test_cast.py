@@ -25,5 +25,6 @@ def test_update_db(session):
     assert result_profile[0].id == result_attack[0].target_id
 
 
-def test_send_mail():
+def test_send_mail(session):
+    # TODO -- what should the send mail function return that can prove the mail was received not just sent?
     assert 1 == 1
