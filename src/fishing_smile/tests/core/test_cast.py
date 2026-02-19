@@ -2,8 +2,36 @@ from sqlmodel import (
     select,
 )
 
-from fishing_smile.core.cast_net import register_new_attack
+from fishing_smile.core.cast_net import (
+    register_target_profile,
+    register_new_attack,
+)
 from fishing_smile.core.model import *
+
+
+def test_upsert_on_same_email(session):
+    old_profile = TargetProfile(
+        name = 'Gandalf the Grey',
+        email = 'gandalf@middle.earth.org',
+    )
+    registered_old_profile = register_target_profile(old_profile, session)
+    new_profile = TargetProfile(
+        name = 'Gandalf the White',
+        email = 'gandalf@middle.earth.org',
+        phone = '0123456789',
+    )
+    expected = new_profile.model_dump(exclude = ['id'])
+    registered_new_profile = register_target_profile(new_profile, session)
+    assert registered_old_profile is registered_new_profile, \
+        'Registering profiles with duplicate email should result in the same object'
+
+    results = session.exec(
+        select(TargetProfileTable)
+    ).all()
+
+    assert len(results) == 1
+    assert results[0] is registered_old_profile
+    assert results[0].model_dump(exclude = ['id']) == expected
 
 
 def test_register_new_attack(session):
