@@ -5,8 +5,8 @@ description: >-
 components:
   kind: email
   name: bait_email
-  email_template: something here
-  templates:
+  email_template:
+  template:
     url: >-
       {settings.cast.url}/index.html?k={attack.external_id}
     # TODO -- make image for this and host it somewhere
