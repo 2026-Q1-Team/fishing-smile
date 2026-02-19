@@ -7,18 +7,22 @@ from fishing_smile.core.model import *
 
 
 def test_update_db(session):
-    target = TargetProfile(
-        name = 'John Fishing',
-        email = 'address@domail.com',
-        phone = '0000000000',
-        company = 'ocean gate',
-        job_title = 'pro fisher',
+    scheme = AttackScheme(
+        name='test_scheme_1',
+        description='this is a test'
     )
-    ex_id_out = update_database(target, 'update_test', session)
-    result_attacks = session.exec(select(AttackTable)).all()
-    assert len(result_attacks) == 1
-    assert result_attacks[0].scheme_name == 'update_test'
-    assert result_attacks[0].target.email == 'address@domail.com'
+    target = TargetProfileTable(
+        name='John Fishing',
+        email='address@domain.com',
+        phone=0000000000,
+        company='ocean gate',
+        job_title='pro fisher',
+    )
+    out = update_database(target, scheme, session)
+    result_profile = session.exec(select(TargetProfileTable).where(TargetProfileTable.name == target.name)).all()
+    result_attack = session.exec(select(AttackTable).where(AttackTable.external_id == out.external_id)).all()
+    assert len(result_attack) == 1
+    assert result_profile[0].id == result_attack[0].target_id
 
 
 def test_send_mail():
