@@ -29,8 +29,9 @@ class Attack(SQLModel):
 
     @property
     def scheme(self) -> AttackScheme:
-        # TODO: Look up available subclasses of AttackScheme
-        raise NotImplementedError
+        # TODO: Validate scheme_name on construction of Attack?
+        # TODO: Do we allow assignment of AttackScheme object on this property?
+        return AttackScheme.get(self.scheme_name)
 
 
 class AttackTable(Attack, table = True):
