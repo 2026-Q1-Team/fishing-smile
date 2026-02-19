@@ -14,7 +14,7 @@ def test_update_db(session):
     target = TargetProfileTable(
         name='John Fishing',
         email='address@domain.com',
-        phone=0000000000,
+        phone='0000000000',
         company='ocean gate',
         job_title='pro fisher',
     )
