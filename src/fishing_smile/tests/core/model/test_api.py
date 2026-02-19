@@ -2,16 +2,27 @@ import pytest
 from sqlmodel import (
     select,
     delete,
-    Session
+    Session,
 )
-from pydantic import ValidationError
-from fishing_smile.database.engine import engine
+from fishing_smile.database.engine import get_session
 from fishing_smile.core.model import *
-import requests
+from fishing_smile.core.fyke_hub import app
+from fastapi.testclient import TestClient
 from sqlalchemy import desc
 import json
 
-def test_change_password_api(session):
+@pytest.fixture(name = 'client')
+def fyke_hub_client(session):
+    def get_session_override():
+        return session
+
+    app.dependency_overrides[get_session] = get_session_override
+
+    client = TestClient(app)
+    yield client
+    app.dependency_overrides.clear()
+
+def test_change_password_api(session, client):
     profile = TargetProfileTable(
         name = 'test_change_password_api',
         email = 'test_change_password_api@nowhere.westeros.org',
@@ -21,41 +32,26 @@ def test_change_password_api(session):
         scheme_name = 'empty',
         target = profile,
     )
-
-    result1 = session.exec(
-        select(AttackTable).where(AttackTable.external_id == attack.external_id)
-    ).first()
-    if result1 != None:
-        session.delete(result1)
-        session.commit()
-
     session.add(attack)
-    session.commit()
-    results = session.exec(select(EventTable)).all()
+    session.flush()
 
-    response = requests.get(
-            f"http://host.docker.internal:80/change_password",
-            params={
-                "k": attack.external_id,
-            }
-        )
-    session.close()
-    session = Session(engine)
+    parameter = {"k": attack.external_id}
+    response = client.get('http://host.docker.internal:80/change_password', params = parameter)
     response_json = response.json()
-    attack_id = json.loads(response_json)["result"]
-    print(json.loads(response_json)["detail"])
 
-    result2 = session.exec(
+    attack_id = json.loads(response_json)["result"]
+    result = session.exec(
         select(EventTable).where(EventTable.parent_attack_id == int(attack_id)).order_by(desc(EventTable.id))
     ).first()
 
     # test that it's the same for response and database. and it actually insert to database.
-    assert result2.kind == 'Email sent, Link clicked' == json.loads(response_json)["kind"]  
-    assert result2.parent_attack_id == json.loads(response_json)["result"]
-    assert result2.detail == json.loads(response_json)["detail"]
-    #assert json.loads(response_json)["time"] == str(result2.time) There is a milisecond issue. I will find a way around it to make it usable
+    assert result.kind == 'Email sent, Link clicked' == json.loads(response_json)["kind"]  
+    assert result.parent_attack_id == json.loads(response_json)["result"]
+    assert result.detail == json.loads(response_json)["detail"]
+    #assert json.loads(response_json)["time"] == str(result.time) There is a milisecond issue. I will find a way around it to make it usable
 
-def test_change_password_api2(session):
+
+def test_change_password_api2(session, client):
     profile = TargetProfileTable(
         name = 'test_change_password_api2',
         email = 'test_change_password_api2@nowhere.westeros.org',
@@ -65,34 +61,20 @@ def test_change_password_api2(session):
         scheme_name = 'empty',
         target = profile,
     )
-
-    result1 = session.exec(
-        select(AttackTable).where(AttackTable.external_id == attack.external_id)
-    ).first()
-    if result1 != None:
-        session.delete(result1)
-        session.commit()
-
     session.add(attack)
-    session.commit()
-    results = session.exec(select(EventTable)).all()
+    session.flush()
 
-    response = requests.post(
-            "http://host.docker.internal:80/api/change_password",
-            json={'k': attack.external_id, 'p': 'password'}
-        )
-    session.close()
-    session = Session(engine)
+    parameter_json = {'k': attack.external_id, 'p': 'password'}
+    response = client.post('http://host.docker.internal:80/api/change_password', json = parameter_json)
     response_json = response.json()
-    print(response_json)
-    attack_id = json.loads(response_json)["result"]
 
-    result2 = session.exec(
+    attack_id = json.loads(response_json)["result"]
+    result = session.exec(
         select(EventTable).where(EventTable.parent_attack_id == int(attack_id)).order_by(desc(EventTable.id))
     ).first()
 
     # test that it's the same for response and database. and it actually insert to database.
-    assert result2.kind == 'Email sent, Link clicked, Password inserted' == json.loads(response_json)["kind"] 
-    assert result2.parent_attack_id == json.loads(response_json)["result"]
-    assert result2.detail == json.loads(response_json)["detail"]
-    #assert json.loads(response_json)["time"] == str(result2.time) There is a milisecond issue. I will find a way around it to make it usable
+    assert result.kind == 'Email sent, Link clicked, Password inserted' == json.loads(response_json)["kind"] 
+    assert result.parent_attack_id == json.loads(response_json)["result"]
+    assert result.detail == json.loads(response_json)["detail"]
+    #assert json.loads(response_json)["time"] == str(result.time) There is a milisecond issue. I will find a way around it to make it usable
