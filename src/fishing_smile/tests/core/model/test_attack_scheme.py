@@ -31,3 +31,12 @@ def test_invalid_attack_scheme(scheme_file):
         with open(scheme_file) as f:
             doc = yaml.safe_load(f)
         scheme = AttackScheme.model_validate(doc)
+
+
+@pytest.mark.parametrize(
+    'scheme_name',
+    AttackScheme.list(),
+)
+def test_get_registered_schemes(scheme_name):
+    scheme = AttackScheme.get(scheme_name)
+    assert scheme.name == scheme_name
