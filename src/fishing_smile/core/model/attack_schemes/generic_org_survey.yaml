@@ -1,0 +1,28 @@
+name: generic_org_survey
+description: >-
+  Trick victim into providing private information (home address, national id, etc.)
+  by impersonating a organization-wide survey regarding mundane topics.
+components:
+  kind: email
+  name: bait_email
+  email_template:
+  template:
+    url: >-
+      {settings.cast.url}/index.html?k={attack.external_id}
+    # TODO -- make image for this and host it somewhere
+    image: >-
+      [add static link to image here]
+    subject: >-
+      {attack.target.company} Yearly Benefits Survey.
+    body: |
+      Dear {attack.target.name},
+      
+      We would like to gather feedback from all members of the {attack.target.job_title} team,
+      in order to improve the quality of benefits we provide to our employees.
+      
+      Please fill out the form below.
+      
+      <a href="{url}"><img src="{image}"></a>
+      
+      Thank you for taking your time to improve our organization.
+      - HR Team.

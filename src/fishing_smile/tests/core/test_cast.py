@@ -14,7 +14,7 @@ def test_update_db(session):
     target = TargetProfileTable(
         name='John Fishing',
         email='address@domain.com',
-        phone=0000000000,
+        phone='0000000000',
         company='ocean gate',
         job_title='pro fisher',
     )
@@ -25,5 +25,6 @@ def test_update_db(session):
     assert result_profile[0].id == result_attack[0].target_id
 
 
-def test_send_mail():
+def test_send_mail(session):
+    # TODO -- what should the send mail function return that can prove the mail was received not just sent?
     assert 1 == 1
