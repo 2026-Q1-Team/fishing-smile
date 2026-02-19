@@ -2,11 +2,11 @@ from sqlmodel import (
     select,
 )
 
-from fishing_smile.core.cast_net import update_database
+from fishing_smile.core.cast_net import register_new_attack
 from fishing_smile.core.model import *
 
 
-def test_update_db(session):
+def test_register_new_attack(session):
     scheme = AttackScheme(
         name='test_scheme_1',
         description='this is a test'
@@ -18,7 +18,7 @@ def test_update_db(session):
         company='ocean gate',
         job_title='pro fisher',
     )
-    out = update_database(target, scheme, session)
+    out = register_new_attack(target, scheme, session)
     result_profile = session.exec(select(TargetProfileTable).where(TargetProfileTable.name == target.name)).all()
     result_attack = session.exec(select(AttackTable).where(AttackTable.external_id == out.external_id)).all()
     assert len(result_attack) == 1

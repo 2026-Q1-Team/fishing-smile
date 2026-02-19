@@ -19,32 +19,44 @@ from fishing_smile.core.model import *
 settings = get_settings()
 
 
-def update_database(
+def register_target_profile(
+    target: TargetProfile,
+    session: Session,
+    *,
+    upsert: bool = True,
+) -> TargetProfileTable:
+    table = session.exec(
+        select(TargetProfileTable).where(TargetProfileTable.email == target.email)
+    ).first()
+    if table:
+        if upsert:
+            for key, value in target.model_dump(exclude = ['id', 'email']).items():
+                setattr(table, key, value)
+        else:
+            # TODO: Don't throw exception if there is no change
+            raise Exception('Another target with the same email address already exist')
+    else:
+        table = TargetProfileTable(**target.model_dump(exclude = ['id']))
+
+    session.add(table)
+    return table
+
+
+def register_new_attack(
     target: TargetProfile,
     scheme: AttackScheme,
     session: Session,
 ) -> AttackTable:
-    if not isinstance(target, TargetProfileTable):
-        target = TargetProfileTable(**target.model_dump())
-
     ex_id = secrets.token_hex(16)  # token_urlsafe returns inconsistent string length
-    insert_result = session.exec(
-        insert(TargetProfileTable).values(
-            **target.model_dump(exclude = ['id'])
-        ).on_duplicate_key_update(
-            **target.model_dump(exclude = ['id', 'email'])
-        )
-    )
-    new_attack = AttackTable(
+    target = register_target_profile(target, session)
+    session.flush()
+    attack = AttackTable(
         external_id = ex_id,
         scheme_name = scheme.name,
-        target_id = insert_result.inserted_primary_key[0],
+        target_id = target.id,
     )
-    session.add(new_attack)
-    session.commit()
-    # TODO: is this necessary?
-    session.refresh(new_attack)
-    return new_attack
+    session.add(attack)
+    return attack
 
 
 def send_email(
@@ -89,7 +101,8 @@ def cast_net(
 
     sent_count = 0
     for target in targets:
-        attack = update_database(target, scheme, session)
+        attack = register_new_attack(target, scheme, session)
+        session.commit()
         try:
             send_email(target, attack)
             sent_count += 1
