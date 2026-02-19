@@ -19,35 +19,11 @@ from fishing_smile.core.model import *
 settings = get_settings()
 
 
-# TODO -- change to modular email templates
-URL = f"{settings.cast.url}/index.html?k="
-SUBJECT = "Please change your Organization account password."
-TEXT_MESSAGE = """Dear {name_en},
-According to our new security policy, all Organization staff must change their password every 6 months.
-Follow these steps below to change your Organization account password.
-    Step 1. Go to <a href="{link}">this page</a>.
-    Step 2. Enter your old password.
-    Step 3. Enter your new password.
-    Step 4. Confirm your new password.
-    Step 5. Click "Submit".
-Please be reminded that all staff must change their password before 28 Jan 2026. If your password is already expired please contact ICT support team.
-*You will be automatically logged out of your account on all devices after this process.
-**If you are not logged out automatically, please manually log out to allow the process to complete.
-
-Thank you for taking your time to keep our organization secure.
-- ICT Team.
-"""
-
-
-# TODO -- redesign the flow of cast_net
-# Entire flow should probably be changed to avoid repeatedly connecting and disconnecting to the sql server.
-
-
 def update_database(
     target: TargetProfile,
-    scheme: str,
+    scheme: AttackScheme,
     session: Session,
-):
+) -> AttackTable:
     if not isinstance(target, TargetProfileTable):
         target = TargetProfileTable(**target.model_dump())
 
@@ -61,22 +37,42 @@ def update_database(
     )
     new_attack = AttackTable(
         external_id = ex_id,
-        scheme_name = scheme,
+        scheme_name = scheme.name,
         target_id = insert_result.inserted_primary_key[0],
     )
     session.add(new_attack)
     session.commit()
-    return ex_id
+    # TODO: is this necessary?
+    session.refresh(new_attack)
+    return new_attack
 
 
 def send_email(
     target: TargetProfile,
-    ex_id: int,
-):
-    with smtplib.SMTP("smtp.gmail.com", 587).starttls() as server:
+    attack: Attack,
+) -> None:
+    email_component = attack.scheme.components[0]
+    assert email_component.kind == 'email', \
+        'Assuming emailing is the first attack component right now. To be changed later.'
+    url = email_component.templates['url'].format(
+        # FIXME: This can potentially leak sensitive settings to email.
+        # Restrict what can be used as template variables.
+        settings = settings,
+        attack = attack,
+    )
+    subject = email_component.templates['subject'].format(
+        attack = attack,
+    )
+    body = email_component.templates['body'].format(
+        attack = attack,
+        # TODO: Current templating language don't allow cross-referencing automatically yet.
+        url = url,
+    )
+    with smtplib.SMTP("smtp.gmail.com", 587) as server:
+        server.starttls()
         with server.login(settings.cast.sender, settings.cast.password) as session:
-            msg = MIMEText(TEXT_MESSAGE.format(**target.model_dump(), link=URL + ex_id, ), 'html')
-            msg['Subject'] = SUBJECT
+            msg = MIMEText(body, 'html')
+            msg['Subject'] = subject
             msg['From'] = settings.cast.sender
             msg['To'] = target.email
             session.sendmail(settings.cast.sender, target.email, msg.as_string())
@@ -84,15 +80,18 @@ def send_email(
 
 def cast_net(
     targets: Iterable[TargetProfile],
-    # TODO: Might optionally allow AttackScheme object too
-    scheme: str,
+    # TODO: Allow AttackScheme object for simplicity?
+    scheme: AttackScheme | str,
     session: Session,
-):
+) -> None:
+    if isinstance(scheme, str):
+        scheme = AttackScheme.get(scheme)
+
     sent_count = 0
     for target in targets:
-        ex_id = update_database(target, scheme, session)
+        attack = update_database(target, scheme, session)
         try:
-            send_email(target, ex_id)
+            send_email(target, attack)
             sent_count += 1
         except:
             _logger.exception(f'Failed to send to {target.email}')
