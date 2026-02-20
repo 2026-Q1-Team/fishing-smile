@@ -3,7 +3,7 @@ description: >-
   Trick victim into providing private information (home address, national id, etc.)
   by impersonating a organization-wide survey regarding mundane topics.
 components:
-  kind: email
+- kind: email
   name: bait_email
   email_template:
   template:
@@ -26,3 +26,14 @@ components:
       
       Thank you for taking your time to improve our organization.
       - HR Team.
+  red_flags:
+
+- kind: html
+  name: form_page
+  url:
+  html_template:
+  red_flags:
+
+- kind: api
+  name:
+  url:
