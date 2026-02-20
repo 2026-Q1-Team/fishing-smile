@@ -36,7 +36,7 @@ def test_change_password_api(session, client):
     session.flush()
 
     parameter = {"k": attack.external_id}
-    response = client.get('http://host.docker.internal:80/change_password', params = parameter)
+    response = client.get('/change_password', params = parameter)
     response_json = response.json()
 
     attack_id = json.loads(response_json)["result"]
@@ -65,7 +65,7 @@ def test_change_password_api2(session, client):
     session.flush()
 
     parameter_json = {'k': attack.external_id, 'p': 'password'}
-    response = client.post('http://host.docker.internal:80/api/change_password', json = parameter_json)
+    response = client.post('/api/change_password', json = parameter_json)
     response_json = response.json()
 
     attack_id = json.loads(response_json)["result"]
