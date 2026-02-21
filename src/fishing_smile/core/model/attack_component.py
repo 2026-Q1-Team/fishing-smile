@@ -21,7 +21,7 @@ class AttackComponent(BaseModel):
 
 
 class EmailComponent(AttackComponent):
-    kind: Literal['email']
+    kind: Literal['email'] = 'email'
     email_template: str
 
 
@@ -32,11 +32,11 @@ class EmailComponent(AttackComponent):
 # NOTE: And if we have `handler` property,
 # both HTML and API can be handled the same way.
 class HTMLComponent(AttackComponent):
-    kind: Literal['html']
+    kind: Literal['html'] = 'html'
     url: str
     html_template: str
 
 
 class APIComponent(AttackComponent):
-    kind: Literal['api']
+    kind: Literal['api'] = 'api'
     url: str
