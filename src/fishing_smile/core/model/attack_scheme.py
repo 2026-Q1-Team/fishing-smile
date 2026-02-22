@@ -48,3 +48,17 @@ class AttackScheme(BaseModel):
         with open(SCHEMES_PATH / f'{scheme_name}.yaml') as f:
             doc = yaml.safe_load(f)
         return AttackScheme.model_validate(doc)
+
+    def find_component(
+        self,
+        name: str = None,
+        kind: str = None,
+    ) -> AttackComponent:
+        """Find the first component statisfying search condition"""
+        for component in self.components:
+            if (
+                (name is None or component.name == name)
+                and (kind is None or component.kind == kind)
+            ):
+                return component
+        raise ValueError(f'Search with {name=} and {kind=} does not match any AttackComponent')

@@ -1,4 +1,5 @@
 from pathlib import Path
+from contextlib import nullcontext
 
 import pytest
 import yaml
@@ -40,3 +41,68 @@ def test_invalid_attack_scheme(scheme_file):
 def test_get_registered_schemes(scheme_name):
     scheme = AttackScheme.get(scheme_name)
     assert scheme.name == scheme_name
+
+
+@pytest.mark.parametrize(
+    'components, search, expectation',
+    [
+        pytest.param(
+            [
+                EmailComponent(name = 'first', email_template = ''),
+                EmailComponent(name = 'second', email_template = ''),
+            ],
+            {},
+            nullcontext(
+                EmailComponent(name = 'first', email_template = ''),
+            ),
+            id = 'without search condition, get first component',
+        ),
+        pytest.param(
+            [
+                APIComponent(name = 'login', url = ''),
+                EmailComponent(name = 'first', email_template = ''),
+                EmailComponent(name = 'second', email_template = ''),
+            ],
+            {'name': 'second'},
+            nullcontext(
+                EmailComponent(name = 'second', email_template = ''),
+            ),
+            id = 'search only by name',
+        ),
+        pytest.param(
+            [
+                APIComponent(name = 'login', url = ''),
+                EmailComponent(name = 'first', email_template = ''),
+                EmailComponent(name = 'second', email_template = ''),
+            ],
+            {'name': 'third'},
+            pytest.raises(ValueError),
+            id = 'search not found',
+        ),
+        pytest.param(
+            [],
+            {},
+            pytest.raises(ValueError),
+            id = 'search not found on empty list',
+        ),
+        pytest.param(
+            [
+                APIComponent(name = 'login', url = ''),
+                HTMLComponent(name = 'login', url = '', html_template = ''),
+            ],
+            {'name': 'login', 'kind': 'html'},
+            nullcontext(
+                HTMLComponent(name = 'login', url = '', html_template = ''),
+            ),
+            id = 'search by both name and kind',
+        ),
+    ],
+)
+def test_find_component(components, search, expectation):
+    scheme = AttackScheme(
+        name = 'scheme_name',
+        components = components,
+    )
+    with expectation as expected:
+        result = scheme.find_component(**search)
+        assert result == expected
