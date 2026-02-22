@@ -1,6 +1,5 @@
 from typing import (
     Annotated,
-    List,
     Literal,
     Union,
 )
@@ -13,6 +12,7 @@ from pydantic import (
 )
 import yaml
 
+from .search_list import SearchList
 from .attack_component import (
     EmailComponent,
     HTMLComponent,
@@ -32,7 +32,7 @@ SCHEMES_PATH = Path(__file__).parent / 'attack_schemes'
 class AttackScheme(BaseModel):
     name: str = Field(description = 'short, snake_case, unique name')
     description: str | None = Field(None, description = 'longer, human readable explanation')
-    components: List[AnyAttackComponent] = []
+    components: SearchList[AnyAttackComponent] = []
 
     @staticmethod
     @cache
@@ -48,17 +48,3 @@ class AttackScheme(BaseModel):
         with open(SCHEMES_PATH / f'{scheme_name}.yaml') as f:
             doc = yaml.safe_load(f)
         return AttackScheme.model_validate(doc)
-
-    def find_component(
-        self,
-        name: str = None,
-        kind: str = None,
-    ) -> AttackComponent:
-        """Find the first component statisfying search condition"""
-        for component in self.components:
-            if (
-                (name is None or component.name == name)
-                and (kind is None or component.kind == kind)
-            ):
-                return component
-        raise ValueError(f'Search with {name=} and {kind=} does not match any AttackComponent')
