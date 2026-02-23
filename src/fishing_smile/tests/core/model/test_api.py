@@ -42,7 +42,6 @@ def test_change_password_api(session, client):
     result2 = session.exec(statement).first()
     session.refresh(profile)
     session.refresh(attack)
-    #breakpoint()
 
     # test database match
     assert result2.TargetProfileTable.name == 'test_change_password_api'
@@ -53,7 +52,6 @@ def test_change_password_api(session, client):
     assert result2.EventTable.kind == 'Email.sent, Link.clicked'
     assert result2.EventTable.detail == json.dumps({"ip": "testclient"})
 
-    #
     assert str(response) == '<Response [200 OK]>'
 
 
@@ -75,13 +73,12 @@ def test_change_password_api2(session, client):
 
     # test that password is not plain password
     statement = select(EventTable, AttackTable, TargetProfileTable).join(AttackTable, EventTable.parent_attack_id == AttackTable.id).join(TargetProfileTable, AttackTable.target_id == TargetProfileTable.id).order_by(EventTable.id.desc())
-    #breakpoint()
+
     result2 = session.exec(
         statement
     ).first()
     session.refresh(profile)
     session.refresh(attack)
-    #breakpoint()
 
     # test database match
     assert result2.TargetProfileTable.name == 'test_change_password_api2'
@@ -91,7 +88,3 @@ def test_change_password_api2(session, client):
     assert result2.AttackTable.target.id == result2.TargetProfileTable.id
     assert result2.EventTable.kind == "Email.sent, Link.clicked, Password.inserted"
     assert result2.EventTable.detail == '{"ip": "testclient", "password": "5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8"}'
-
-
-    #assert json.loads(response_json)["time"] == str(result.time) There is a milisecond issue. I will find a way around it to make it usable
-

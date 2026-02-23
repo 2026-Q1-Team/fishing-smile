@@ -60,14 +60,13 @@ async def change_password_ui(
 
     # check the attack scheme component
     scheme = AttackScheme.list()
-    print(scheme)
+
     if result.scheme_name in AttackScheme.list():
         return templates.TemplateResponse(
             request=request, name="index.html" , context={"k": k}
         )
     else:
         raise HTTPException(status_code=404)
-    # TODO: shouldn't this also serve next-stage HTML payload?
     # TODO: Log error when key does not match.
     # Currently it just does not insert because select is empty.
 
@@ -100,11 +99,9 @@ async def change_password_api(
     session.commit()
 
     scheme = AttackScheme.list()
-    print(scheme)
     for atkscheme in scheme:
         if atkscheme == result.scheme_name:
             sscheme = AttackScheme.get(result.scheme_name)
-            print(sscheme)
 
             html_content = f"""
             <html>
@@ -119,19 +116,9 @@ async def change_password_api(
             """
             return HTMLResponse(content=html_content, status_code=200)
 
-    #result.scheme_name in AttackScheme.list():
-       # return templates.TemplateResponse(
-     #       request=request,
-     #        name="Changepwd.html", 
-     #   )
-
-
-        #return RedirectResponse("/docs")
     else:
         raise HTTPException(status_code=404, detail="Scheme doesn't match")
 
     # This is the end of "change password" attack scheme.
-    # TODO: Serve HTML explaining the red-flags of this attack scheme
-    # to the user who fell through.
     # TODO: Log error when key does not match.
     # Currently it just does not insert because select is empty.
