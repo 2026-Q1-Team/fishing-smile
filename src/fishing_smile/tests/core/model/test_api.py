@@ -29,7 +29,7 @@ def test_change_password_api(session, client):
     )
     attack = AttackTable(
         external_id = 'test_change_password_apitest_cha',
-        scheme_name = 'empty',
+        scheme_name = 'generic_org_change_password',
         target = profile,
     )
     session.add(attack)
@@ -37,18 +37,24 @@ def test_change_password_api(session, client):
 
     parameter = {"k": attack.external_id}
     response = client.get('/change_password', params = parameter)
-    response_json = response.json()
-
-    attack_id = json.loads(response_json)["result"]
-    result = session.exec(
-        select(EventTable).where(EventTable.parent_attack_id == int(attack_id)).order_by(desc(EventTable.id))
-    ).first()
-
     # test that it's the same for response and database. and it actually insert to database.
-    assert result.kind == 'Email sent, Link clicked' == json.loads(response_json)["kind"]  
-    assert result.parent_attack_id == json.loads(response_json)["result"]
-    assert result.detail == json.loads(response_json)["detail"]
-    #assert json.loads(response_json)["time"] == str(result.time) There is a milisecond issue. I will find a way around it to make it usable
+    statement = select(EventTable, AttackTable, TargetProfileTable).join(AttackTable, EventTable.parent_attack_id == AttackTable.id).join(TargetProfileTable, AttackTable.target_id == TargetProfileTable.id).order_by(EventTable.id.desc())
+    result2 = session.exec(statement).first()
+    session.refresh(profile)
+    session.refresh(attack)
+    #breakpoint()
+
+    # test database match
+    assert result2.TargetProfileTable.name == 'test_change_password_api'
+    assert result2.TargetProfileTable.email == 'test_change_password_api@nowhere.westeros.org'
+    assert result2.AttackTable.external_id == 'test_change_password_apitest_cha'
+    assert result2.AttackTable.scheme_name == 'generic_org_change_password'
+    assert result2.AttackTable.target.id == result2.TargetProfileTable.id
+    assert result2.EventTable.kind == 'Email.sent, Link.clicked'
+    assert result2.EventTable.detail == json.dumps({"ip": "testclient"})
+
+    #
+    assert str(response) == '<Response [200 OK]>'
 
 
 def test_change_password_api2(session, client):
@@ -57,8 +63,8 @@ def test_change_password_api2(session, client):
         email = 'test_change_password_api2@nowhere.westeros.org',
     )
     attack = AttackTable(
-        external_id = 'test_change_password_api22222222',
-        scheme_name = 'empty',
+        external_id = 'test_change_password_api2test_ch',
+        scheme_name = 'generic_org_change_password',
         target = profile,
     )
     session.add(attack)
@@ -66,15 +72,26 @@ def test_change_password_api2(session, client):
 
     parameter_json = {'k': attack.external_id, 'p': 'password'}
     response = client.post('/api/change_password', json = parameter_json)
-    response_json = response.json()
 
-    attack_id = json.loads(response_json)["result"]
-    result = session.exec(
-        select(EventTable).where(EventTable.parent_attack_id == int(attack_id)).order_by(desc(EventTable.id))
+    # test that password is not plain password
+    statement = select(EventTable, AttackTable, TargetProfileTable).join(AttackTable, EventTable.parent_attack_id == AttackTable.id).join(TargetProfileTable, AttackTable.target_id == TargetProfileTable.id).order_by(EventTable.id.desc())
+    #breakpoint()
+    result2 = session.exec(
+        statement
     ).first()
+    session.refresh(profile)
+    session.refresh(attack)
+    #breakpoint()
 
-    # test that it's the same for response and database. and it actually insert to database.
-    assert result.kind == 'Email sent, Link clicked, Password inserted' == json.loads(response_json)["kind"] 
-    assert result.parent_attack_id == json.loads(response_json)["result"]
-    assert result.detail == json.loads(response_json)["detail"]
+    # test database match
+    assert result2.TargetProfileTable.name == 'test_change_password_api2'
+    assert result2.TargetProfileTable.email == 'test_change_password_api2@nowhere.westeros.org'
+    assert result2.AttackTable.external_id == 'test_change_password_api2test_ch'
+    assert result2.AttackTable.scheme_name == 'generic_org_change_password'
+    assert result2.AttackTable.target.id == result2.TargetProfileTable.id
+    assert result2.EventTable.kind == "Email.sent, Link.clicked, Password.inserted"
+    assert result2.EventTable.detail == '{"ip": "testclient", "password": "5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8"}'
+
+
     #assert json.loads(response_json)["time"] == str(result.time) There is a milisecond issue. I will find a way around it to make it usable
+
