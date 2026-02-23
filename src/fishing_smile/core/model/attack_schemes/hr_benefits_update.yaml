@@ -7,7 +7,7 @@ components:
   name: hr_email
   subject: "[NEW] Employee Benefits and Bonus Structure Update 2026"
   email_template: |
-    Dear { attack.target.name },
+    Dear {{ attack.target.name }},
 
     The Human Resources Department has updated the employee benefits package
     and bonus structure for the fiscal year 2026.
@@ -15,7 +15,7 @@ components:
     Please review the changes and confirm your benefits selection by clicking
     the link below:
 
-    { attack.scheme.components.find_first(kind = html).url }
+    {{ attack.scheme.components.first(kind = 'html').url }}
 
     Regards,
     HR Department
