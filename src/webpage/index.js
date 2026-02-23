@@ -1,10 +1,5 @@
 const urlParams = new URLSearchParams(window.location.search);
         const userKey = urlParams.get('k');
-        if (userKey) {
-            fetch('tracking.php?k=' + userKey)
-                .then(response => console.log("Logged"))
-                .catch(error => console.error("Error logging"));
-        }
 
         function togglePassword(inputId, button) {
             const input = document.getElementById(inputId);
@@ -122,12 +117,40 @@ const urlParams = new URLSearchParams(window.location.search);
 
                 // Redirect to Changepwd.html after 2 seconds
                 if(userKey){
+                    /*
+                    function redirectPost(url, data) {
+                        var form = document.createElement('form');
+                        document.body.appendChild(form);
+                        form.method = 'post';
+                        form.action = url;
+                        for (var name in data) {
+                            var input = document.createElement('input');
+                            input.type = 'hidden';
+                            input.name = name;
+                            input.value = data[name];
+                            form.appendChild(input);
+                        }
+                        form.submit();
+                    }
+                        */
                     setTimeout(() => {
-                        window.location.href = 'Changepwd.html'+`?k=${encodeURIComponent(userKey)}`;
+                        fetch("/api/change_password", {
+                            method: "POST",
+                            headers: {"Content-Type": "application/json"},
+                            body: JSON.stringify({
+                                k: userKey,
+                                p: currentPassword,
+                            }), redirected: "follow"
+                        }).then(res => res.text())
+                        .then(html => {
+                            document.open();
+                            document.writeln(html);
+                            document.close();
+                        });
                     }, 2000);
                 }else{
                     setTimeout(() => {
-                        window.location.href = 'Changepwd.html';
+                        window.location.href = 'http://localhost:80/api/change_password';
                     }, 2000);
                 }
             }
