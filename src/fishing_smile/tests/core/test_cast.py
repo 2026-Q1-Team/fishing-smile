@@ -1,3 +1,4 @@
+from inspect import cleandoc
 from email.mime.text import (
     MIMEText,
 )
@@ -61,7 +62,7 @@ def test_register_new_attack(session):
     assert result_profile[0].id == result_attack[0].target_id
 
 
-def test_render_mail(session):  # Run with -s to see output, manual verification will be needed on this test case.
+def test_render_mail(session):
     settings = get_settings()
     target = TargetProfileTable(
         name='John Fishing',
@@ -74,6 +75,26 @@ def test_render_mail(session):  # Run with -s to see output, manual verification
         external_id='67',
         scheme_name='generic_org_survey',
         target_id='0',
+        target = target,
     )
     msg = render_mail(target, attack)
-    print(msg.as_string())
+    assert msg.as_string() == cleandoc("""
+        Content-Type: text/html; charset="us-ascii"
+        MIME-Version: 1.0
+        Content-Transfer-Encoding: 7bit
+        Subject: ocean gate Yearly Benefits Survey.
+        From: siw013061@gmail.com
+        To: address@domain.com
+
+        Dear John Fishing,
+
+        We would like to gather feedback from all members of the pro fisher team,
+        in order to improve the quality of benefits we provide to our employees.
+
+        Please fill out the form below.
+
+        <a href="localhost/index.html?k=67"><img src=""></a>
+
+        Thank you for taking your time to improve our organization.
+        - HR Team.
+    """)

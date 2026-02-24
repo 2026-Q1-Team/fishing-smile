@@ -12,6 +12,7 @@ from sqlmodel import (
     Session,
     select,
 )
+from jinja2 import Template
 
 from fishing_smile.settings import get_settings
 from fishing_smile.core.model import *
@@ -65,23 +66,21 @@ def render_mail(
     attack: Attack,
 ) -> Message:
     email_component = attack.scheme.components.first(kind = 'email')
-    url = email_component.templates['url'].format(
+    rendered = {}
+    context = {
         # FIXME: This can potentially leak sensitive settings to email.
         # Restrict what can be used as template variables.
-        settings = settings,
-        attack = attack,
-    )
-    subject = email_component.templates['subject'].format(
-        attack = attack,
-    )
-    body = email_component.templates['body'].format(
-        attack = attack,
-        # TODO: Current templating language don't allow cross-referencing automatically yet.
-        url = url,
-    )
+        'settings': settings,
+        'attack': attack,
+        'templates': rendered,
+    }
+    # TODO: Current templating language don't allow cross-referencing automatically yet.
+    # We rely on rendering templates in the **correct** order and adding them to context
+    for template_name in ['url', 'subject', 'body']:
+        rendered[template_name] = Template(email_component.templates[template_name]).render(**context)
 
-    msg = MIMEText(body, 'html')
-    msg['Subject'] = subject
+    msg = MIMEText(rendered['body'], 'html')
+    msg['Subject'] = rendered['subject']
     msg['From'] = settings.cast.sender
     msg['To'] = target.email
     return msg
