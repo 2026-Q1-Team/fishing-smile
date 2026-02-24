@@ -9,6 +9,7 @@ from sqlmodel import (
 from fishing_smile.core.cast_net import (
     register_target_profile,
     register_new_attack,
+    render_mail,
 )
 from fishing_smile.core.model import *
 from fishing_smile.settings import (
@@ -74,21 +75,5 @@ def test_render_mail(session):  # Run with -s to see output, manual verification
         scheme_name='generic_org_survey',
         target_id='0',
     )
-    email_component = attack.scheme.components.first(kind = 'email')
-    url = email_component.templates['url'].format(
-        settings=settings,
-        attack=attack,
-    )
-    subject = email_component.templates['subject'].format(
-        attack=attack,
-    )
-    body = email_component.templates['body'].format(
-        attack=attack,
-        # TODO: Current templating language don't allow cross-referencing automatically yet.
-        url=url,
-    )
-    msg = MIMEText(body, 'html')
-    msg['Subject'] = subject
-    msg['From'] = settings.cast.sender
-    msg['To'] = target.email
+    msg = render_mail(target, attack)
     print(msg.as_string())

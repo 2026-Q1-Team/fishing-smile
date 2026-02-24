@@ -3,6 +3,7 @@ _logger = logging.getLogger(__name__)
 from multiprocessing.pool import job_counter
 import secrets
 import smtplib
+from email.message import Message
 from email.mime.text import MIMEText
 from collections.abc import Iterable
 
@@ -59,10 +60,10 @@ def register_new_attack(
     return attack
 
 
-def send_email(
+def render_mail(
     target: TargetProfile,
     attack: Attack,
-) -> None:
+) -> Message:
     email_component = attack.scheme.components.first(kind = 'email')
     url = email_component.templates['url'].format(
         # FIXME: This can potentially leak sensitive settings to email.
@@ -78,13 +79,24 @@ def send_email(
         # TODO: Current templating language don't allow cross-referencing automatically yet.
         url = url,
     )
+
+    msg = MIMEText(body, 'html')
+    msg['Subject'] = subject
+    msg['From'] = settings.cast.sender
+    msg['To'] = target.email
+    return msg
+
+
+def send_email(
+    target: TargetProfile,
+    attack: Attack,
+) -> None:
+    msg = render_mail(target, attack)
     with smtplib.SMTP("smtp.gmail.com", 587) as server:
         server.starttls()
         with server.login(settings.cast.sender, settings.cast.password) as session:
-            msg = MIMEText(body, 'html')
-            msg['Subject'] = subject
-            msg['From'] = settings.cast.sender
-            msg['To'] = target.email
+            # TODO: Is `SMTP.send_message` a more appropriate choice?
+            # https://docs.python.org/3/library/smtplib.html#smtplib.SMTP.send_message
             session.sendmail(settings.cast.sender, target.email, msg.as_string())
 
 
