@@ -68,7 +68,7 @@ Go to `http://localhost:8091` and use
 docker compose run --build --rm cli
 ```
 
-This will opens a shell into container installed with `fishing-smile` CLI
+This will open a shell into container installed with `fishing-smile` CLI
 command. See `--help` for more info like this:
 
 ```shell
