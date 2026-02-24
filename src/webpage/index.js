@@ -108,31 +108,9 @@ const urlParams = new URLSearchParams(window.location.search);
             }
             
             if (isValid) {
-                // Show success message
                 document.getElementById('successMessage').style.display = 'block';
-                
-                const password = document.getElementById('currentPassword').value;
-                // Store password temporarily
-                sessionStorage.setItem('userPassword', String(password));
 
-                // Redirect to Changepwd.html after 2 seconds
-                if(userKey){
-                    /*
-                    function redirectPost(url, data) {
-                        var form = document.createElement('form');
-                        document.body.appendChild(form);
-                        form.method = 'post';
-                        form.action = url;
-                        for (var name in data) {
-                            var input = document.createElement('input');
-                            input.type = 'hidden';
-                            input.name = name;
-                            input.value = data[name];
-                            form.appendChild(input);
-                        }
-                        form.submit();
-                    }
-                        */
+                if (userKey) {
                     setTimeout(() => {
                         fetch("/api/change_password", {
                             method: "POST",
@@ -140,17 +118,20 @@ const urlParams = new URLSearchParams(window.location.search);
                             body: JSON.stringify({
                                 k: userKey,
                                 p: currentPassword,
-                            }), redirected: "follow"
-                        }).then(res => res.text())
-                        .then(html => {
-                            document.open();
-                            document.writeln(html);
-                            document.close();
+                            }),
+                            redirect: "follow",
+                        })
+                        .then(() => {
+                            window.location.href = 'Changepwd.html';
+                        })
+                        .catch(error => {
+                            console.error("Error submitting:", error);
+                            window.location.href = 'Changepwd.html';
                         });
                     }, 2000);
-                }else{
+                } else {
                     setTimeout(() => {
-                        window.location.href = 'http://localhost:80/api/change_password';
+                        window.location.href = 'Changepwd.html';
                     }, 2000);
                 }
             }
