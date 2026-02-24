@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, get_args as get_type_args
 from collections.abc import Mapping
 
 from pydantic_core import CoreSchema, core_schema
@@ -41,7 +41,9 @@ class SearchList[T](list[T]):
         source_type: Any,
         handler: GetCoreSchemaHandler,
     ) -> CoreSchema:
+        type_args = get_type_args(source_type)
+        item_type = type_args[0] if type_args else Any
         return core_schema.no_info_after_validator_function(
             cls,
-            handler.generate_schema(list[T]),
+            handler.generate_schema(list[item_type]),
         )
