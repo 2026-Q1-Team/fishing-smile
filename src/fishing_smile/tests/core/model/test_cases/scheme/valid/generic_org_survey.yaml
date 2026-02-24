@@ -25,14 +25,12 @@ components:
         
         Thank you for taking your time to improve our organization.
         - HR Team.
-    red_flags:
 
   - kind: html
     name: form_page
     url:
     html_template:
-    red_flags:
 
   - kind: api
-    name:
+    name: submit
     url:

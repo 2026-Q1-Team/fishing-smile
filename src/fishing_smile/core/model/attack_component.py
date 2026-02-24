@@ -18,11 +18,15 @@ class AttackComponent(BaseModel):
     kind: str
     name: str
     red_flags: List[RedFlag] = []
+    templates: dict[str, str] = {}
 
 
 class EmailComponent(AttackComponent):
     kind: Literal['email'] = 'email'
-    email_template: str
+    foo: str = 'bar'
+    # TODO: Required templates:
+    # - subject
+    # - body
 
 
 # NOTE: Maybe we should have a `handler` property that
@@ -33,10 +37,12 @@ class EmailComponent(AttackComponent):
 # both HTML and API can be handled the same way.
 class HTMLComponent(AttackComponent):
     kind: Literal['html'] = 'html'
-    url: str
-    html_template: str
+    # TODO: Required templates:
+    # - url
+    # - html
 
 
 class APIComponent(AttackComponent):
     kind: Literal['api'] = 'api'
-    url: str
+    # TODO: Required templates:
+    # - url
