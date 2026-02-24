@@ -63,9 +63,7 @@ def send_email(
     target: TargetProfile,
     attack: Attack,
 ) -> None:
-    email_component = attack.scheme.components[0]
-    assert email_component.kind == 'email', \
-        'Assuming emailing is the first attack component right now. To be changed later.'
+    email_component = attack.scheme.components.first(kind = 'email')
     url = email_component.templates['url'].format(
         # FIXME: This can potentially leak sensitive settings to email.
         # Restrict what can be used as template variables.

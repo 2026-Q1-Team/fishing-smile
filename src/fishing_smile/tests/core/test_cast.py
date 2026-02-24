@@ -74,9 +74,7 @@ def test_render_mail(session):  # Run with -s to see output, manual verification
         scheme_name='generic_org_survey',
         target_id='0',
     )
-    email_component = attack.scheme.components[0]
-    assert email_component.kind == 'email', \
-        'Assuming emailing is the first attack component right now. To be changed later.'
+    email_component = attack.scheme.components.first(kind = 'email')
     url = email_component.templates['url'].format(
         settings=settings,
         attack=attack,
