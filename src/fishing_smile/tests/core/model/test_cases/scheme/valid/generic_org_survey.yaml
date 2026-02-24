@@ -1,0 +1,38 @@
+name: generic_org_survey
+description: >-
+  Trick victim into providing private information (home address, national id, etc.)
+  by impersonating a organization-wide survey regarding mundane topics.
+components:
+  - kind: email
+    name: fake_survey_email
+    email_template:
+      url: >-
+        {{ cast_url }}/index.html?k={{ external_id }}
+      # TODO -- make image for this and host it somewhere
+      image: >-
+        {{ image_url }}
+      subject: >-
+        {{ company }} Yearly Benefits Survey.
+      body: |
+        Dear {{ name }},
+        
+        We would like to gather feedback from all members of the {{ job_title }} team,
+        in order to improve the quality of benefits we provide to our employees.
+        
+        Please fill out the form below.
+        
+        <a href="{{ url }}"><img src="{{ image }}"></a>
+        
+        Thank you for taking your time to improve our organization.
+        - HR Team.
+    red_flags:
+
+  - kind: html
+    name: form_page
+    url:
+    html_template:
+    red_flags:
+
+  - kind: api
+    name:
+    url:

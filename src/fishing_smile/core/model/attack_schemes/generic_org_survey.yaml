@@ -4,25 +4,24 @@ description: >-
   by impersonating a organization-wide survey regarding mundane topics.
 components:
 - kind: email
-  name: bait_email
+  name: fake_survey_email
   email_template:
-  template:
     url: >-
-      {settings.cast.url}/index.html?k={attack.external_id}
+      {{ cast_url }}/index.html?k={{ external_id }}
     # TODO -- make image for this and host it somewhere
     image: >-
-      [add static link to image here]
+      {{ image_url }}
     subject: >-
-      {attack.target.company} Yearly Benefits Survey.
+      {{ company }} Yearly Benefits Survey.
     body: |
-      Dear {attack.target.name},
+      Dear {{ name }},
       
-      We would like to gather feedback from all members of the {attack.target.job_title} team,
+      We would like to gather feedback from all members of the {{ job_title }} team,
       in order to improve the quality of benefits we provide to our employees.
       
       Please fill out the form below.
       
-      <a href="{url}"><img src="{image}"></a>
+      <a href="{{ url }}"><img src="{{ image }}"></a>
       
       Thank you for taking your time to improve our organization.
       - HR Team.
