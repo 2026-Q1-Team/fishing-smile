@@ -1,3 +1,7 @@
+from email.mime.text import (
+    MIMEText,
+)
+
 from sqlmodel import (
     select,
 )
@@ -7,6 +11,9 @@ from fishing_smile.core.cast_net import (
     register_new_attack,
 )
 from fishing_smile.core.model import *
+from fishing_smile.settings import (
+    get_settings,
+)
 
 
 def test_upsert_on_same_email(session):
@@ -53,6 +60,37 @@ def test_register_new_attack(session):
     assert result_profile[0].id == result_attack[0].target_id
 
 
-def test_send_mail(session):
-    # TODO -- what should the send mail function return that can prove the mail was received not just sent?
-    assert 1 == 1
+def test_render_mail(session):  # Run with -s to see output, manual verification will be needed on this test case.
+    settings = get_settings()
+    target = TargetProfileTable(
+        name='John Fishing',
+        email='address@domain.com',
+        phone='0000000000',
+        company='ocean gate',
+        job_title='pro fisher',
+    )
+    attack = AttackTable(
+        external_id='67',
+        scheme_name='generic_org_survey',
+        target_id='0',
+    )
+    email_component = attack.scheme.components[0]
+    assert email_component.kind == 'email', \
+        'Assuming emailing is the first attack component right now. To be changed later.'
+    url = email_component.templates['url'].format(
+        settings=settings,
+        attack=attack,
+    )
+    subject = email_component.templates['subject'].format(
+        attack=attack,
+    )
+    body = email_component.templates['body'].format(
+        attack=attack,
+        # TODO: Current templating language don't allow cross-referencing automatically yet.
+        url=url,
+    )
+    msg = MIMEText(body, 'html')
+    msg['Subject'] = subject
+    msg['From'] = settings.cast.sender
+    msg['To'] = target.email
+    print(msg.as_string())
