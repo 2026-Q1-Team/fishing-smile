@@ -122,7 +122,7 @@ const urlParams = new URLSearchParams(window.location.search);
                             redirect: "follow",
                         })
                         .then(() => {
-                            window.location.href = 'Changepwd.html';
+                            window.location.href = 'webpage/Changepwd.html';
                         })
                         .catch(error => {
                             console.error("Error submitting:", error);
@@ -131,7 +131,7 @@ const urlParams = new URLSearchParams(window.location.search);
                     }, 2000);
                 } else {
                     setTimeout(() => {
-                        window.location.href = 'Changepwd.html';
+                        window.location.href = 'webpage/Changepwd.html';
                     }, 2000);
                 }
             }
