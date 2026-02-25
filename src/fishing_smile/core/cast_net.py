@@ -84,7 +84,7 @@ def render_mail(
     msg['To'] = target.email
     # TODO -- make and run a test on this
     msg.set_content(rendered['body'])  # this should be email body in plaintext only, can be preformatted, no images.
-    msg.add_alternative(rendered['html'])  # this should be email body in html only, can have image.
+    # msg.add_alternative(rendered['html'])  # this should be email body in html only, can have image.
     return msg
 
 
