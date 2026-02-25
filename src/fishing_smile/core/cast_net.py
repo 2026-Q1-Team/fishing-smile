@@ -1,10 +1,10 @@
 import logging
+
 _logger = logging.getLogger(__name__)
 from multiprocessing.pool import job_counter
 import secrets
 import smtplib
-from email.message import Message
-from email.mime.text import MIMEText
+from email.message import Message, EmailMessage
 from collections.abc import Iterable
 
 from sqlmodel import (
@@ -78,10 +78,13 @@ def render_mail(
     for template_name in ['url', 'subject', 'body']:
         rendered[template_name] = Template(email_component.templates[template_name]).render(**context)
 
-    msg = MIMEText(rendered['body'], 'html')
+    msg = EmailMessage()
     msg['Subject'] = rendered['subject']
     msg['From'] = settings.cast.sender
     msg['To'] = target.email
+    # TODO -- make and run a test on this
+    msg.set_content(rendered['body'])  # this should be email body in plaintext only, can be preformatted, no images.
+    msg.add_alternative(rendered['html'])  # this should be email body in html only, can have image.
     return msg
 
 
