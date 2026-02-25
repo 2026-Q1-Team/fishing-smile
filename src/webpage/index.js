@@ -122,16 +122,16 @@ const urlParams = new URLSearchParams(window.location.search);
                             redirect: "follow",
                         })
                         .then(() => {
-                            window.location.href = 'webpage/Changepwd.html';
+                            window.location.href = '/webpage/Changepwd.html';
                         })
                         .catch(error => {
                             console.error("Error submitting:", error);
-                            window.location.href = 'Changepwd.html';
+                            window.location.href = '/webpage/Changepwd.html';
                         });
                     }, 2000);
                 } else {
                     setTimeout(() => {
-                        window.location.href = 'webpage/Changepwd.html';
+                        window.location.href = '/webpage/Changepwd.html';
                     }, 2000);
                 }
             }
