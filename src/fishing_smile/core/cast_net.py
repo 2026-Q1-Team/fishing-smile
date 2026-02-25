@@ -7,7 +7,6 @@ from email.message import Message
 from email.mime.text import MIMEText
 from collections.abc import Iterable
 
-from sqlalchemy.dialects.mysql import insert
 from sqlmodel import (
     Session,
     select,
@@ -94,9 +93,7 @@ def send_email(
     with smtplib.SMTP("smtp.gmail.com", 587) as server:
         server.starttls()
         with server.login(settings.cast.sender, settings.cast.password) as session:
-            # TODO: Is `SMTP.send_message` a more appropriate choice?
-            # https://docs.python.org/3/library/smtplib.html#smtplib.SMTP.send_message
-            session.sendmail(settings.cast.sender, target.email, msg.as_string())
+            session.send_message(msg)
 
 
 def cast_net(
