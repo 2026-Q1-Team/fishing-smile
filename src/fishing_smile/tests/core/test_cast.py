@@ -1,7 +1,4 @@
 from inspect import cleandoc
-from email.mime.text import (
-    MIMEText,
-)
 
 from sqlmodel import (
     select,
@@ -73,28 +70,33 @@ def test_render_mail(session):
     )
     attack = AttackTable(
         external_id='67',
-        scheme_name='generic_org_survey',
+        scheme_name='generic_org_change_password',
         target_id='0',
         target = target,
     )
     msg = render_mail(target, attack)
     assert msg.as_string() == cleandoc("""
-        Content-Type: text/html; charset="us-ascii"
-        MIME-Version: 1.0
-        Content-Transfer-Encoding: 7bit
-        Subject: ocean gate Yearly Benefits Survey.
+        Subject: Please change your ocean gate account password.
         From: siw013061@gmail.com
         To: address@domain.com
+        Content-Type: text/plain; charset="utf-8"
+        Content-Transfer-Encoding: 7bit
+        MIME-Version: 1.0
 
         Dear John Fishing,
 
-        We would like to gather feedback from all members of the pro fisher team,
-        in order to improve the quality of benefits we provide to our employees.
+        According to our new security policy, all ocean gate staff must change their password every 6 months.
+        Follow these steps below to change your ocean gate account password.
+            Step 1. Go to <a href="localhost/index.html?k=67">this page</a>.
+            Step 2. Enter your old password.
+            Step 3. Enter your new password.
+            Step 4. Confirm your new password.
+            Step 5. Click "Submit".
+      
+        Please be reminded that all staff must change their password before 28 Jan 2026. If your password is already expired please contact ICT support team.
+        *You will be automatically logged out of your account on all devices after this process.
+        **If you are not logged out automatically, please manually log out to allow the process to complete.
 
-        Please fill out the form below.
-
-        <a href="localhost/index.html?k=67"><img src=""></a>
-
-        Thank you for taking your time to improve our organization.
-        - HR Team.
+        Thank you for taking your time to keep our organization secure.
+        - ICT Team.
     """)
