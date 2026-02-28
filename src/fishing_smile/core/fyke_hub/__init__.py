@@ -49,10 +49,12 @@ async def change_password_ui(
         select(AttackTable)
             .where(AttackTable.external_id == k)
     ).first()
+    # TODO: is this really going to return None or []
     if result == None:
         raise HTTPException(status_code=404)
 
     time = datetime.now()
+    # TODO: don't need to dump json here. keep it structured
     detail_json = json.dumps({'ip': client_host})
     event = EventTable(parent_attack_id=result.id, kind="Email.sent, Link.clicked", time=time, detail=detail_json)
     session.add(event)
