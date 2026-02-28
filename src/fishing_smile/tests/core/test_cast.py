@@ -75,7 +75,8 @@ def test_render_mail(session):
         target = target,
     )
     msg = render_mail(target, attack)
-    assert msg.as_string() == cleandoc("""
+    result = msg.as_string()
+    expected = cleandoc("""
         Subject: Please change your ocean gate account password.
         From: siw013061@gmail.com
         To: address@domain.com
@@ -99,4 +100,5 @@ def test_render_mail(session):
 
         Thank you for taking your time to keep our organization secure.
         - ICT Team.
-    """)
+    """) + '\n'
+    assert result == expected
