@@ -70,15 +70,14 @@ def test_change_password_api(session, client):
         "EventTable.kind between database and test doesn't match"
     assert result2.EventTable.detail == json.dumps({"ip": "testclient"}),\
         "EventTable.detail between database and test doesn't match"
-    assert str(response) == '<Response [200 OK]>',\
-        "HTTP response between database and test doesn't match"
+    assert response.status_code == 200
 
     parameter = {"k": attacks[1].external_id}
     response = client.get('/change_password', params = parameter)
 
     # test condition when attack scheme is invalid
-    assert str(response) == '<Response [404 Not Found]>',\
-        "test case for invalid attack scheme doesn't give HTTP respionse <Response [404 Not Found]>"
+    assert response.status_code == 404,\
+        "test case for invalid attack scheme doesn't give HTTP response <Response [404 Not Found]>"
 
 
 def test_change_password_api2(session, client):
@@ -133,5 +132,5 @@ def test_change_password_api2(session, client):
     response = client.post('/api/change_password', json = parameter_json2)
 
     # test condition when attack scheme is invalid
-    assert str(response) == '<Response [404 Not Found]>',\
+    assert response.status_code == 404,\
         "test case for invalid attack scheme doesn't give HTTP respionse <Response [404 Not Found]>"
