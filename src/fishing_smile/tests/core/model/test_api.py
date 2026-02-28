@@ -72,7 +72,7 @@ def test_change_password_api(session, client):
         "AttackTable.target.id between database and test doesn't match"
     assert result2.EventTable.kind == 'Email.sent, Link.clicked',\
         "EventTable.kind between database and test doesn't match"
-    assert result2.EventTable.detail == json.dumps({"ip": "testclient", "attack_scheme": "generic_org_change_password"}),\
+    assert result2.EventTable.detail == json.dumps({"ip": "testclient"}),\
         "EventTable.detail between database and test doesn't match"
     assert str(response) == '<Response [200 OK]>',\
         "HTTP response between database and test doesn't match"
@@ -84,7 +84,6 @@ def test_change_password_api(session, client):
     # test condition when attack scheme is invalid
     assert str(response) == '<Response [404 Not Found]>',\
         "test case for invalid attack scheme doesn't give HTTP respionse <Response [404 Not Found]>"
-
 
 
 def test_change_password_api2(session, client):
@@ -135,7 +134,7 @@ def test_change_password_api2(session, client):
         "AttackTable.target.id between database and test doesn't match"
     assert result2.EventTable.kind == "Email.sent, Link.clicked, Password.inserted",\
         "EventTable.kind between database and test doesn't match"
-    assert result2.EventTable.detail == '{"ip": "testclient", "password": "5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8", "attack_scheme": "generic_org_change_password"}',\
+    assert result2.EventTable.detail == '{"ip": "testclient", "password": "5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8"}',\
         "EventTable.detail between database and test doesn't match"
 
     session.refresh(attack2)
