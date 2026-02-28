@@ -46,7 +46,7 @@ def cast_net(targets_csv_file, scheme_name):
     """Send out simulated phishing emails to targets"""
     targets = pd.read_csv(
         targets_csv_file,
-        usecols = (lambda col: col in ['name', 'email', 'phone', 'company', 'job_title']),
+        usecols = (lambda col: col in TargetProfile.model_fields and col != 'id'),
     )
     targets = [
         TargetProfile(**target._asdict())
