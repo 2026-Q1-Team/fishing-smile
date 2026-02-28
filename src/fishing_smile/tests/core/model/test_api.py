@@ -11,6 +11,7 @@ from fastapi.testclient import TestClient
 from sqlalchemy import desc
 import json
 
+
 @pytest.fixture(name = 'client')
 def fyke_hub_client(session):
     def get_session_override():
@@ -21,6 +22,7 @@ def fyke_hub_client(session):
     client = TestClient(app)
     yield client
     app.dependency_overrides.clear()
+
 
 def test_change_password_api(session, client):
     profile = TargetProfileTable(
@@ -48,8 +50,12 @@ def test_change_password_api(session, client):
 
     parameter = {"k": attack.external_id}
     response = client.get('/change_password', params = parameter)
-    statement = select(EventTable, AttackTable, TargetProfileTable).join(AttackTable, EventTable.parent_attack_id == AttackTable.id).join(TargetProfileTable, AttackTable.target_id == TargetProfileTable.id).order_by(EventTable.id.desc())
-    result2 = session.exec(statement).first()
+    result2 = session.exec(
+        select(EventTable, AttackTable, TargetProfileTable)
+            .join(AttackTable, EventTable.parent_attack_id == AttackTable.id)
+            .join(TargetProfileTable, AttackTable.target_id == TargetProfileTable.id)
+            .order_by(EventTable.id.desc())
+    ).first()
     session.refresh(profile)
     session.refresh(attack)
 
@@ -107,10 +113,11 @@ def test_change_password_api2(session, client):
     parameter_json = {'k': attack.external_id, 'p': 'password'}
     response = client.post('/api/change_password', json = parameter_json)
 
-    statement = select(EventTable, AttackTable, TargetProfileTable).join(AttackTable, EventTable.parent_attack_id == AttackTable.id).join(TargetProfileTable, AttackTable.target_id == TargetProfileTable.id).order_by(EventTable.id.desc())
-
     result2 = session.exec(
-        statement
+        select(EventTable, AttackTable, TargetProfileTable)
+            .join(AttackTable, EventTable.parent_attack_id == AttackTable.id)
+            .join(TargetProfileTable, AttackTable.target_id == TargetProfileTable.id)
+            .order_by(EventTable.id.desc())
     ).first()
     session.refresh(profile)
     session.refresh(attack)
