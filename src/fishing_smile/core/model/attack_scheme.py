@@ -49,5 +49,5 @@ class AttackScheme(BaseModel):
             with open(SCHEMES_PATH / f'{scheme_name}.yaml') as f:
                 doc = yaml.safe_load(f)
         except FileNotFoundError:
-            raise ValueError(f'{scheme_name} is not a valid attack scheme name')
+            raise ValueError(f'{scheme_name} is not a valid attack scheme name') from None
         return AttackScheme.model_validate(doc)

@@ -61,14 +61,10 @@ async def change_password_ui(
     session.add(event)
     session.commit()
 
-    if attack.scheme_name in AttackScheme.list():
-        return templates.TemplateResponse(
-            request=request, name="index.html" , context={"k": k}
-        )
-    else:
-        raise HTTPException(status_code=404)
-    # TODO: Log error when key does not match.
-    # Currently it just does not insert because select is empty.
+    # TODO: Load HTML template from the scheme
+    return templates.TemplateResponse(
+        request = request, name = "index.html", context = {"k": k}
+    )
 
 
 class ChangePasswordApiBody(BaseModel):
@@ -104,26 +100,16 @@ async def change_password_api(
     session.add(event)
     session.commit()
 
-    for atkscheme in AttackScheme.list():
-        if atkscheme == attack.scheme_name:
-            sscheme = AttackScheme.get(attack.scheme_name)
-
-            html_content = f"""
-            <html>
-                <head>
-                    <title>Phishing attack scheme</title>
-                </head>
-                <body>
-                    <h1>{sscheme.name}</h1>
-                    <p>{sscheme.description}</p><br>
-                </body>
-            </html>
-            """
-            return HTMLResponse(content=html_content, status_code=200)
-
-    else:
-        raise HTTPException(status_code=404, detail="Scheme doesn't match")
-
-    # This is the end of "change password" attack scheme.
-    # TODO: Log error when key does not match.
-    # Currently it just does not insert because select is empty.
+    # TODO: Load HTML template from the scheme
+    html_content = f"""
+    <html>
+        <head>
+            <title>Phishing attack scheme</title>
+        </head>
+        <body>
+            <h1>{attack.scheme.name}</h1>
+            <p>{attack.scheme.description}</p><br>
+        </body>
+    </html>
+    """
+    return HTMLResponse(content = html_content)

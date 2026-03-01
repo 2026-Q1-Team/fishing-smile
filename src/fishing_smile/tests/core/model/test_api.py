@@ -36,7 +36,7 @@ def test_change_password_api(session, client):
         ),
         AttackTable(
             external_id = 'test_change_password_api_John_Fi',
-            scheme_name = 'scheme12345',
+            scheme_name = 'generic_org_change_password',
             target = TargetProfileTable(
                 name = 'John Fishing',
                 email = 'John.Fishing@nowhere.westeros.org',
@@ -74,10 +74,7 @@ def test_change_password_api(session, client):
 
     parameter = {"k": attacks[1].external_id}
     response = client.get('/change_password', params = parameter)
-
-    # test condition when attack scheme is invalid
-    assert response.status_code == 404,\
-        "test case for invalid attack scheme doesn't give HTTP response <Response [404 Not Found]>"
+    assert response.status_code == 200
 
 
 def test_change_password_api2(session, client):
@@ -131,8 +128,5 @@ def test_change_password_api2(session, client):
     }, "EventTable.detail between database and test doesn't match"
 
     parameter_json2 = {'k': attacks[1].external_id, 'p': 'password'}
-    response = client.post('/api/change_password', json = parameter_json2)
-
-    # test condition when attack scheme is invalid
-    assert response.status_code == 404,\
-        "test case for invalid attack scheme doesn't give HTTP respionse <Response [404 Not Found]>"
+    with pytest.raises(ValueError):
+        response = client.post('/api/change_password', json = parameter_json2)
