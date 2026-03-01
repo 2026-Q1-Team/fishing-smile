@@ -1,3 +1,7 @@
+from datetime import datetime
+from pathlib import Path
+import hashlib
+
 from fastapi import FastAPI, Request, Depends, HTTPException
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
@@ -8,18 +12,12 @@ from pydantic import (
     BaseModel,
     Field,
 )
-import pymysql
+from sqlmodel import Field, Session, select
 
 from fishing_smile.settings import get_settings
-from sqlmodel import Field, Session, select
 from fishing_smile.database.engine import get_session
 from fishing_smile.database.sqlmodel import SQLModel
 from fishing_smile.core.model import *
-from datetime import datetime
-from pathlib import Path
-import hashlib
-import json
-import os
 
 settings = get_settings()
 app = FastAPI(title = 'Fyke Hub: Handling interactions from anti-phish training participants')
