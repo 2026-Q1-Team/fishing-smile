@@ -41,27 +41,27 @@ async def change_password_ui(
     request: Request,
     session: Session = Depends(get_session)
 ):
-    result = session.exec(
+    attack = session.exec(
         select(AttackTable)
             .where(AttackTable.external_id == k)
     ).first()
-    if result == None:
-        raise HTTPException(status_code=404)
+    if attack == None:
+        raise HTTPException(
+            status_code = 404,
+            # NOTE: Report error using the neutral term `session` instead of `attack`
+            # because at this point we are still trying to deceive target.
+            detail = 'Key does not match existing session',
+        )
 
-    time = datetime.now()
     event = EventTable(
-        parent_attack_id = result.id,
+        parent_attack_id = attack.id,
         kind = "Email.sent, Link.clicked",
-        time = time,
         detail = {'ip': request.client.host},
     )
     session.add(event)
     session.commit()
 
-    # check the attack scheme component
-    scheme = AttackScheme.list()
-
-    if result.scheme_name in AttackScheme.list():
+    if attack.scheme_name in AttackScheme.list():
         return templates.TemplateResponse(
             request=request, name="index.html" , context={"k": k}
         )
@@ -82,19 +82,20 @@ async def change_password_api(
     request: Request,
     session: Session = Depends(get_session),
 ):
-    result = session.exec(
+    attack = session.exec(
         select(AttackTable)
-            .where(AttackTable.external_id == str(body.k))
+            .where(AttackTable.external_id == body.k)
     ).first()
-    if result == None:
-        raise HTTPException(status_code=404)
+    if attack == None:
+        raise HTTPException(
+            status_code = 404,
+            detail = 'Key does not match existing session',
+        )
 
-    hashed_password = hashlib.sha256(body.p.encode('utf8')) # hash password
-    time = datetime.now()
+    hashed_password = hashlib.sha256(body.p.encode('utf8'))
     event = EventTable(
-        parent_attack_id = result.id,
+        parent_attack_id = attack.id,
         kind = "Email.sent, Link.clicked, Password.inserted",
-        time = time,
         detail = {
             'ip': request.client.host,
             'password' : hashed_password.hexdigest(),
@@ -103,10 +104,9 @@ async def change_password_api(
     session.add(event)
     session.commit()
 
-    scheme = AttackScheme.list()
-    for atkscheme in scheme:
-        if atkscheme == result.scheme_name:
-            sscheme = AttackScheme.get(result.scheme_name)
+    for atkscheme in AttackScheme.list():
+        if atkscheme == attack.scheme_name:
+            sscheme = AttackScheme.get(attack.scheme_name)
 
             html_content = f"""
             <html>
