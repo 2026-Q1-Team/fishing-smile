@@ -1,3 +1,5 @@
+from functools import cached_property
+
 from sqlalchemy import CHAR
 from sqlmodel import Field, Relationship
 
@@ -27,7 +29,7 @@ class Attack(SQLModel):
         ondelete = 'CASCADE',
     )
 
-    @property
+    @cached_property
     def scheme(self) -> AttackScheme:
         # TODO: Validate scheme_name on construction of Attack?
         # TODO: Do we allow assignment of AttackScheme object on this property?
