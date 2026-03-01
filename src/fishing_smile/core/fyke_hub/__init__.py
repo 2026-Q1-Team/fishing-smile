@@ -43,20 +43,20 @@ async def change_password_ui(
     request: Request,
     session: Session = Depends(get_session)
 ):
-    client_host = request.client.host # This is used to get ip
-
     result = session.exec(
         select(AttackTable)
             .where(AttackTable.external_id == k)
     ).first()
-    # TODO: is this really going to return None or []
     if result == None:
         raise HTTPException(status_code=404)
 
     time = datetime.now()
-    # TODO: don't need to dump json here. keep it structured
-    detail_json = json.dumps({'ip': client_host})
-    event = EventTable(parent_attack_id=result.id, kind="Email.sent, Link.clicked", time=time, detail=detail_json)
+    event = EventTable(
+        parent_attack_id = result.id,
+        kind = "Email.sent, Link.clicked",
+        time = time,
+        detail = {'ip': request.client.host},
+    )
     session.add(event)
     session.commit()
 
@@ -84,8 +84,6 @@ async def change_password_api(
     request: Request,
     session: Session = Depends(get_session),
 ):
-    client_host = request.client.host
-
     result = session.exec(
         select(AttackTable)
             .where(AttackTable.external_id == str(body.k))
@@ -95,8 +93,15 @@ async def change_password_api(
 
     hashed_password = hashlib.sha256(body.p.encode('utf8')) # hash password
     time = datetime.now()
-    detail_json = json.dumps({'ip': client_host, 'password' : hashed_password.hexdigest()})
-    event = EventTable(parent_attack_id=result.id, kind="Email.sent, Link.clicked, Password.inserted", time=time, detail=detail_json)
+    event = EventTable(
+        parent_attack_id = result.id,
+        kind = "Email.sent, Link.clicked, Password.inserted",
+        time = time,
+        detail = {
+            'ip': request.client.host,
+            'password' : hashed_password.hexdigest(),
+        },
+    )
     session.add(event)
     session.commit()
 

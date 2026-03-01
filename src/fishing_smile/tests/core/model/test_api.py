@@ -68,7 +68,7 @@ def test_change_password_api(session, client):
         "AttackTable.target.id between database and test doesn't match"
     assert result2.EventTable.kind == 'Email.sent, Link.clicked',\
         "EventTable.kind between database and test doesn't match"
-    assert result2.EventTable.detail == json.dumps({"ip": "testclient"}),\
+    assert result2.EventTable.detail == {"ip": "testclient"},\
         "EventTable.detail between database and test doesn't match"
     assert response.status_code == 200
 
@@ -125,8 +125,10 @@ def test_change_password_api2(session, client):
         "AttackTable.target.id between database and test doesn't match"
     assert result2.EventTable.kind == "Email.sent, Link.clicked, Password.inserted",\
         "EventTable.kind between database and test doesn't match"
-    assert result2.EventTable.detail == '{"ip": "testclient", "password": "5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8"}',\
-        "EventTable.detail between database and test doesn't match"
+    assert result2.EventTable.detail == {
+        "ip": "testclient",
+        "password": "5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8",
+    }, "EventTable.detail between database and test doesn't match"
 
     parameter_json2 = {'k': attacks[1].external_id, 'p': 'password'}
     response = client.post('/api/change_password', json = parameter_json2)
