@@ -88,7 +88,7 @@ def test_render_mail(session):
 
         According to our new security policy, all ocean gate staff must change their password every 6 months.
         Follow these steps below to change your ocean gate account password.
-            Step 1. Go to <a href="localhost/index.html?k=67">this page</a>.
+            Step 1. Go to this page [1].
             Step 2. Enter your old password.
             Step 3. Enter your new password.
             Step 4. Confirm your new password.
@@ -100,5 +100,7 @@ def test_render_mail(session):
 
         Thank you for taking your time to keep our organization secure.
         - ICT Team.
+        
+        [1] localhost/index.html?k=67
     """) + '\n'
     assert result == expected

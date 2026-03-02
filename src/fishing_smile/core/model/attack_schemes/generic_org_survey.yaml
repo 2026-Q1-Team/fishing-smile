@@ -8,9 +8,6 @@ components:
   templates:
     url: >-
       {{ settings.cast.url }}/index.html?k={{ attack.external_id }}
-    # TODO -- make image for this and host it somewhere
-    image: >-
-      {{ image_url }}
     subject: >-
       {{ attack.target.company }} Yearly Benefits Survey.
     body: |
@@ -21,10 +18,18 @@ components:
       
       Please fill out the form below.
       
-      <a href="{{ templates.url }}"><img src="{{ templates.image }}"></a>
+      {{ templates.url }}
       
       Thank you for taking your time to improve our organization.
       - HR Team.
+    alt_body: >-
+      <!DOCTYPE html>
+      <head>
+      <main>
+      <p>Cool text here.</p>
+      <a href="{{ templates.url }}">Click here.</a>
+      </main>
+      </head>
 
 - kind: html
   name: form_page
