@@ -5,26 +5,44 @@ description: >-
 components:
   - kind: email
     name: fake_survey_email
-    email_template:
+    templates:
       url: >-
-        {{ cast_url }}/index.html?k={{ external_id }}
-      # TODO -- make image for this and host it somewhere
-      image: >-
-        {{ image_url }}
+        {{ settings.cast.url }}/index.html?k={{ attack.external_id }}
       subject: >-
-        {{ company }} Yearly Benefits Survey.
-      body: |
-        Dear {{ name }},
+        {{ attack.target.company }} Yearly Benefits Survey.
+      body_plain: |
+        Dear {{ attack.target.name }},
         
-        We would like to gather feedback from all members of the {{ job_title }} team,
+        We would like to gather feedback from all members of the {{ attack.target.job_title }} team,
         in order to improve the quality of benefits we provide to our employees.
         
         Please fill out the form below.
         
-        <a href="{{ url }}"><img src="{{ image }}"></a>
+        {{ templates.url }}
         
         Thank you for taking your time to improve our organization.
         - HR Team.
+      body_html: |
+        <!DOCTYPE html>
+        <head>
+        <main>
+        <pre>
+        Dear {{ attack.target.name }},
+        
+        We would like to gather feedback from all members of the {{ attack.target.job_title }} team,
+        in order to improve the quality of benefits we provide to our employees.
+        
+        Please fill out the form below.
+        
+        </pre>
+        <a href="{{ templates.url }}">Click here.</a>
+        <pre>
+        
+        Thank you for taking your time to improve our organization.
+        - HR Team.
+        </pre>
+        </main>
+        </head>
 
   - kind: html
     name: form_page
