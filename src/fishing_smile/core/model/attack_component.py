@@ -1,5 +1,4 @@
 from typing import (
-    List,
     Literal,
 )
 
@@ -10,6 +9,7 @@ from pydantic import (
 )
 
 from .red_flag import RedFlag
+from .template_spec import TemplateSpec
 
 
 class AttackComponent(BaseModel):
@@ -17,13 +17,12 @@ class AttackComponent(BaseModel):
 
     kind: str
     name: str
-    red_flags: List[RedFlag] = []
-    templates: dict[str, str] = {}
+    red_flags: list[RedFlag] = []
+    templates: dict[str, TemplateSpec] = {}
 
 
 class EmailComponent(AttackComponent):
     kind: Literal['email'] = 'email'
-    foo: str = 'bar'
     # TODO: Required templates:
     # - subject
     # - body

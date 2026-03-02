@@ -1,0 +1,13 @@
+name: scheme_with_external_template_file
+components:
+- kind: email
+  name: email
+  templates:
+    absolute:
+      kind: file
+      mime: text/javascript
+      path: /opt/app/src/fishing_smile/tests/core/model/test_cases/scheme/valid/scheme_with_external_template_file/script.js
+    relative:
+      kind: file
+      mine: text/javascript
+      path: script.js

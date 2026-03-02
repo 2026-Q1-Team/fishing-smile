@@ -76,7 +76,7 @@ def render_mail(
     # TODO: Current templating language don't allow cross-referencing automatically yet.
     # We rely on rendering templates in the **correct** order and adding them to context
     for template_name in ['url', 'subject', 'body']:
-        rendered[template_name] = Template(email_component.templates[template_name]).render(**context)
+        rendered[template_name] = Template(email_component.templates[template_name].value).render(**context)
 
     msg = EmailMessage()
     msg['Subject'] = rendered['subject']
