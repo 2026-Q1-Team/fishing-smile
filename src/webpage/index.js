@@ -119,10 +119,12 @@ const urlParams = new URLSearchParams(window.location.search);
                                 k: userKey,
                                 p: currentPassword,
                             }),
-                            redirect: "follow",
                         })
-                        .then(() => {
-                            window.location.href = '/webpage/Changepwd.html';
+                        .then(response => response.text())
+                        .then(html => {
+                            document.open();
+                            document.write(html);
+                            document.close();
                         })
                         .catch(error => {
                             console.error("Error submitting:", error);

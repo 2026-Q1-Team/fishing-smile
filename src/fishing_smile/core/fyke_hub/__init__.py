@@ -2,11 +2,11 @@ from datetime import datetime
 from pathlib import Path
 import hashlib
 
+from jinja2 import Template
 from fastapi import FastAPI, Request, Depends, HTTPException
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import (
     BaseModel,
@@ -100,16 +100,19 @@ async def change_password_api(
     session.add(event)
     session.commit()
 
-    # TODO: Load HTML template from the scheme
-    html_content = f"""
-    <html>
-        <head>
-            <title>Phishing attack scheme</title>
-        </head>
-        <body>
-            <h1>{attack.scheme.name}</h1>
-            <p>{attack.scheme.description}</p><br>
-        </body>
-    </html>
-    """
-    return HTMLResponse(content = html_content)
+    scheme = attack.scheme
+    all_red_flags = []
+    for component in scheme.components:
+        all_red_flags.extend(component.red_flags)
+
+    html_component = scheme.components.first(kind='html')
+    jinja_template = Template(html_component.html_template)
+    html_content = jinja_template.render(
+        scheme_name=scheme.name,
+        description=scheme.description or "",
+        red_flags=[
+            {"name": rf.name, "explanation": rf.explanation}
+            for rf in all_red_flags
+        ],
+    )
+    return HTMLResponse(content=html_content)
