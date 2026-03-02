@@ -61,10 +61,11 @@ async def change_password_ui(
     session.add(event)
     session.commit()
 
-    # TODO: Load HTML template from the scheme
-    return templates.TemplateResponse(
-        request = request, name = "index.html", context = {"k": k}
-    )
+    scheme = attack.scheme
+    html_component = scheme.components.first(name = 'form_page_change_password')
+    jinja_template = Template(html_component.html_template)
+    html_content = jinja_template.render()
+    return HTMLResponse(content=html_content)
 
 
 class ChangePasswordApiBody(BaseModel):
@@ -105,7 +106,7 @@ async def change_password_api(
     for component in scheme.components:
         all_red_flags.extend(component.red_flags)
 
-    html_component = scheme.components.first(kind='html')
+    html_component = scheme.components.first(name ='form_page')
     jinja_template = Template(html_component.html_template)
     html_content = jinja_template.render(
         scheme_name=scheme.name,
