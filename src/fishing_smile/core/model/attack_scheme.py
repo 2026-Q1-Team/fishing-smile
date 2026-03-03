@@ -37,6 +37,7 @@ class AttackScheme(BaseModel):
     @staticmethod
     @cache
     def list() -> list[str]:
+        """List of attack scheme names available in the standard collection"""
         return [
             path.stem
             for path in SCHEMES_PATH.glob('*.yaml')
@@ -45,6 +46,7 @@ class AttackScheme(BaseModel):
     @staticmethod
     @cache
     def get(scheme_name: str) -> AttackScheme:
+        """Retrieve attack scheme from the standard collection by name"""
         try:
             with open(SCHEMES_PATH / f'{scheme_name}.yaml') as f:
                 doc = yaml.safe_load(f)
