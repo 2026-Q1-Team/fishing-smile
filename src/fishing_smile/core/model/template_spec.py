@@ -10,6 +10,7 @@ from pydantic import (
     Field,
     model_validator,
     BeforeValidator,
+    ValidationInfo,
 )
 
 
@@ -30,13 +31,20 @@ class FileTemplateSpec(LongTemplateSpec):
     _value: str
 
     # TODO: guess mime type from filename 
-    @model_validator(mode="after")
-    def read_template_value_from_file(self):
+    @model_validator(mode = "after")
+    def read_template_value_from_file(self, info: ValidationInfo):
+        if self.path.is_absolute():
+            effective_path = self.path
+        else:
+            base_directory = info.context and info.context.get('base_directory', None)
+            if base_directory is None:
+                raise ValueError('Need base_directory context to resolve relative path to template file')
+            effective_path = base_directory / self.path
+
         try:
-            # TODO: support relative path
-            self._value = self.path.read_text()
+            self._value = effective_path.read_text()
         except FileNotFoundError:
-            raise ValueError('Path does not point to a file') from None
+            raise ValueError(f'Path {effective_path} does not point to a file') from None
         return self
 
     @property

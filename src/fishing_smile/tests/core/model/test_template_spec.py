@@ -10,6 +10,9 @@ from pydantic import (
 from fishing_smile.core.model import *
 
 
+_BASE_DIRECTORY = Path(__file__).parent.resolve() / 'test_cases/scheme/valid/scheme_with_external_template_file'
+
+
 @pytest.mark.parametrize(
     'input_value, expectation',
     [
@@ -39,12 +42,12 @@ from fishing_smile.core.model import *
             {
                 'kind': 'file',
                 'mime': 'text/javascript',
-                'path': Path(__file__).parent.resolve() / 'test_cases/scheme/valid/scheme_with_external_template_file/script.js',
+                'path': _BASE_DIRECTORY / 'script.js',
             },
             nullcontext({
                 'kind': 'file',
                 'mime': 'text/javascript',
-                'path': Path(__file__).parent.resolve() / 'test_cases/scheme/valid/scheme_with_external_template_file/script.js',
+                'path': _BASE_DIRECTORY / 'script.js',
                 'value': 'alert(1);\n',
             }),
             id = 'specifying template using absolute path to file',
@@ -53,16 +56,43 @@ from fishing_smile.core.model import *
             {
                 'kind': 'file',
                 'mime': 'text/javascript',
-                'path': 'non/existent/path/script.js',
+                'path': 'non/existent/absolute/path/script.js',
             },
             pytest.raises(ValidationError),
-            id = 'path does not point to a file',
+            id = 'absolute path does not point to a file',
+        ),
+        pytest.param(
+            {
+                'kind': 'file',
+                'mime': 'text/javascript',
+                'path': 'script.js',
+            },
+            nullcontext({
+                'kind': 'file',
+                'mime': 'text/javascript',
+                'path': Path('script.js'),
+                'value': 'alert(1);\n',
+            }),
+            id = 'specifying template using relative path to file',
+        ),
+        pytest.param(
+            {
+                'kind': 'file',
+                'mime': 'text/javascript',
+                'path': 'non/existent/relative/path/script.js',
+            },
+            pytest.raises(ValidationError),
+            id = 'relative path does not point to a file',
         ),
     ],
 )
 def test_template_spec(input_value, expectation):
     with expectation as expected_attrs:
-        result = TypeAdapter(TemplateSpec).validate_python(input_value)
+        result = TypeAdapter(TemplateSpec).validate_python(
+            input_value,
+            context = {'base_directory': _BASE_DIRECTORY},
+        )
+        # NOTE: Not using model_dump() because `.value` is a private attribute in case of FileTemplateSpec
         result_attrs = {
             key: getattr(result, key)
             for key in expected_attrs

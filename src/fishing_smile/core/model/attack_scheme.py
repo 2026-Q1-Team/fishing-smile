@@ -47,9 +47,11 @@ class AttackScheme(BaseModel):
     @cache
     def get(scheme_name: str) -> AttackScheme:
         """Retrieve attack scheme from the standard collection by name"""
+        # TODO: Allow each scheme to be inside their own directory for better modularity
+        path = SCHEMES_PATH / f'{scheme_name}.yaml'
         try:
-            with open(SCHEMES_PATH / f'{scheme_name}.yaml') as f:
+            with open(path) as f:
                 doc = yaml.safe_load(f)
         except FileNotFoundError:
             raise ValueError(f'{scheme_name} is not a valid attack scheme name') from None
-        return AttackScheme.model_validate(doc)
+        return AttackScheme.model_validate(doc, context = {'base_directory': path.parent})
