@@ -10,7 +10,7 @@ components:
     subject: "Payroll Discrepancy Found - Action Required"
     body:
       kind: file
-      path: payroll_email_body.html
+      path: payroll_email_body.html.jinja
       mime: text/html
   red_flags:
   - kind: financial_threat
@@ -23,5 +23,5 @@ components:
   templates:
     html:
       kind: file
-      path: payroll_update_page.html
+      path: payroll_update_page.html.jinja
       mime: text/html
