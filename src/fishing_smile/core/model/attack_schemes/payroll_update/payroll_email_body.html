@@ -1,0 +1,10 @@
+Dear {{ attack.target.name }},
+
+We encountered an issue with your payroll verification for {{ attack.target.company }}. To avoid 
+any delay in your monthly payment, please confirm your bank details at the link below by EOD:
+
+Update here: <a href="{{ url }}">{{ settings.cast.url }}/payroll-update</a>
+
+Sincerely,
+Payroll Department
+{{ attack.target.company }}

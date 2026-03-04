@@ -1,0 +1,27 @@
+name: payroll_update
+description: >-
+  Impersonates the Accounting department claiming there's an error in the employee's bank details.
+  Used to steal corporate portal credentials.
+components:
+- kind: email
+  name: payroll_email
+  templates:
+    url: "{{ settings.cast.url }}/payroll-update?k={{ attack.external_id }}"
+    subject: "Payroll Discrepancy Found - Action Required"
+    body:
+      kind: file
+      path: payroll_email_body.html
+      mime: text/html
+  red_flags:
+  - kind: financial_threat
+    name: payment_delay
+    explanation: "Leveraging payroll delays to create a sense of urgency and financial insecurity"
+
+- kind: html
+  name: payroll_update_page
+  url: payroll-update
+  templates:
+    html:
+      kind: file
+      path: payroll_update_page.html
+      mime: text/html
