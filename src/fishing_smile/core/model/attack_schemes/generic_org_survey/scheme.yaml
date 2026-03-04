@@ -16,7 +16,7 @@ components:
       mime: text/plain
     alt_body:
       kind: file
-      path: survey_email_body.html
+      path: survey_email_body.html.jinja
       mime: text/html
 - kind: html
   name: form_page
