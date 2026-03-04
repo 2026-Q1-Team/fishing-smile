@@ -51,7 +51,7 @@ class EmailComponent(AttackComponent):
 # both HTML and API can be handled the same way.
 class HTMLComponent(AttackComponent):
     kind: Literal['html'] = 'html'
-    required_templates = ['url']
+    required_templates = ['url', 'html']
 
 
 class APIComponent(AttackComponent):

@@ -23,6 +23,8 @@ components:
   templates:
     url: >-
       {{ settings.cast.url }}/survey
+    html: |
+      <html></html>
 - kind: api
   name: submit
   templates:

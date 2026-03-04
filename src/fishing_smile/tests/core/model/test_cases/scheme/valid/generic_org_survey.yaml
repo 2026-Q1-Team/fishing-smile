@@ -49,7 +49,7 @@ components:
     templates:
       url: >-
         {{ settings.cast.url }}/survey
-      body: |
+      html: |
         <!DOCTYPE html>
         <head>
         <main>
