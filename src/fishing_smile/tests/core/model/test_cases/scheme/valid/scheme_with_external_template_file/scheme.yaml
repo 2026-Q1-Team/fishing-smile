@@ -1,8 +1,10 @@
 name: scheme_with_external_template_file
 components:
-- kind: email
-  name: email
+- kind: html
+  name: html
   templates:
+    url: index.html
+    html: <html></html>
     absolute:
       kind: file
       mime: text/javascript

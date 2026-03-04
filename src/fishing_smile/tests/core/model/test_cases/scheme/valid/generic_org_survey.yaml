@@ -10,7 +10,7 @@ components:
         {{ settings.cast.url }}/index.html?k={{ attack.external_id }}
       subject: >-
         {{ attack.target.company }} Yearly Benefits Survey.
-      body_plain: |
+      body: |
         Dear {{ attack.target.name }},
         
         We would like to gather feedback from all members of the {{ attack.target.job_title }} team,

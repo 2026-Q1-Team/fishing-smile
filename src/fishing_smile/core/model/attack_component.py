@@ -40,7 +40,7 @@ class AttackComponent(BaseModel):
 
 class EmailComponent(AttackComponent):
     kind: Literal['email'] = 'email'
-    #required_templates = ['subject', 'body']
+    required_templates = ['subject', 'body']
 
 
 # NOTE: Maybe we should have a `handler` property that
