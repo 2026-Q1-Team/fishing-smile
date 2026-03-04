@@ -2,6 +2,7 @@ from typing import (
     Literal,
     ClassVar,
 )
+from http import HTTPMethod
 
 from pydantic import (
     BaseModel,
@@ -55,4 +56,5 @@ class HTMLComponent(AttackComponent):
 
 class APIComponent(AttackComponent):
     kind: Literal['api'] = 'api'
+    method: HTTPMethod = 'POST'
     required_templates = ['url']
