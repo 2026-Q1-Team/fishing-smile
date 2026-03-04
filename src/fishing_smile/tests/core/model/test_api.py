@@ -72,7 +72,6 @@ def test_change_password_page(session, client):
     parameter = {"k": attacks[1].external_id}
     with pytest.raises(ValueError):
         response = client.get('/change_password', params = parameter)
-        assert response.status_code == 404
 
 
 def test_change_password_api(session, client):
@@ -128,4 +127,55 @@ def test_change_password_api(session, client):
     parameter_json2 = {'k': attacks[1].external_id, 'p': 'password'}
     with pytest.raises(ValueError):
         response = client.post('/api/change_password', json = parameter_json2)
-        assert response.status_code == 404
+
+
+def test_payroll_update(session, client):
+    attacks = [
+        AttackTable(
+            external_id = 'test_hr_benefit_html_page_1',
+            scheme_name = 'payroll_update',
+            target = TargetProfileTable(
+                name = 'Jack Fishing',
+                email = 'jack.fishing@nowhere.westeros.org',
+            ),
+        ),
+        AttackTable(
+            external_id = 'test_hr_benefit_html_page_2',
+            scheme_name = 'invalid_scheme',
+            target = TargetProfileTable(
+                name = 'John Fishing',
+                email = 'John.Fishing@nowhere.westeros.org',
+            ),
+        ),
+    ]
+    session.add_all(attacks)
+    session.flush()
+
+    response = client.get('/payroll_update', params={"k": attacks[0].external_id})
+    assert response.status_code == 200
+
+
+def test_hr_html(session, client):
+    attacks = [
+        AttackTable(
+            external_id = 'test_hr_benefit_html_page_1',
+            scheme_name = 'hr_benefits_update_page',
+            target = TargetProfileTable(
+                name = 'Jack Fishing',
+                email = 'jack.fishing@nowhere.westeros.org',
+            ),
+        ),
+        AttackTable(
+            external_id = 'test_hr_benefit_html_page_2',
+            scheme_name = 'invalid_scheme',
+            target = TargetProfileTable(
+                name = 'John Fishing',
+                email = 'John.Fishing@nowhere.westeros.org',
+            ),
+        ),
+    ]
+
+    session.add_all(attacks)
+    session.flush()
+    response = client.get('/internal/hr-portal', params={"k": attacks[0].external_id})
+    assert response.status_code == 200
