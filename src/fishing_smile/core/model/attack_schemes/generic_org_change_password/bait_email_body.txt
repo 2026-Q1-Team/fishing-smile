@@ -1,0 +1,18 @@
+Dear {{ attack.target.name }},
+
+According to our new security policy, all {{ attack.target.company }} staff must change their password every 6 months.
+Follow these steps below to change your {{ attack.target.company }} account password.
+    Step 1. Go to this page [1].
+    Step 2. Enter your old password.
+    Step 3. Enter your new password.
+    Step 4. Confirm your new password.
+    Step 5. Click "Submit".
+
+Please be reminded that all staff must change their password before 28 Jan 2026. If your password is already expired please contact ICT support team.
+*You will be automatically logged out of your account on all devices after this process.
+**If you are not logged out automatically, please manually log out to allow the process to complete.
+
+Thank you for taking your time to keep our organization secure.
+- ICT Team.
+
+[1] {{ templates.url }}

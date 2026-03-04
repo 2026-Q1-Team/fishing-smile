@@ -63,7 +63,9 @@ async def change_password_ui(
 
     scheme = attack.scheme
     html_component = scheme.components.first(name = 'form_page_change_password')
-    jinja_template = Template(html_component.html_template)
+    html_spec = getattr(html_component, 'templates', {}).get('html')
+    template_str = html_spec.value if html_spec is not None and hasattr(html_spec, 'value') else getattr(html_component, 'html_template', '') or ''
+    jinja_template = Template(template_str)
     html_content = jinja_template.render()
     return HTMLResponse(content=html_content)
 
@@ -107,7 +109,9 @@ async def change_password_api(
         all_red_flags.extend(component.red_flags)
 
     html_component = scheme.components.first(name ='form_page')
-    jinja_template = Template(html_component.html_template)
+    html_spec = getattr(html_component, 'templates', {}).get('html')
+    template_str = html_spec.value if html_spec is not None and hasattr(html_spec, 'value') else getattr(html_component, 'html_template', '') or ''
+    jinja_template = Template(template_str)
     html_content = jinja_template.render(
         scheme_name=scheme.name,
         description=scheme.description or "",

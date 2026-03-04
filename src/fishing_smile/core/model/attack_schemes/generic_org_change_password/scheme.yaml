@@ -1,0 +1,53 @@
+name: generic_org_change_password
+description: >-
+  Trick victim into giving up their password by pretending to be
+  IT department of target's organization prompting for a regular password change.
+components:
+- kind: email
+  name: bait_email
+  red_flags:
+  - kind: urgency
+    name: กำหนดเวลาเร่งด่วน
+    explanation: อีเมลบอกให้เปลี่ยนรหัสผ่านก่อนวันที่กำหนด เพื่อกดดันให้รีบดำเนินการโดยไม่ทันคิด
+  - kind: suspicious_link
+    name: ลิงก์ URL ไม่ตรงกับเว็บจริงขององค์กร
+    explanation: ลิงก์ในอีเมลชี้ไปยังเว็บไซต์ที่ไม่ใช่ระบบจริงขององค์กร ควรตรวจสอบ URL ก่อนคลิกเสมอ
+  - kind: password_request
+    name: ขอรหัสผ่านปัจจุบันผ่านเว็บ
+    explanation: ระบบเปลี่ยนรหัสผ่านจริงไม่เคยขอรหัสผ่านเดิมผ่านหน้าเว็บภายนอก
+  - kind: no_2fa
+    name: ไม่มีการยืนยันตัวตนเพิ่มเติม
+    explanation: ระบบจริงมักจะมี 2FA หรือ OTP ยืนยันตัวตนก่อนเปลี่ยนรหัสผ่าน
+  - kind: mismatched_sender
+    name: ชื่อผู้ส่งกับอีเมลไม่ตรงกัน
+    explanation: >-
+      อีเมลแสดงชื่อผู้ส่งว่า ICT Team แต่ที่อยู่อีเมลจริงอาจไม่ตรงกับโดเมนขององค์กร
+      ควรตรวจสอบที่อยู่อีเมลผู้ส่งเสมอ ไม่ใช่แค่ชื่อที่แสดง
+  templates:
+    url: >-
+      {{ settings.cast.url }}/index.html?k={{ attack.external_id }}
+    subject: >-
+      Please change your {{ attack.target.company }} account password.
+    body:
+      kind: file
+      path: bait_email_body.txt
+      mime: text/plain
+- kind: html
+  name: form_page_change_password
+  url:
+  templates:
+    html:
+      kind: file
+      path: form_page_change_password.html
+      mime: text/html
+- kind: html
+  name: form_page
+  url:
+  templates:
+    html:
+      kind: file
+      path: form_page.html
+      mime: text/html
+- kind: api
+  name: submit
+  url:
