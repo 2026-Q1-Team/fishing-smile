@@ -2,7 +2,6 @@ import logging
 _logger = logging.getLogger(__name__)
 from pathlib import Path
 
-import yaml
 from pydantic import (
     BaseModel,
     Field,
@@ -55,13 +54,7 @@ class AttackSchemeCollection(BaseModel):
         if meta.cache is not None:
             return meta.cache
 
-        try:
-            with meta.source.open() as f:
-                doc = yaml.safe_load(f)
-        except FileNotFoundError:
-            raise ValueError(f'Can not load scheme {scheme_name} from {meta.source}') from None
-
-        meta.cache = AttackScheme.model_validate(doc, context = {'base_directory': meta.source.parent})
+        meta.cache = AttackScheme.from_file(meta.source)
         if meta.cache.name != scheme_name:
             _logger.warning(f'Scheme named {meta.cache.name} is unconventionally stored at {meta.source}')
         return meta.cache

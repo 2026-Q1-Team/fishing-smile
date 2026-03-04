@@ -12,27 +12,21 @@ TEST_SCHEME_PATH = Path(__file__).parent / 'test_cases/scheme'
 
 @pytest.mark.parametrize(
     'scheme_file',
-    list(TEST_SCHEME_PATH.glob('valid/*.yaml')),
-    ids = (lambda path: path.stem),
+    list(TEST_SCHEME_PATH.glob('valid/**/*.yaml')),
+    ids = (lambda path: str(path.relative_to(TEST_SCHEME_PATH))),
 )
-def test_create_attack_scheme(scheme_file):
-    scheme_name = scheme_file.stem
-    with open(scheme_file) as f:
-        doc = yaml.safe_load(f)
-    scheme = AttackScheme.model_validate(doc)
-    assert scheme.name == scheme_name
+def test_create_valid_attack_schemes_from_file(scheme_file):
+    scheme = AttackScheme.from_file(scheme_file)
 
 
 @pytest.mark.parametrize(
     'scheme_file',
-    list(TEST_SCHEME_PATH.glob('invalid/*.yaml')),
-    ids = (lambda path: path.stem),
+    list(TEST_SCHEME_PATH.glob('invalid/**/*.yaml')),
+    ids = (lambda path: str(path.relative_to(TEST_SCHEME_PATH))),
 )
-def test_invalid_attack_scheme(scheme_file):
+def test_create_invalid_attack_schemes_from_file(scheme_file):
     with pytest.raises(ValidationError):
-        with open(scheme_file) as f:
-            doc = yaml.safe_load(f)
-        scheme = AttackScheme.model_validate(doc)
+        scheme = AttackScheme.from_file(scheme_file)
 
 
 def test_find_component():
