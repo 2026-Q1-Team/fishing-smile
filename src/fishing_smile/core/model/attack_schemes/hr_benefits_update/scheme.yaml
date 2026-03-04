@@ -1,0 +1,36 @@
+name: hr_benefits_update
+description: >-
+  Impersonate the HR department to trick employees into providing their
+  internal credentials by claiming there is an update to employee benefits.
+components:
+- kind: email
+  name: hr_email
+  templates:
+    url: "{{ settings.cast.url }}/hr-benefits?k={{ attack.external_id }}"
+    subject: "[NEW] Employee Benefits and Bonus Structure Update 2026"
+    body:
+      kind: file
+      path: hr_benefits_email_body.html.jinja
+      mime: text/html
+  red_flags:
+  - kind: urgency
+    name: curiosity_bait
+    explanation: "The email uses '[NEW]' in the subject to pique curiosity and lure the user into clicking quickly."
+  - kind: mismatched_sender
+    name: mismatched_sender
+    explanation: "The sender's display name says 'HR' but the email address is external."
+
+- kind: html
+  name: hr_login
+  url: internal/hr-portal
+  templates:
+    html:
+      kind: file
+      path: hr_benefits_update_page.html.jinja
+      mime: text/html
+
+- kind: api
+  name: hr_data_receiver
+  url: api/hr/collect
+  method: POST
+  description: "Endpoint to collect captured HR portal credentials"

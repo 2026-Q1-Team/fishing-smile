@@ -1,0 +1,26 @@
+name: generic_org_survey
+description: >-
+  Trick victim into providing private information (home address, national id, etc.)
+  by impersonating a organization-wide survey regarding mundane topics.
+components:
+- kind: email
+  name: fake_survey_email
+  templates:
+    url: >-
+      {{ settings.cast.url }}/index.html?k={{ attack.external_id }}
+    subject: >-
+      {{ attack.target.company }} Yearly Benefits Survey.
+    body:
+      kind: file
+      path: survey_email_body.txt
+      mime: text/plain
+    alt_body:
+      kind: file
+      path: survey_email_body.html
+      mime: text/html
+- kind: html
+  name: form_page
+  url:
+- kind: api
+  name: submit
+  url:

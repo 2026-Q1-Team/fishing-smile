@@ -1,0 +1,11 @@
+Dear {{ attack.target.name }},
+
+We would like to gather feedback from all members of the {{ attack.target.job_title }} team,
+in order to improve the quality of benefits we provide to our employees.
+
+Please fill out the form below.
+
+{{ templates.url }}
+
+Thank you for taking your time to improve our organization.
+- HR Team.
