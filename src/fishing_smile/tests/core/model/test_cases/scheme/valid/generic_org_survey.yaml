@@ -46,8 +46,10 @@ components:
 
   - kind: html
     name: form_page
-    url:
-    body_html: |
+    templates:
+      url: >-
+        {{ settings.cast.url }}/survey
+      body: |
         <!DOCTYPE html>
         <head>
         <main>
@@ -71,4 +73,6 @@ components:
 
   - kind: api
     name: submit
-    url:
+    templates:
+      url: >-
+        {{ settings.cast.url }}/api/survey/submit

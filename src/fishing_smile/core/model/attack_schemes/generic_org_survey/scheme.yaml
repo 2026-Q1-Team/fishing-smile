@@ -20,7 +20,11 @@ components:
       mime: text/html
 - kind: html
   name: form_page
-  url:
+  templates:
+    url: >-
+      {{ settings.cast.url }}/survey
 - kind: api
   name: submit
-  url:
+  templates:
+    url: >-
+      {{ settings.cast.url }}/api/survey/submit

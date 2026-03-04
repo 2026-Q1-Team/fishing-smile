@@ -30,12 +30,18 @@ def test_create_invalid_attack_schemes_from_file(scheme_file):
 
 
 def test_find_component():
-    expected = HTMLComponent(name = 'first', url = '', html_template = '')
+    expected = HTMLComponent(
+        name = 'first',
+        templates = {
+            'url': '',
+            'html': '<html></html>',
+        },
+    )
     scheme = AttackScheme(
         name = 'scheme_name',
         components = [
-            EmailComponent(name = 'first', email_template = ''),
-            EmailComponent(name = 'second', email_template = ''),
+            EmailComponent(name = 'first', templates = {'subject': '', 'body': ''}),
+            EmailComponent(name = 'second', templates = {'subject': '', 'body': ''}),
             expected,
         ],
     )

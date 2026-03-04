@@ -22,8 +22,9 @@ components:
 
 - kind: html
   name: hr_login
-  url: internal/hr-portal
   templates:
+    url: >-
+      {{ settings.cast.url }}/internal/hr-portal
     html:
       kind: file
       path: hr_benefits_update_page.html.jinja
@@ -31,6 +32,8 @@ components:
 
 - kind: api
   name: hr_data_receiver
-  url: api/hr/collect
   method: POST
   description: "Endpoint to collect captured HR portal credentials"
+  templates:
+    url: >-
+      {{ settings.cast.url }}/api/hr/collect

@@ -19,8 +19,9 @@ components:
 
 - kind: html
   name: payroll_update_page
-  url: payroll-update
   templates:
+    url: >-
+      {{ settings.cast.url }}/payroll-update
     html:
       kind: file
       path: payroll_update_page.html.jinja
