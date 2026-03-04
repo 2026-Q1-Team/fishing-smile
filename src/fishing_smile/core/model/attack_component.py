@@ -14,18 +14,21 @@ from .template_spec import TemplateSpec
 
 class AttackComponent(BaseModel):
     model_config = ConfigDict(extra = 'allow')
-
     kind: str
     name: str
     red_flags: list[RedFlag] = []
     templates: dict[str, TemplateSpec] = {}
 
 
+class EmailTemplate(BaseModel):
+    model_config = ConfigDict(extra = 'allow')
+    subject: TemplateSpec
+    body: TemplateSpec
+
 class EmailComponent(AttackComponent):
     kind: Literal['email'] = 'email'
-    # TODO: Required templates:
-    # - subject
-    # - body
+    email_template: str | None = None
+    template: EmailTemplate
 
 
 # NOTE: Maybe we should have a `handler` property that
@@ -36,12 +39,10 @@ class EmailComponent(AttackComponent):
 # both HTML and API can be handled the same way.
 class HTMLComponent(AttackComponent):
     kind: Literal['html'] = 'html'
-    # TODO: Required templates:
-    # - url
-    # - html
+    url: TemplateSpec
+    html_template: TemplateSpec
 
 
 class APIComponent(AttackComponent):
     kind: Literal['api'] = 'api'
-    # TODO: Required templates:
-    # - url
+    url: TemplateSpec
