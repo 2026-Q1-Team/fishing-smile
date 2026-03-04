@@ -1,15 +1,12 @@
 import pytest
 from sqlmodel import (
     select,
-    delete,
-    Session,
 )
+from fastapi.testclient import TestClient
+
 from fishing_smile.database.engine import get_session
 from fishing_smile.core.model import *
 from fishing_smile.core.fyke_hub import app
-from fastapi.testclient import TestClient
-from sqlalchemy import desc
-import json
 
 
 @pytest.fixture(name = 'client')
@@ -24,19 +21,19 @@ def fyke_hub_client(session):
     app.dependency_overrides.clear()
 
 
-def test_change_password_api(session, client):
+def test_change_password_page(session, client):
     attacks = [
         AttackTable(
-            external_id = 'test_change_password_apitest_cha',
+            external_id = 'test_change_password_html_page_1',
             scheme_name = 'generic_org_change_password',
             target = TargetProfileTable(
-                name = 'test_change_password_api',
-                email = 'test_change_password_api@nowhere.westeros.org',
+                name = 'Jack Fishing',
+                email = 'jack.fishing@nowhere.westeros.org',
             ),
         ),
         AttackTable(
-            external_id = 'test_change_password_api_John_Fi',
-            scheme_name = 'generic_org_change_password',
+            external_id = 'test_change_password_html_page_2',
+            scheme_name = 'invalid_scheme',
             target = TargetProfileTable(
                 name = 'John Fishing',
                 email = 'John.Fishing@nowhere.westeros.org',
@@ -48,7 +45,7 @@ def test_change_password_api(session, client):
 
     parameter = {"k": attacks[0].external_id}
     response = client.get('/change_password', params = parameter)
-    result2 = session.exec(
+    result = session.exec(
         select(EventTable, AttackTable, TargetProfileTable)
             .join(AttackTable, EventTable.parent_attack_id == AttackTable.id)
             .join(TargetProfileTable, AttackTable.target_id == TargetProfileTable.id)
@@ -56,40 +53,41 @@ def test_change_password_api(session, client):
     ).first()
 
     # test database match
-    assert result2.TargetProfileTable.name == 'test_change_password_api',\
+    assert result.TargetProfileTable.name == 'Jack Fishing',\
         "TargetProfileTable.name between database and test doesn't match"
-    assert result2.TargetProfileTable.email == 'test_change_password_api@nowhere.westeros.org',\
+    assert result.TargetProfileTable.email == 'jack.fishing@nowhere.westeros.org',\
         "TargetProfileTable.email between database and test doesn't match"
-    assert result2.AttackTable.external_id == 'test_change_password_apitest_cha',\
+    assert result.AttackTable.external_id == 'test_change_password_html_page_1',\
         "AttackTable.external_id between database and test doesn't match"
-    assert result2.AttackTable.scheme_name == 'generic_org_change_password',\
+    assert result.AttackTable.scheme_name == 'generic_org_change_password',\
         "AttackTable.scheme_name between database and test doesn't match"
-    assert result2.AttackTable.target.id == result2.TargetProfileTable.id ,\
+    assert result.AttackTable.target.id == result.TargetProfileTable.id ,\
         "AttackTable.target.id between database and test doesn't match"
-    assert result2.EventTable.kind == 'Email.sent, Link.clicked',\
+    assert result.EventTable.kind == 'Email.sent, Link.clicked',\
         "EventTable.kind between database and test doesn't match"
-    assert result2.EventTable.detail == {"ip": "testclient"},\
+    assert result.EventTable.detail == {"ip": "testclient"},\
         "EventTable.detail between database and test doesn't match"
     assert response.status_code == 200
 
     parameter = {"k": attacks[1].external_id}
-    response = client.get('/change_password', params = parameter)
-    assert response.status_code == 200
+    with pytest.raises(ValueError):
+        response = client.get('/change_password', params = parameter)
+        assert response.status_code == 404
 
 
-def test_change_password_api2(session, client):
+def test_change_password_api(session, client):
     attacks = [
         AttackTable(
-            external_id = 'test_change_password_api2test_ch',
+            external_id = 'test_change_password_api_1',
             scheme_name = 'generic_org_change_password',
             target = TargetProfileTable(
-                name = 'test_change_password_api2',
-                email = 'test_change_password_api2@nowhere.westeros.org',
+                name = 'Jack Fishing',
+                email = 'jack.fishing@nowhere.westeros.org',
             ),
         ),
         AttackTable(
-            external_id = 'test_change_password_api_John_Fi',
-            scheme_name = 'scheme12345',
+            external_id = 'test_change_password_api_2',
+            scheme_name = 'invalid_scheme',
             target = TargetProfileTable(
                 name = 'John Fishing',
                 email = 'John.Fishing@nowhere.westeros.org',
@@ -102,7 +100,7 @@ def test_change_password_api2(session, client):
     parameter_json = {'k': attacks[0].external_id, 'p': 'password'}
     response = client.post('/api/change_password', json = parameter_json)
 
-    result2 = session.exec(
+    result = session.exec(
         select(EventTable, AttackTable, TargetProfileTable)
             .join(AttackTable, EventTable.parent_attack_id == AttackTable.id)
             .join(TargetProfileTable, AttackTable.target_id == TargetProfileTable.id)
@@ -110,19 +108,19 @@ def test_change_password_api2(session, client):
     ).first()
 
     # test database match
-    assert result2.TargetProfileTable.name == 'test_change_password_api2',\
+    assert result.TargetProfileTable.name == 'Jack Fishing',\
         "TargetProfileTable.name between database and test doesn't match"
-    assert result2.TargetProfileTable.email == 'test_change_password_api2@nowhere.westeros.org',\
+    assert result.TargetProfileTable.email == 'jack.fishing@nowhere.westeros.org',\
         "TargetProfileTable.email between database and test doesn't match"
-    assert result2.AttackTable.external_id == 'test_change_password_api2test_ch',\
+    assert result.AttackTable.external_id == 'test_change_password_api_1',\
         "AttackTable.external_id between database and test doesn't match"
-    assert result2.AttackTable.scheme_name == 'generic_org_change_password',\
+    assert result.AttackTable.scheme_name == 'generic_org_change_password',\
         "AttackTable.scheme_name between database and test doesn't match"
-    assert result2.AttackTable.target.id == result2.TargetProfileTable.id ,\
+    assert result.AttackTable.target.id == result.TargetProfileTable.id ,\
         "AttackTable.target.id between database and test doesn't match"
-    assert result2.EventTable.kind == "Email.sent, Link.clicked, Password.inserted",\
+    assert result.EventTable.kind == "Email.sent, Link.clicked, Password.inserted",\
         "EventTable.kind between database and test doesn't match"
-    assert result2.EventTable.detail == {
+    assert result.EventTable.detail == {
         "ip": "testclient",
         "password": "5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8",
     }, "EventTable.detail between database and test doesn't match"
@@ -130,3 +128,4 @@ def test_change_password_api2(session, client):
     parameter_json2 = {'k': attacks[1].external_id, 'p': 'password'}
     with pytest.raises(ValueError):
         response = client.post('/api/change_password', json = parameter_json2)
+        assert response.status_code == 404
