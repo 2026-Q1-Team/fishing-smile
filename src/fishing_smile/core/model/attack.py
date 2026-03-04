@@ -5,6 +5,7 @@ from sqlmodel import Field, Relationship
 
 from fishing_smile.database.sqlmodel import SQLModel
 from .attack_scheme import AttackScheme
+from .attack_scheme_collection import standard_schemes
 
 
 class Attack(SQLModel):
@@ -33,7 +34,7 @@ class Attack(SQLModel):
     def scheme(self) -> AttackScheme:
         # TODO: Validate scheme_name on construction of Attack?
         # TODO: Do we allow assignment of AttackScheme object on this property?
-        return AttackScheme.get(self.scheme_name)
+        return standard_schemes.get(self.scheme_name)
 
 
 class AttackTable(Attack, table = True):

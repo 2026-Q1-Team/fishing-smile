@@ -29,7 +29,7 @@ def init():
 @cli.command()
 @click.option(
     '--scheme', 'scheme_name',
-    type = click.Choice(AttackScheme.list()),
+    type = click.Choice(standard_schemes.schemes),
     # TODO: Pick better default. Or make it required option?
     default = 'generic_org_change_password',
     help = 'Which attack scheme to use on targets',
@@ -52,7 +52,7 @@ def cast_net(targets_csv_file, scheme_name):
         TargetProfile(**target._asdict())
         for target in targets.itertuples()
     ]
-    scheme = AttackScheme.get(scheme_name)
+    scheme = standard_schemes.get(scheme_name)
     # TODO: try to place with get_session() ?
     with Session(engine) as session:
         core_cast_net(

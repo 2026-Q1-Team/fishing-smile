@@ -107,7 +107,7 @@ def cast_net(
     session: Session,
 ) -> None:
     if isinstance(scheme, str):
-        scheme = AttackScheme.get(scheme)
+        scheme = standard_schemes.get(scheme)
 
     sent_count = 0
     for target in targets:
