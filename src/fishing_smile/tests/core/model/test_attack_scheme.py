@@ -13,6 +13,7 @@ TEST_SCHEME_PATH = Path(__file__).parent / 'test_cases/scheme'
 @pytest.mark.parametrize(
     'scheme_file',
     list(TEST_SCHEME_PATH.glob('valid/*.yaml')),
+    ids = (lambda path: path.stem),
 )
 def test_create_attack_scheme(scheme_file):
     scheme_name = scheme_file.stem
@@ -25,6 +26,7 @@ def test_create_attack_scheme(scheme_file):
 @pytest.mark.parametrize(
     'scheme_file',
     list(TEST_SCHEME_PATH.glob('invalid/*.yaml')),
+    ids = (lambda path: path.stem),
 )
 def test_invalid_attack_scheme(scheme_file):
     with pytest.raises(ValidationError):
