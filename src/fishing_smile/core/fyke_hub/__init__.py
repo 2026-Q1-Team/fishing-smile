@@ -121,3 +121,59 @@ async def change_password_api(
         ],
     )
     return HTMLResponse(content=html_content)
+
+@app.get('/payroll_update', response_class=HTMLResponse)
+async def update_payroll(
+    k: str,
+    request: Request,
+    session: Session = Depends(get_session)
+):
+    client_host = request.client.host
+    attack = session.exec(
+        select(AttackTable).where(AttackTable.external_id == str(k))
+    ).first()
+    if attack == None:
+        raise HTTPException(
+            status_code=404,
+            detail = 'Key does not match existing session',
+        )
+
+    detail_json = {'ip': client_host}
+    event = EventTable(parent_attack_id=attack.id, kind="Email.sent, Link.clicked", detail=detail_json)
+    session.add(event)
+    session.commit()
+
+    scheme = attack.scheme
+    html_component = scheme.components.first(name = 'payroll_update_page')
+    jinja_template = Template(html_component.templates['html'].value)
+    html_content = jinja_template.render()
+    return HTMLResponse(html_content)
+
+@app.get('/internal/hr-portal', response_class=HTMLResponse)
+async def hr_benefits_update_login(
+    k: str,
+    request: Request,
+    session: Session = Depends(get_session)
+):
+    client_host = request.client.host
+    attack_table = session.exec(
+        select(AttackTable).where(AttackTable.external_id == str(k))
+    ).first()
+    if attack_table == None:
+        raise HTTPException(
+            status_code=404,
+            detail = 'Key does not match existing session',
+        )
+
+    detail_json = {'ip': client_host}
+    event = EventTable(parent_attack_id=attack_table.id, kind="Email.sent, Link.clicked", detail=detail_json)
+    session.add(event)
+    session.commit()
+
+    session.refresh(attack_table)
+    scheme = attack_table.scheme
+
+    html_component = scheme.components.first(name = 'hr_login')
+    jinja_template = Template(html_component.templates['html'].value)
+    html_content = jinja_template.render(attack = attack_table)
+    return HTMLResponse(html_content)
