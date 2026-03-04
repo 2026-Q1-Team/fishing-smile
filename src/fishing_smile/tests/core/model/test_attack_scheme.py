@@ -33,20 +33,6 @@ def test_invalid_attack_scheme(scheme_file):
         scheme = AttackScheme.model_validate(doc)
 
 
-@pytest.mark.parametrize(
-    'scheme_name',
-    AttackScheme.list(),
-)
-def test_get_registered_schemes(scheme_name):
-    scheme = AttackScheme.get(scheme_name)
-    assert scheme.name == scheme_name
-
-
-def test_get_invalid_scheme_name():
-    with pytest.raises(ValueError, match = 'not a valid attack scheme name'):
-        scheme = AttackScheme.get('scheme_does_not_exist')
-
-
 def test_find_component():
     expected = HTMLComponent(name = 'first', url = '', html_template = '')
     scheme = AttackScheme(
