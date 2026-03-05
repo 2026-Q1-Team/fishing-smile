@@ -72,6 +72,7 @@ _BASE_DIRECTORY = Path(__file__).parent.resolve() / 'test_cases/scheme/valid/sch
                 'mime': 'text/javascript',
                 'path': Path('script.js'),
                 'value': 'alert(1);\n',
+                '_effective_path': _BASE_DIRECTORY / 'script.js',
             }),
             id = 'specifying template using relative path to file',
         ),
@@ -83,6 +84,45 @@ _BASE_DIRECTORY = Path(__file__).parent.resolve() / 'test_cases/scheme/valid/sch
             },
             pytest.raises(ValidationError),
             id = 'relative path does not point to a file',
+        ),
+        pytest.param(
+            {
+                'kind': 'file',
+                'path': 'script.js',
+            },
+            nullcontext({
+                'kind': 'file',
+                'mime': 'text/javascript',
+                'path': Path('script.js'),
+                'value': 'alert(1);\n',
+            }),
+            id = 'guess type',
+        ),
+        pytest.param(
+            {
+                'kind': 'file',
+                'path': 'response.json.jinja',
+            },
+            nullcontext({
+                'kind': 'file',
+                'mime': 'application/json',
+                'path': Path('response.json.jinja'),
+                'value': '{"key":"value"}\n',
+            }),
+            id = 'guess type with jinja suffix',
+        ),
+        pytest.param(
+            {
+                'kind': 'file',
+                'path': 'sub/no-extension',
+            },
+            nullcontext({
+                'kind': 'file',
+                'mime': 'text/plain',
+                'path': Path('sub/no-extension'),
+                'value': 'just text\n',
+            }),
+            id = 'leave guessable type as text/plain',
         ),
     ],
 )

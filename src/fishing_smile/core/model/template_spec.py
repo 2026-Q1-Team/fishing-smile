@@ -4,6 +4,7 @@ from typing import (
     Union,
 )
 from pathlib import Path
+import mimetypes
 
 from pydantic import (
     BaseModel,
@@ -27,29 +28,42 @@ class StringTemplateSpec(LongTemplateSpec):
 class FileTemplateSpec(LongTemplateSpec):
     kind: Literal['file'] = 'file'
     path: Path
-    # NOTE: This is a private field used to cache file content
+    _effective_path: Path
     _value: str
 
-    # TODO: guess mime type from filename 
-    @model_validator(mode = "after")
+    @model_validator(mode = 'after')
     def read_template_value_from_file(self, info: ValidationInfo):
         if self.path.is_absolute():
-            effective_path = self.path
+            self._effective_path = self.path
         else:
             base_directory = info.context and info.context.get('base_directory', None)
             if base_directory is None:
                 raise ValueError('Need base_directory context to resolve relative path to template file')
-            effective_path = base_directory / self.path
+            self._effective_path = base_directory / self.path
 
         try:
-            self._value = effective_path.read_text()
+            self._value = self._effective_path.read_text()
         except FileNotFoundError:
-            raise ValueError(f'Path {effective_path} does not point to a file') from None
+            raise ValueError(f'Path {self._effective_path} does not point to a file') from None
         return self
 
     @property
     def value(self) -> str:
         return self._value
+
+    @model_validator(mode = 'after')
+    def guess_type_when_not_explicitly_set(self):
+        if 'mime' in self.model_fields_set:
+            return self
+
+        path = self._effective_path
+        if path.suffix == '.jinja':
+            path = path.with_suffix('')
+
+        (guess, _) = mimetypes.guess_file_type(path)
+        if guess:
+            self.mime = guess
+        return self
 
 
 AnyLongTemplateSpec = Annotated[
