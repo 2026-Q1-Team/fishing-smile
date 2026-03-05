@@ -16,8 +16,8 @@ This document will cover the description, requirements, and traceability matrix 
 
 ## Scope
 
-The fishing-smile system is a tool for evaluating phishing-attack awareness, it can be used to simulate an attack in
-order to perform evaluation on any subjects specified by the user, with provided dashboard displays for ease of
+The fishing-smile system is a tool for phishing-attack awareness training, it can be used to simulate an attack in
+and perform evaluation on any subjects specified by the user, with provided dashboard displays for ease of
 management.
 Additionally, the scheme of each attack can be customized to match any requirements of the user in order to train
 subjects to catch specific red-flags that count towards the evaluation metric.
@@ -40,7 +40,18 @@ understands the basic premise of the product and merely wishes to view the more 
 
 ## System Overview
 
+Fishing-smile is a phishing-attack simulation tool, it is a system designed to perform simulated phishing attacks on any
+user-specified targets and provide evaluation of a target's awareness of the ongoing attack scenario simulation.
+This tool is developed primarily to provide support for any security awareness training regiment, in order to be used in
+tandem with other educational tool and evaluation methods.
+
+```mermaid
+placeholder1->placeholder2
+```
+
 ## System Functionality
+
+There are [number] functions that the fishing-smile tool offers.
 
 ## Design and Implementation Constraints
 
