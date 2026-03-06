@@ -26,7 +26,7 @@ AnyAttackComponent = Annotated[
 class AttackScheme(BaseModel):
     name: str = Field(description = 'short, snake_case, unique name')
     description: str | None = Field(None, description = 'longer, human readable explanation')
-    components: SearchList[AnyAttackComponent] = []
+    components: SearchList[AnyAttackComponent] = SearchList()
 
     @classmethod
     def from_file(cls, path: Path):
