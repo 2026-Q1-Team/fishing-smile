@@ -30,9 +30,10 @@ class FileTemplateSpec(LongTemplateSpec):
     path: Path
     _effective_path: Path
     _value: str
+    _value_mtime: float
 
     @model_validator(mode = 'after')
-    def read_template_value_from_file(self, info: ValidationInfo):
+    def resolve_path(self, info: ValidationInfo):
         if self.path.is_absolute():
             self._effective_path = self.path
         else:
@@ -40,15 +41,23 @@ class FileTemplateSpec(LongTemplateSpec):
             if base_directory is None:
                 raise ValueError('Need base_directory context to resolve relative path to template file')
             self._effective_path = base_directory / self.path
+        return self
 
+    @model_validator(mode = 'after')
+    def reload_from_file(self):
         try:
-            self._value = self._effective_path.read_text()
+            current_mtime = self._effective_path.stat().st_mtime
+            previous_mtime = getattr(self, '_value_mtime', None)
+            if current_mtime != previous_mtime:
+                self._value_mtime = current_mtime
+                self._value = self._effective_path.read_text()
         except FileNotFoundError:
             raise ValueError(f'Path {self._effective_path} does not point to a file') from None
         return self
 
     @property
     def value(self) -> str:
+        self.reload_from_file()
         return self._value
 
     @model_validator(mode = 'after')
