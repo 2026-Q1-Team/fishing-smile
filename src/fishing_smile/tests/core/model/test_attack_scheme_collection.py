@@ -47,28 +47,30 @@ def test_scheme_cache(schemes):
 
 
 def test_get_template_from_jinja_env(schemes):
-    template = schemes.jinja_env.get_template('scheme_with_external_template_file/html/relative')
+    template = schemes.jinja_env.get_template('scheme_with_external_template_file/html/html/relative')
     rendered = template.render()
     assert rendered == 'alert(1);'
 
 
 def test_get_invalid_template_from_jinja_env(schemes):
-    with pytest.raises(ValueError):
+    expects_invalid_format = pytest.raises(ValueError, match = 'Template name must follow .* format')
+    with expects_invalid_format:
         template = schemes.jinja_env.get_template('does not follow naming format')
     with pytest.raises(ValueError):
-        template = schemes.jinja_env.get_template('scheme_name_does_not_exist/component_name/template_name')
-    with pytest.raises(ValueError):
+        template = schemes.jinja_env.get_template('scheme_name_does_not_exist/component_kind/component_name/template_name')
+    with expects_invalid_format:
         template = schemes.jinja_env.get_template('empty/component_name_does_not_exist/template_name')
     # NOTE: Is it better to convert to ValueError for uniformity?
     with pytest.raises(KeyError):
-        template = schemes.jinja_env.get_template('scheme_with_external_template_file/html/template_name_does_not_exist')
+        template = schemes.jinja_env.get_template('scheme_with_external_template_file/html/html/template_name_does_not_exist')
 
 
 def test_string_template_cache(schemes):
     scheme_name = 'scheme_with_external_template_file'
+    component_kind = 'html'
     component_name = 'html'
     template_name = 'url'
-    jinja_key = f'{scheme_name}/{component_name}/{template_name}'
+    jinja_key = f'{scheme_name}/{component_kind}/{component_name}/{template_name}'
     source = schemes.get_meta(scheme_name).source
 
     first = schemes.jinja_env.get_template(jinja_key)
@@ -84,9 +86,10 @@ def test_string_template_cache(schemes):
 
 def test_file_template_cache(schemes):
     scheme_name = 'scheme_with_external_template_file'
+    component_kind = 'html'
     component_name = 'html'
     template_name = 'relative'
-    jinja_key = f'{scheme_name}/{component_name}/{template_name}'
+    jinja_key = f'{scheme_name}/{component_kind}/{component_name}/{template_name}'
     source = schemes.get(scheme_name).components.first(name = component_name).templates[template_name]._effective_path
 
     first = schemes.jinja_env.get_template(jinja_key)

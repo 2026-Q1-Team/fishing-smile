@@ -89,13 +89,16 @@ class AttackSchemeCollection(BaseModel):
     def jinja_env(self) -> Environment:
         def loader(name: str):
             try:
-                (scheme_name, component_name, template_name) = name.split('/')
+                (scheme_name, component_kind, component_name, template_name) = name.split('/')
             except ValueError as e:
-                # FIXME: component_name is not unique within scheme
-                e.add_note('Template name must follow {scheme_name}/{component_name}/{template_name} format')
+                e.add_note('Template name must follow {scheme_name}/{component_kind}/{component_name}/{template_name} format')
                 raise
 
-            template_spec = self.get(scheme_name).components.first(name = component_name).templates[template_name]
+            template_spec = (
+                self.get(scheme_name)
+                    .components.first(kind = component_kind, name = component_name)
+                    .templates[template_name]
+            )
             scheme_meta = self.get_meta(scheme_name)
             # FIXME: The work of checking souce current mtime is repeated by both `loader`
             # and `AttackSchemeCollection.get` / `TemplateSpec.value`.
