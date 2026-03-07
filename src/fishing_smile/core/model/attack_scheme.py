@@ -7,6 +7,7 @@ import yaml
 from pydantic import (
     BaseModel,
     Field,
+    model_validator,
 )
 
 from .search_list import SearchList
@@ -37,3 +38,13 @@ class AttackScheme(BaseModel):
             raise ValueError(f'Can not load scheme from {path}') from e
 
         return cls.model_validate(doc, context = {'base_directory': path.parent})
+
+    @model_validator(mode = 'after')
+    def components_have_unqiue_kind_name_pair(self):
+        seen = set()
+        for component in self.components:
+            key = (component.kind, component.name)
+            if key in seen:
+                raise ValueError(f'components within a scheme must have unique kind-name pair but {key} is duplicated')
+            seen.add(key)
+        return self

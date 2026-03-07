@@ -47,3 +47,22 @@ def test_find_component():
     )
     result = scheme.components.first(kind = 'html', name = 'first')
     assert result == expected
+
+
+def test_component_must_have_unique_kind_name_pair():
+    # NOTE: same name is allowed if components are of different kind
+    scheme = AttackScheme(
+        name = 'scheme_name',
+        components = [
+            EmailComponent(name = 'same_name', templates = {'subject': '', 'body': ''}),
+            HTMLComponent(name = 'same_name', templates = {'url': '', 'html': ''}),
+        ],
+    )
+    with pytest.raises(ValidationError, match = 'components within a scheme must have unique kind-name pair'):
+        scheme = AttackScheme(
+            name = 'scheme_name',
+            components = [
+                EmailComponent(name = 'same_name', templates = {'subject': 'hello', 'body': ''}),
+                EmailComponent(name = 'same_name', templates = {'subject': 'bye', 'body': ''}),
+            ],
+        )
