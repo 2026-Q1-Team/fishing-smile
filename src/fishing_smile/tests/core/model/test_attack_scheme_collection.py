@@ -2,6 +2,7 @@ from pathlib import Path
 
 import pytest
 
+from fishing_smile.settings import get_settings
 from fishing_smile.core.model import *
 
 
@@ -37,13 +38,16 @@ def test_scheme_cache(schemes):
 
     scheme = schemes.get(scheme_name)
     second = meta.cache
-    assert first is second, 'If source mtime did ont change, cached object shuold be exactly the same object as before'
+    assert first is second, 'If source mtime did not change, cached object should be exactly the same object as before'
 
     meta.source.touch()
     scheme = schemes.get(scheme_name)
     after_touching = meta.cache
-    assert second is not after_touching, 'once touched, cache must be reloaded'
-    assert second == after_touching, 'content must stays the same as file is only touched but not edited'
+    if get_settings().deployment_mode == 'development':
+        assert second is not after_touching, 'once touched, cache must be reloaded'
+        assert second == after_touching, 'content must stays the same as file is only touched but not edited'
+    else:
+        assert second is after_touching, 'Template auto-reloading is disabled in non-development mode'
 
 
 def test_get_template_from_jinja_env(schemes):
@@ -81,7 +85,10 @@ def test_string_template_cache(schemes):
     source.touch()
     assert not second.is_up_to_date
     after_touching = schemes.jinja_env.get_template(jinja_key)
-    assert second is not after_touching
+    if get_settings().deployment_mode == 'development':
+        assert second is not after_touching
+    else:
+        assert second is after_touching, 'Template auto-reloading is disabled in non-development mode'
 
 
 def test_file_template_cache(schemes):
@@ -100,4 +107,7 @@ def test_file_template_cache(schemes):
     source.touch()
     assert not second.is_up_to_date
     after_touching = schemes.jinja_env.get_template(jinja_key)
-    assert second is not after_touching
+    if get_settings().deployment_mode == 'development':
+        assert second is not after_touching
+    else:
+        assert second is after_touching, 'Template auto-reloading is disabled in non-development mode'

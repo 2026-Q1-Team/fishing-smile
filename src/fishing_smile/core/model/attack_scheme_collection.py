@@ -13,6 +13,7 @@ from jinja2 import (
     FunctionLoader,
 )
 
+from fishing_smile.settings import get_settings
 from .attack_scheme import AttackScheme
 
 
@@ -28,7 +29,20 @@ class SchemeMeta(BaseModel):
         ),
     )
 
+    @property
+    def scheme(self) -> AttackScheme:
+        if (
+            get_settings().deployment_mode != 'development'
+            and self.cache is not None
+        ):
+            return self.cache
+
+        self.refresh()
+        return self.cache
+
+
     def refresh(self) -> None:
+        """Reloads scheme from source if out-of-date"""
         current_mtime = self.source.stat().st_mtime
         if (
             self.cache is not None
@@ -90,10 +104,9 @@ class AttackSchemeCollection(BaseModel):
 
     def get(self, scheme_name: str) -> AttackScheme:
         meta = self.get_meta(scheme_name)
-        meta.refresh()
-        if meta.cache.name != scheme_name:
-            _logger.warning(f'Scheme named {meta.cache.name} is unconventionally stored at {meta.source}')
-        return meta.cache
+        if meta.scheme.name != scheme_name:
+            _logger.warning(f'Scheme named {meta.scheme.name} is unconventionally stored at {meta.source}')
+        return meta.scheme
 
     @cached_property
     def jinja_env(self) -> Environment:
@@ -130,6 +143,7 @@ class AttackSchemeCollection(BaseModel):
             return (template_spec.value, filename, uptodate)
         return Environment(
             loader = FunctionLoader(loader),
+            auto_reload = get_settings().deployment_mode == 'development',
             # TODO: set bytecode_cache to persistent location
         )
 

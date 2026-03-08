@@ -7,6 +7,7 @@ from pydantic import (
     ValidationError,
 )
 
+from fishing_smile.settings import get_settings
 from fishing_smile.core.model import *
 
 
@@ -138,3 +139,26 @@ def test_template_spec(input_value, expectation):
             for key in expected_attrs
         }
         assert result_attrs == expected_attrs
+
+
+def test_file_template_spec_cache():
+    spec = TypeAdapter(TemplateSpec).validate_python(
+        {
+            'kind': 'file',
+            'mime': 'text/javascript',
+            'path': 'script.js',
+        },
+        context = {'base_directory': _BASE_DIRECTORY},
+    )
+    value_before = spec.value
+    mtime_before = spec._value_mtime
+
+    spec._effective_path.touch()
+    value_after = spec.value
+    mtime_after = spec._value_mtime
+    if get_settings().deployment_mode == 'development':
+        assert mtime_before != mtime_after
+        # NOTE: The same immutable string object might be reused after reload. Can't test using string identity.
+    else:
+        assert mtime_before == mtime_after, 'Template auto-reloading is disabled in non-development mode'
+        assert value_before is value_after

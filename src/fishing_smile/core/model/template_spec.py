@@ -14,6 +14,8 @@ from pydantic import (
     ValidationInfo,
 )
 
+from fishing_smile.settings import get_settings
+
 
 class LongTemplateSpec(BaseModel):
     kind: str
@@ -57,7 +59,8 @@ class FileTemplateSpec(LongTemplateSpec):
 
     @property
     def value(self) -> str:
-        self.reload_from_file()
+        if get_settings().deployment_mode == 'development':
+            self.reload_from_file()
         return self._value
 
     @model_validator(mode = 'after')
