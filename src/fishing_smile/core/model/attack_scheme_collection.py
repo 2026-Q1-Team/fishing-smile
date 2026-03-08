@@ -19,7 +19,25 @@ from .attack_scheme import AttackScheme
 class SchemeMeta(BaseModel):
     source: Path
     cache: AttackScheme | None = None
-    cache_mtime: float | None = None
+    cache_mtime: float | None = Field(
+        None,
+        description = (
+            'mtime of source file when current cache is obtained.'
+            ' Set to None to mark cache as stale.'
+            ' Must be None when cache is None.'
+        ),
+    )
+
+    def refresh(self) -> None:
+        current_mtime = self.source.stat().st_mtime
+        if (
+            self.cache is not None
+            and self.cache_mtime == current_mtime
+        ):
+            return
+
+        self.cache = AttackScheme.from_file(self.source)
+        self.cache_mtime = current_mtime
 
 
 def _make_mtime_checker(
@@ -72,15 +90,7 @@ class AttackSchemeCollection(BaseModel):
 
     def get(self, scheme_name: str) -> AttackScheme:
         meta = self.get_meta(scheme_name)
-        current_mtime = meta.source.stat().st_mtime
-        if (
-            meta.cache is not None
-            and meta.cache_mtime == current_mtime
-        ):
-            return meta.cache
-
-        meta.cache = AttackScheme.from_file(meta.source)
-        meta.cache_mtime = current_mtime
+        meta.refresh()
         if meta.cache.name != scheme_name:
             _logger.warning(f'Scheme named {meta.cache.name} is unconventionally stored at {meta.source}')
         return meta.cache
@@ -101,8 +111,7 @@ class AttackSchemeCollection(BaseModel):
             )
             scheme_meta = self.get_meta(scheme_name)
             # FIXME: The work of checking souce current mtime is repeated by both `loader`
-            # and `AttackSchemeCollection.get` / `TemplateSpec.value`.
-            # Maybe, jinja's uptodate function should invalidate underlying cache too.
+            # and `SchemeMeta.refresh` / `TemplateSpec.value`.
             match template_spec.kind:
                 case 'file':
                     uptodate = _make_mtime_checker(template_spec._effective_path)
