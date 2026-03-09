@@ -51,11 +51,27 @@ placeholder1->placeholder2
 
 ## System Functionality
 
-There are [number] functions that the fishing-smile tool offers.
+There are five main functions that the fishing-smile tool offers.
+
++ Email content generation based on attack schemes and target profiles.
++ Landing page content generation based on attack schemes. (WIP)
++ Sending emails to target addresses.
++ Tracking and recording target interaction with the system.
++ Summarizing target risk factor as part of a security awareness training program.
 
 ## Design and Implementation Constraints
 
-## Assumptions adn Dependencies
+This tool is designed for the personal desktop computer and personal laptop computer.
+It is currently not possible to track a target's interaction with the email contents itself, only the website that the
+URL that should be present in every email directs to.
+
+## Assumptions and Dependencies
+
+It is assumed that the user has explicit permission to perform any such simulated phishing attacks on all targets
+referenced in the simulated attack itself.
+This tool is not to be used to perform the simulated phishing attack function without explicit permission from involved
+parties.
+For this tool to function as intended -- one, the user must ensure that [add dependencies here]
 
 # Specific Requirements
 
