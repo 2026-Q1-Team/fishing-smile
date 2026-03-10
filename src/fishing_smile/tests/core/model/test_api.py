@@ -70,8 +70,8 @@ def test_change_password_page(session, client):
     assert response.status_code == 200
 
     parameter = {"k": attacks[1].external_id}
-    with pytest.raises(ValueError):
-        response = client.get('/change_password', params = parameter)
+    response = client.get('/change_password', params = parameter)
+    assert response.status_code == 404
 
 
 def test_change_password_api(session, client):

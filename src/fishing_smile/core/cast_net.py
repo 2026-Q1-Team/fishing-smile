@@ -11,7 +11,6 @@ from sqlmodel import (
     Session,
     select,
 )
-from jinja2 import Template
 
 from fishing_smile.settings import get_settings
 from fishing_smile.core.model import *
@@ -76,7 +75,7 @@ def render_mail(
     # TODO: Current templating language don't allow cross-referencing automatically yet.
     # We rely on rendering templates in the **correct** order and adding them to context
     for template_name in ['url', 'subject', 'body']:
-        rendered[template_name] = Template(email_component.templates[template_name].value).render(**context)
+        rendered[template_name] = email_component.templates[template_name].jinja.render(**context)
 
     msg = EmailMessage()
     msg['Subject'] = rendered['subject']

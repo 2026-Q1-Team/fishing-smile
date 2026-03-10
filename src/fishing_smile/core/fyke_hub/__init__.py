@@ -45,7 +45,10 @@ async def change_password_ui(
         select(AttackTable)
             .where(AttackTable.external_id == k)
     ).first()
-    if attack == None:
+    if (
+        attack == None
+        or attack.scheme_name != 'generic_org_change_password'
+    ):
         raise HTTPException(
             status_code = 404,
             # NOTE: Report error using the neutral term `session` instead of `attack`
@@ -62,12 +65,13 @@ async def change_password_ui(
     session.commit()
 
     scheme = attack.scheme
-    html_component = scheme.components.first(name = 'form_page_change_password')
-    html_spec = getattr(html_component, 'templates', {}).get('html')
-    template_str = html_spec.value if html_spec is not None and hasattr(html_spec, 'value') else getattr(html_component, 'html_template', '') or ''
-    jinja_template = Template(template_str)
-    html_content = jinja_template.render()
-    return HTMLResponse(content=html_content)
+    html_content = (
+        scheme
+        .components.first(kind = 'html', name = 'form_page_change_password')
+        .templates['html']
+        .jinja.render()
+    )
+    return HTMLResponse(content = html_content)
 
 
 class ChangePasswordApiBody(BaseModel):
