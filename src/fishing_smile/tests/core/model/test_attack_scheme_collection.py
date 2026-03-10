@@ -111,3 +111,13 @@ def test_file_template_cache(schemes):
         assert second is not after_touching
     else:
         assert second is after_touching, 'Template auto-reloading is disabled in non-development mode'
+
+
+def test_render_template_using_jinja_env_of_collection(schemes):
+    scheme_name = 'scheme_with_external_template_file'
+    component_kind = 'html'
+    component_name = 'html'
+    template_name = 'relative'
+    template_spec = schemes.get(scheme_name).components.first(name = component_name).templates[template_name]
+    rendered = template_spec.jinja.render()
+    assert rendered == 'alert(1);'

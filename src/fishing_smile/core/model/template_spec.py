@@ -2,6 +2,7 @@ from typing import (
     Annotated,
     Literal,
     Union,
+    Callable,
 )
 from pathlib import Path
 import mimetypes
@@ -13,13 +14,20 @@ from pydantic import (
     BeforeValidator,
     ValidationInfo,
 )
+from jinja2 import Template
 
 from fishing_smile.settings import get_settings
+from .always_equal import AlwaysEqual
 
 
 class LongTemplateSpec(BaseModel):
     kind: str
     mime: str = 'text/plain'
+    _jinja: AlwaysEqual[Callable[[], Template]] | None = None
+
+    @property
+    def jinja(self) -> Template:
+        return self._jinja.value()
 
 
 class StringTemplateSpec(LongTemplateSpec):

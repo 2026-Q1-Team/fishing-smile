@@ -3,6 +3,7 @@ _logger = logging.getLogger(__name__)
 from pathlib import Path
 from functools import cached_property
 from typing import Callable
+import weakref
 
 from pydantic import (
     BaseModel,
@@ -15,6 +16,7 @@ from jinja2 import (
 
 from fishing_smile.settings import get_settings
 from .attack_scheme import AttackScheme
+from .always_equal import AlwaysEqual
 
 
 class SchemeMeta(BaseModel):
@@ -31,6 +33,8 @@ class SchemeMeta(BaseModel):
 
     @property
     def scheme(self) -> AttackScheme:
+        # NOTE: To future maintainers, consider removing autoreloading feature if it is getting too complicated.
+        # This is a feature used only in development.
         if (
             get_settings().deployment_mode != 'development'
             and self.cache is not None
@@ -39,7 +43,6 @@ class SchemeMeta(BaseModel):
 
         self.refresh()
         return self.cache
-
 
     def refresh(self) -> None:
         """Reloads scheme from source if out-of-date"""
@@ -106,6 +109,14 @@ class AttackSchemeCollection(BaseModel):
         meta = self.get_meta(scheme_name)
         if meta.scheme.name != scheme_name:
             _logger.warning(f'Scheme named {meta.scheme.name} is unconventionally stored at {meta.source}')
+        for component in meta.scheme.components:
+            for template_name, template_spec in component.templates.items():
+                template_spec._jinja = AlwaysEqual(
+                    lambda
+                        env = weakref.proxy(self.jinja_env),
+                        name = f'{scheme_name}/{component.kind}/{component.name}/{template_name}':
+                    env.get_template(name)
+                )
         return meta.scheme
 
     @cached_property
