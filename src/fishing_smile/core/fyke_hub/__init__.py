@@ -113,10 +113,7 @@ async def change_password_api(
         all_red_flags.extend(component.red_flags)
 
     html_component = scheme.components.first(name ='form_page')
-    html_spec = getattr(html_component, 'templates', {}).get('html')
-    template_str = html_spec.value if html_spec is not None and hasattr(html_spec, 'value') else getattr(html_component, 'html_template', '') or ''
-    jinja_template = Template(template_str)
-    html_content = jinja_template.render(
+    html_content = html_component.templates['html'].jinja.render(
         scheme_name=scheme.name,
         description=scheme.description or "",
         red_flags=[
@@ -125,6 +122,7 @@ async def change_password_api(
         ],
     )
     return HTMLResponse(content=html_content)
+
 
 @app.get('/payroll_update', response_class=HTMLResponse)
 async def update_payroll(
@@ -149,9 +147,9 @@ async def update_payroll(
 
     scheme = attack.scheme
     html_component = scheme.components.first(name = 'payroll_update_page')
-    jinja_template = Template(html_component.templates['html'].value)
-    html_content = jinja_template.render()
+    html_content = html_component.templates['html'].jinja.render()
     return HTMLResponse(html_content)
+
 
 @app.get('/internal/hr-portal', response_class=HTMLResponse)
 async def hr_benefits_update_login(
@@ -178,6 +176,5 @@ async def hr_benefits_update_login(
     scheme = attack_table.scheme
 
     html_component = scheme.components.first(name = 'hr_login')
-    jinja_template = Template(html_component.templates['html'].value)
-    html_content = jinja_template.render(attack = attack_table)
+    html_content = html_component.templates['html'].jinja.render(attack = attack_table)
     return HTMLResponse(html_content)
