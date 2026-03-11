@@ -13,7 +13,6 @@ def test_create_search_delete(session):
         email = 'jon.snow@nowhere.westeros.org',
     )
     attack = AttackTable(
-        external_id = '01234567890123456789012345678901',
         scheme_name = 'empty',
         target = profile,
     )

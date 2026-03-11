@@ -69,7 +69,7 @@ def test_render_mail(session):
         job_title='pro fisher',
     )
     attack = AttackTable(
-        external_id='67',
+        external_id='01234567890123456789012345678901',
         scheme_name='generic_org_change_password',
         target_id='0',
         target = target,
@@ -101,6 +101,6 @@ def test_render_mail(session):
         Thank you for taking your time to keep our organization secure.
         - ICT Team.
         
-        [1] localhost/index.html?k=67
+        [1] localhost/index.html?k=01234567890123456789012345678901
     """) + '\n'
     assert result == expected

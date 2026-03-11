@@ -1,8 +1,6 @@
 import logging
-
 _logger = logging.getLogger(__name__)
 from multiprocessing.pool import job_counter
-import secrets
 import smtplib
 from email.message import Message, EmailMessage
 from collections.abc import Iterable
@@ -47,11 +45,9 @@ def register_new_attack(
     scheme: AttackScheme,
     session: Session,
 ) -> AttackTable:
-    ex_id = secrets.token_hex(16)  # token_urlsafe returns inconsistent string length
     target = register_target_profile(target, session)
     session.flush()
     attack = AttackTable(
-        external_id = ex_id,
         scheme_name = scheme.name,
         target_id = target.id,
     )

@@ -24,7 +24,6 @@ def fyke_hub_client(session):
 def test_change_password_page(session, client):
     attacks = [
         AttackTable(
-            external_id = 'test_change_password_html_page_1',
             scheme_name = 'generic_org_change_password',
             target = TargetProfileTable(
                 name = 'Jack Fishing',
@@ -32,7 +31,6 @@ def test_change_password_page(session, client):
             ),
         ),
         AttackTable(
-            external_id = 'test_change_password_html_page_2',
             scheme_name = 'invalid_scheme',
             target = TargetProfileTable(
                 name = 'John Fishing',
@@ -57,7 +55,7 @@ def test_change_password_page(session, client):
         "TargetProfileTable.name between database and test doesn't match"
     assert result.TargetProfileTable.email == 'jack.fishing@nowhere.westeros.org',\
         "TargetProfileTable.email between database and test doesn't match"
-    assert result.AttackTable.external_id == 'test_change_password_html_page_1',\
+    assert result.AttackTable.external_id == attacks[0].external_id,\
         "AttackTable.external_id between database and test doesn't match"
     assert result.AttackTable.scheme_name == 'generic_org_change_password',\
         "AttackTable.scheme_name between database and test doesn't match"
@@ -77,7 +75,6 @@ def test_change_password_page(session, client):
 def test_change_password_api(session, client):
     attacks = [
         AttackTable(
-            external_id = 'test_change_password_api_1',
             scheme_name = 'generic_org_change_password',
             target = TargetProfileTable(
                 name = 'Jack Fishing',
@@ -85,7 +82,6 @@ def test_change_password_api(session, client):
             ),
         ),
         AttackTable(
-            external_id = 'test_change_password_api_2',
             scheme_name = 'invalid_scheme',
             target = TargetProfileTable(
                 name = 'John Fishing',
@@ -111,7 +107,7 @@ def test_change_password_api(session, client):
         "TargetProfileTable.name between database and test doesn't match"
     assert result.TargetProfileTable.email == 'jack.fishing@nowhere.westeros.org',\
         "TargetProfileTable.email between database and test doesn't match"
-    assert result.AttackTable.external_id == 'test_change_password_api_1',\
+    assert result.AttackTable.external_id == attacks[0].external_id,\
         "AttackTable.external_id between database and test doesn't match"
     assert result.AttackTable.scheme_name == 'generic_org_change_password',\
         "AttackTable.scheme_name between database and test doesn't match"
@@ -132,7 +128,6 @@ def test_change_password_api(session, client):
 def test_payroll_update(session, client):
     attacks = [
         AttackTable(
-            external_id = 'test_hr_benefit_html_page_1',
             scheme_name = 'payroll_update',
             target = TargetProfileTable(
                 name = 'Jack Fishing',
@@ -140,7 +135,6 @@ def test_payroll_update(session, client):
             ),
         ),
         AttackTable(
-            external_id = 'test_hr_benefit_html_page_2',
             scheme_name = 'invalid_scheme',
             target = TargetProfileTable(
                 name = 'John Fishing',
@@ -158,7 +152,6 @@ def test_payroll_update(session, client):
 def test_hr_html(session, client):
     attacks = [
         AttackTable(
-            external_id = 'test_hr_benefit_html_page_1',
             scheme_name = 'hr_benefits_update_page',
             target = TargetProfileTable(
                 name = 'Jack Fishing',
@@ -166,7 +159,6 @@ def test_hr_html(session, client):
             ),
         ),
         AttackTable(
-            external_id = 'test_hr_benefit_html_page_2',
             scheme_name = 'invalid_scheme',
             target = TargetProfileTable(
                 name = 'John Fishing',

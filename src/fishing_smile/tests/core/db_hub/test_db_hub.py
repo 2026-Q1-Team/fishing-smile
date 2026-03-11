@@ -21,25 +21,20 @@ def db_hub_client(session):
 
 
 def test_get_campaigns(session, client):
-    # TODO: If we are making more test cases, it might be more convenient
-    # to refactor test data as YAML file
     profile = TargetProfileTable(
         name = 'Jon Snow',
         email = 'jon.snow@nowhere.westeros.org',
     )
     attacks = [
         AttackTable(
-            external_id = '012345678901234567890123456789AA',
             scheme_name = 'lucky_draw',
             target = profile,
         ),
         AttackTable(
-            external_id = '012345678901234567890123456789BB',
             scheme_name = 'change_password',
             target = profile,
         ),
         AttackTable(
-            external_id = '012345678901234567890123456789CC',
             scheme_name = 'change_password',
             target = profile,
         ),
@@ -81,7 +76,6 @@ def test_get_tracking_sent(session, client):
         email = 'jon.snow@nowhere.westeros.org',
     )
     attack = AttackTable(
-        external_id = '012345678901234567890123456789AA',
         scheme_name = 'lucky_draw',
         target = profile,
     )
@@ -117,7 +111,6 @@ def test_get_tracking_clicked(session, client):
         email = 'arya@winterfell.westeros.org',
     )
     attack = AttackTable(
-        external_id = '012345678901234567890123456789DD',
         scheme_name = 'lucky_draw',
         target = profile,
     )
@@ -147,7 +140,6 @@ def test_get_tracking_submitted(session, client):
         email = 'sansa@winterfell.westeros.org',
     )
     attack = AttackTable(
-        external_id = '012345678901234567890123456789EE',
         scheme_name = 'change_password',
         target = profile,
     )
@@ -184,7 +176,6 @@ def test_get_dashboard(session, client):
         email = 'jon.snow@nowhere.westeros.org',
     )
     attack = AttackTable(
-        external_id = '012345678901234567890123456789AA',
         scheme_name = 'lucky_draw',
         target = profile,
     )

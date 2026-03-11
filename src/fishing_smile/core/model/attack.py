@@ -1,4 +1,5 @@
 from functools import cached_property
+import secrets
 
 from sqlalchemy import CHAR
 from sqlmodel import Field, Relationship
@@ -18,6 +19,9 @@ class Attack(SQLModel):
         min_length = 32,
         max_length = 32,
         sa_type = CHAR(32),
+        # TODO: This is more random than UUIDv4, so it can be assumed safe from collision without checking.
+        # However, it's a good idea to provide a `Attack.new()` method that's actually handles collision.
+        default_factory = lambda: secrets.token_urlsafe(24),
     )
     scheme_name: str = Field(
         max_length = 32,
