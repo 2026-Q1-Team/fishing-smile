@@ -4,7 +4,7 @@ import hashlib
 
 from jinja2 import Template
 from fastapi import FastAPI, Request, Depends, HTTPException
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.middleware.cors import CORSMiddleware
@@ -178,35 +178,3 @@ async def hr_benefits_update_login(
     html_component = scheme.components.first(name = 'hr_login')
     html_content = html_component.templates['html'].jinja.render(attack = attack_table)
     return HTMLResponse(html_content)
-
-
-class ChangePasswordApiBody(BaseModel):
-    k: str = Field(description = 'Key identifying attack instance (fishcast)')
-
-
-@app.post('/api/contact_security_team', response_class=JSONResponse)
-async def contact_security_team_api(
-    body: ChangePasswordApiBody,
-    request: Request,
-    session: Session = Depends(get_session),
-):
-    attack = session.exec(
-        select(AttackTable)
-            .where(AttackTable.external_id == body.k)
-    ).first()
-    if attack == None:
-        raise HTTPException(
-            status_code = 404,
-            detail = 'Key does not match existing session',
-        )
-
-    event = EventTable(
-        parent_attack_id = attack.id,
-        kind = "contact_security_team",
-        detail = {
-            'ip': request.client.host,
-        },
-    )
-    session.add(event)
-    session.commit()
-    return {"result" : "done"}  # can change to more suitable response later. 

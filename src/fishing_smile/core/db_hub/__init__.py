@@ -1,13 +1,16 @@
 from fastapi import (
     FastAPI,
     Depends,
+    Request,
 )
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from datetime import datetime
 
 import sqlalchemy as sa
 from sqlmodel import (
+    Field,
     Session,
     select,
 )
@@ -125,3 +128,35 @@ async def get_dashboard_data(
         'campaigns': campaigns,
         'tracking': tracking,
     }
+
+
+class contact_security_team(BaseModel):
+    k: str = Field(description = 'Key identifying attack instance (fishcast)')
+
+
+@app.post('/api/contact_security_team', response_class=JSONResponse)
+async def contact_security_team_api(
+    body: contact_security_team,
+    request: Request,
+    session: Session = Depends(get_session),
+):
+    attack = session.exec(
+        select(AttackTable)
+            .where(AttackTable.external_id == body.k)
+    ).first()
+    if attack == None:
+        raise HTTPException(
+            status_code = 404,
+            detail = 'Key does not match existing session',
+        )
+
+    event = EventTable(
+        parent_attack_id = attack.id,
+        kind = "contact_security_team",
+        detail = {
+            'ip': request.client.host,
+        },
+    )
+    session.add(event)
+    session.commit()
+    return JSONResponse({"result" : "done"})  # can change to more suitable response later. 
