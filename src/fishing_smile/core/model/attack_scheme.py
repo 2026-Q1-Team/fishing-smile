@@ -14,11 +14,12 @@ from .attack_component import (
     EmailComponent,
     HTMLComponent,
     APIComponent,
+    WebComponent
 )
 from .search_list import SearchList
 
 AnyAttackComponent = Annotated[
-    Union[EmailComponent, HTMLComponent, APIComponent],
+    Union[EmailComponent, HTMLComponent, APIComponent, WebComponent],
     Field(discriminator = 'kind'),
 ]
 

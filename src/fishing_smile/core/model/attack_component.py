@@ -43,12 +43,8 @@ class EmailComponent(AttackComponent):
     required_templates = ['subject', 'body']
 
 
-# NOTE: Maybe we should have a `handler` property that
-# evaluates to a FastAPI endpoint definition.
-# The `handler` could be populated through naming python module
-# or ...
-# NOTE: And if we have `handler` property,
-# both HTML and API can be handled the same way.
+# NOTE: Maybe we should have a `handler` that
+# create a FastAPI endpoint based on component definition.
 class HTMLComponent(AttackComponent):
     kind: Literal['html'] = 'html'
     required_templates = ['url', 'html']
@@ -58,3 +54,8 @@ class APIComponent(AttackComponent):
     kind: Literal['api'] = 'api'
     method: HTTPMethod = 'POST'
     required_templates = ['url']
+
+
+class WebComponent(AttackComponent):
+    kind: Literal['web'] = 'web'
+    required_templates = ['html', 'url']

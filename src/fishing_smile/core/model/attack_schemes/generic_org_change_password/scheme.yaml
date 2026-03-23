@@ -35,7 +35,7 @@ components:
 - kind: html
   name: form_page_change_password
   templates:
-    url: https://{{ settings.fyke.host }}/change_password
+    url: /change_password
     html:
       kind: file
       path: form_page_change_password.html.jinja
