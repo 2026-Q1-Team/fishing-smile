@@ -70,7 +70,7 @@ def render_mail(
     }
     # TODO: Current templating language don't allow cross-referencing automatically yet.
     # We rely on rendering templates in the **correct** order and adding them to context
-    for template_name in ['url', 'subject', 'body']:
+    for template_name in email_component.templates:
         rendered[template_name] = email_component.templates[template_name].jinja.render(**context)
 
     msg = EmailMessage()
@@ -78,9 +78,8 @@ def render_mail(
     msg['From'] = settings.cast.sender
     msg['To'] = target.email
     # TODO -- make and run a test on this
-    msg.set_content(rendered['body'],
-                    cte='7bit')  # this should be email body in plaintext only, can be preformatted, no images.
-    # msg.add_alternative(rendered['html'])  # this should be email body in html only, can have image.
+    msg.set_content(rendered['body'], cte='7bit')  # this should be email body in plaintext only, can be preformatted, no images.
+    msg.add_alternative(rendered['alt_body'])  # this should be email body in html only, can have image.
     return msg
 
 
