@@ -1,0 +1,26 @@
+name: template_for_schemes
+description: >-
+  this is a template for designing new schemes. try to follow this format.
+components:
+  - kind: email
+    name: name_of_email
+    templates:
+      url: {{ settings.cast.url }}/path_to_webpage?k={{ attack.external_id }}
+      subject: >-
+        put your email subject here, you can reference stuff from attack table.
+      body:
+        kind: file
+        path: body.txt.jinja
+        mime: text/plain
+      alt_body:
+        kind: file
+        path: alt_body.html.jinja
+        mime: text/html
+  - kind: web
+    name: web_page
+    templates:
+      html:
+        kind: file
+        path: web_page.html.jinja
+        mime: text/html
+      url: /path_to_webpage
