@@ -10,13 +10,12 @@ from pydantic import (
     model_validator,
 )
 
-from .search_list import SearchList
 from .attack_component import (
     EmailComponent,
     HTMLComponent,
     APIComponent,
 )
-
+from .search_list import SearchList
 
 AnyAttackComponent = Annotated[
     Union[EmailComponent, HTMLComponent, APIComponent],
@@ -40,6 +39,7 @@ class AttackScheme(BaseModel):
         return cls.model_validate(doc, context = {'base_directory': path.parent})
 
     @model_validator(mode = 'after')
+    # TODO -- fix typo, change "unqiue" to "unique"
     def components_have_unqiue_kind_name_pair(self):
         seen = set()
         for component in self.components:

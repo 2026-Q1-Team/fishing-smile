@@ -5,7 +5,9 @@ in order to improve the quality of benefits we provide to our employees.
 
 Please fill out the form below.
 
-{{ templates.url }}
+Click here [1]
 
 Thank you for taking your time to improve our organization.
 - HR Team.
+
+[1] {{ settings.cast.url }}{{ survey_page.templates.url }}?k={{ attack.external_id }}

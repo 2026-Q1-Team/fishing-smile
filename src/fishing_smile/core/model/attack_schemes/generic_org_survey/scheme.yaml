@@ -4,29 +4,23 @@ description: >-
   by impersonating a organization-wide survey regarding mundane topics.
 components:
 - kind: email
-  name: fake_survey_email
+  name: benefits_survey_email
   templates:
-    url: >-
-      {{ settings.cast.url }}/index.html?k={{ attack.external_id }}
     subject: >-
       {{ attack.target.company }} Yearly Benefits Survey.
     body:
       kind: file
-      path: survey_email_body.txt
+      path: survey_email_body.txt.jinja
       mime: text/plain
     alt_body:
       kind: file
-      path: survey_email_body.html.jinja
+      path: survey_email_alt_body.html.jinja
       mime: text/html
-- kind: html
-  name: form_page
+- kind: web
+  name: survey_page
   templates:
-    url: >-
-      {{ settings.cast.url }}/survey
-    html: |
-      <html></html>
-- kind: api
-  name: submit
-  templates:
-    url: >-
-      {{ settings.cast.url }}/api/survey/submit
+    html:
+      kind: file
+      path: survey_page.html.jinja
+      mime: text/html
+    url: /benefits_survey

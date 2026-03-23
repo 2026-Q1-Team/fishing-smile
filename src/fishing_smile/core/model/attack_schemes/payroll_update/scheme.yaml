@@ -6,23 +6,22 @@ components:
 - kind: email
   name: payroll_email
   templates:
-    url: "{{ settings.cast.url }}/payroll-update?k={{ attack.external_id }}"
-    subject: "Payroll Discrepancy Found - Action Required"
+    url: >-
+      {{ settings.cast.url }}/payroll_update?k={{ attack.external_id }}
+    subject: >-
+      Payroll Discrepancy Found - Action Required
     body:
       kind: file
-      path: payroll_email_body.html.jinja
+      path: payroll_email_body.txt.jinja
+    alt_body:
+      kind: file
+      path: payroll_email_alt_body.html.jinja
       mime: text/html
-  red_flags:
-  - kind: financial_threat
-    name: payment_delay
-    explanation: "Leveraging payroll delays to create a sense of urgency and financial insecurity"
-
-- kind: html
+- kind: web
   name: payroll_update_page
   templates:
-    url: >-
-      {{ settings.cast.url }}/payroll-update
     html:
       kind: file
       path: payroll_update_page.html.jinja
       mime: text/html
+    url: /payroll_update
