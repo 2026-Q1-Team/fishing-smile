@@ -16,7 +16,7 @@ components:
       mime: text/plain
     alt_body:
       kind: file
-      path: hr_benefits_alt_email_body.html.jinja
+      path: hr_benefits_email_alt_body.html.jinja
       mime: text/html
 - kind: web
   name: hr_benefits_page
