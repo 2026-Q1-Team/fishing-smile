@@ -2,6 +2,7 @@ from datetime import datetime
 from pathlib import Path
 import hashlib
 
+from fastapi.openapi.models import Components
 from jinja2 import Template
 from fastapi import FastAPI, Request, Depends, HTTPException
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
@@ -33,148 +34,112 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# TODO: Each endpoint should be defined as part of an attack component
-# instead of being hardcoded in fyke_hub server.
-@app.get('/change_password', response_class=HTMLResponse)
-async def change_password_ui(
-    k: str,
-    request: Request,
-    session: Session = Depends(get_session)
-):
-    attack = session.exec(
-        select(AttackTable)
-            .where(AttackTable.external_id == k)
-    ).first()
-    if (
-        attack == None
-        or attack.scheme_name != 'generic_org_change_password'
-    ):
-        raise HTTPException(
-            status_code = 404,
-            # NOTE: Report error using the neutral term `session` instead of `attack`
-            # because at this point we are still trying to deceive target.
-            detail = 'Key does not match existing session',
-        )
+# Dynamic Endpoint Creation
+for scheme_name in standard_schemes.schemes:
+    for component in standard_schemes.get(scheme_name).components:
+        if component.kind == 'web' and component.templates['method'].value == 'GET':
+            def create_endpoint(scheme_name):
+                async def universal_endpoint(
+                    k: str,
+                    request: Request,
+                    session: Session = Depends(get_session),
+                ):
+                    attack = session.exec(
+                        select(AttackTable)
+                            .where(AttackTable.external_id == k)
+                    ).first()
+                    if (
+                        attack == None
+                        or attack.scheme_name != scheme_name
+                    ):
+                        raise HTTPException(
+                            status_code = 404,
+                            # NOTE: Report error using the neutral term `session` instead of `attack`
+                            # because at this point we are still trying to deceive target.
+                            detail = 'Key does not match existing session',
+                        )
 
-    event = EventTable(
-        parent_attack_id = attack.id,
-        kind = "Email.sent, Link.clicked",
-        detail = {'ip': request.client.host},
-    )
-    session.add(event)
-    session.commit()
+                    event_detail = {}
+                    if component.templates['eventdetail'].value == 'ip':
+                        event_detail  = {'ip': request.client.host} 
+                    event = EventTable(
+                        parent_attack_id = attack.id,
+                        kind = component.templates['eventkind'].value,
+                        detail = event_detail,
+                    )
+                    session.add(event)
+                    session.commit()
 
-    scheme = attack.scheme
-    html_content = (
-        scheme
-        .components.first(kind = 'html', name = 'form_page_change_password')
-        .templates['html']
-        .jinja.render()
-    )
-    return HTMLResponse(content = html_content)
+                    scheme = attack.scheme
+                    html_component = scheme.components.first(kind = 'web')
+                    html_content = html_component.templates['html'].jinja.render(attack = attack)
+                    return HTMLResponse(content = html_content)
+                return universal_endpoint
 
+            app.add_api_route(
+                path= standard_schemes.get(scheme_name).components.first(kind = 'web').templates['url'].value,
+                endpoint=create_endpoint(scheme_name=scheme_name),
+                methods=["GET"],
+                response_class=HTMLResponse
+            )
 
-class ChangePasswordApiBody(BaseModel):
-    k: str = Field(description = 'Key identifying attack instance (fishcast)')
-    p: str = Field(description = 'Old password phish target gave out')
+        elif component.kind == 'web' and component.templates['method'].value == 'POST':
+            class ChangePasswordApiBody(BaseModel):
+                k: str = Field(description = 'Key identifying attack instance (fishcast)')
+                p: str = Field(description = 'Old password phish target gave out')
 
+            def create_endpoint(scheme_component):
+                async def universal_endpoint(
+                    body: ChangePasswordApiBody,
+                    request: Request,
+                    session: Session = Depends(get_session),
+                ):
+                    attack = session.exec(
+                        select(AttackTable)
+                            .where(AttackTable.external_id == body.k)
+                    ).first()
+                    if attack == None:
+                        raise HTTPException(
+                            status_code = 404,
+                            detail = 'Key does not match existing session',
+                        )
+                        
+                    event_detail = {}
+                    if scheme_component.templates['eventdetail'].value == 'ip, password':
+                        hashed_password = hashlib.sha256(body.p.encode('utf8'))
+                        event_detail  = {
+                            'ip': request.client.host,
+                            'password' : hashed_password.hexdigest(),
+                        }
+                    event = EventTable(
+                        parent_attack_id = attack.id,
+                        kind = str(scheme_component.templates['eventkind'].value),
+                        detail = event_detail,
+                    )
+                    session.add(event)
+                    session.commit()
 
-@app.post('/api/change_password', response_class=HTMLResponse)
-async def change_password_api(
-    body: ChangePasswordApiBody,
-    request: Request,
-    session: Session = Depends(get_session),
-):
-    attack = session.exec(
-        select(AttackTable)
-            .where(AttackTable.external_id == body.k)
-    ).first()
-    if attack == None:
-        raise HTTPException(
-            status_code = 404,
-            detail = 'Key does not match existing session',
-        )
+                    scheme = attack.scheme
+                    all_red_flags = []
+                    for component in scheme.components:
+                        all_red_flags.extend(component.red_flags)
 
-    hashed_password = hashlib.sha256(body.p.encode('utf8'))
-    event = EventTable(
-        parent_attack_id = attack.id,
-        kind = "Email.sent, Link.clicked, Password.inserted",
-        detail = {
-            'ip': request.client.host,
-            'password' : hashed_password.hexdigest(),
-        },
-    )
-    session.add(event)
-    session.commit()
+                    html_component = scheme.components.first(name ='form_page')
+                    html_content = html_component.templates['html'].jinja.render(
+                        scheme_name=scheme.name,
+                        description=scheme.description or "",
+                        red_flags=[
+                            {"name": rf.name, "explanation": rf.explanation}
+                            for rf in all_red_flags
+                        ],
+                    )
+                    return HTMLResponse(content=html_content)
+                return universal_endpoint
 
-    scheme = attack.scheme
-    all_red_flags = []
-    for component in scheme.components:
-        all_red_flags.extend(component.red_flags)
+            app.add_api_route(
+                path= component.templates['url'].value,
+                endpoint=create_endpoint(scheme_component=component),
+                methods=["POST"],
+                response_class=HTMLResponse
+            )
 
-    html_component = scheme.components.first(name ='form_page')
-    html_content = html_component.templates['html'].jinja.render(
-        scheme_name=scheme.name,
-        description=scheme.description or "",
-        red_flags=[
-            {"name": rf.name, "explanation": rf.explanation}
-            for rf in all_red_flags
-        ],
-    )
-    return HTMLResponse(content=html_content)
-
-
-@app.get('/payroll_update', response_class=HTMLResponse)
-async def update_payroll(
-    k: str,
-    request: Request,
-    session: Session = Depends(get_session)
-):
-    client_host = request.client.host
-    attack = session.exec(
-        select(AttackTable).where(AttackTable.external_id == str(k))
-    ).first()
-    if attack == None:
-        raise HTTPException(
-            status_code=404,
-            detail = 'Key does not match existing session',
-        )
-
-    detail_json = {'ip': client_host}
-    event = EventTable(parent_attack_id=attack.id, kind="Email.sent, Link.clicked", detail=detail_json)
-    session.add(event)
-    session.commit()
-
-    scheme = attack.scheme
-    html_component = scheme.components.first(name = 'payroll_update_page')
-    html_content = html_component.templates['html'].jinja.render()
-    return HTMLResponse(html_content)
-
-
-@app.get('/internal/hr-portal', response_class=HTMLResponse)
-async def hr_benefits_update_login(
-    k: str,
-    request: Request,
-    session: Session = Depends(get_session)
-):
-    client_host = request.client.host
-    attack_table = session.exec(
-        select(AttackTable).where(AttackTable.external_id == str(k))
-    ).first()
-    if attack_table == None:
-        raise HTTPException(
-            status_code=404,
-            detail = 'Key does not match existing session',
-        )
-
-    detail_json = {'ip': client_host}
-    event = EventTable(parent_attack_id=attack_table.id, kind="Email.sent, Link.clicked", detail=detail_json)
-    session.add(event)
-    session.commit()
-
-    session.refresh(attack_table)
-    scheme = attack_table.scheme
-
-    html_component = scheme.components.first(name = 'hr_login')
-    html_content = html_component.templates['html'].jinja.render(attack = attack_table)
-    return HTMLResponse(html_content)
