@@ -25,3 +25,7 @@ components:
       path: payroll_update_page.html.jinja
       mime: text/html
     url: /payroll_update
+    method: GET
+    eventkind: Email.sent, Link.clicked
+    eventdetail: ip
+    

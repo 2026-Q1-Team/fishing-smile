@@ -26,3 +26,6 @@ components:
       path: hr_benefits_update_page.html.jinja
       mime: text/html
     url: /hr_benefits
+    method: GET
+    eventkind: Email.sent, Link.clicked
+    eventdetail: ip

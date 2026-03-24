@@ -10,7 +10,7 @@ components:
       {{ attack.target.company }} Yearly Benefits Survey.
     body:
       kind: file
-      path: survey_email_body.txt.jinja
+      path: survey_email_body.txt
       mime: text/plain
     alt_body:
       kind: file
@@ -24,3 +24,6 @@ components:
       path: survey_page.html.jinja
       mime: text/html
     url: /benefits_survey
+    method: GET
+    eventkind: Email.sent, Link.clicked
+    eventdetail: ip

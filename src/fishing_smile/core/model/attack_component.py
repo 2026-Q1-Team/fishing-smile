@@ -58,4 +58,4 @@ class APIComponent(AttackComponent):
 
 class WebComponent(AttackComponent):
     kind: Literal['web'] = 'web'
-    required_templates = ['html', 'url']
+    required_templates = [ 'url']

@@ -23,3 +23,6 @@ components:
         path: web_page.html.jinja
         mime: text/html
       url: /path_to_webpage
+      method: GET
+      eventkind: Email.sent, Link.clicked
+      eventdetail: ip

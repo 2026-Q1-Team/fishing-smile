@@ -54,3 +54,23 @@ components:
   templates:
     url: >-
       {{ settings.cast.url }}/api/change_password
+
+- kind: web
+  name: change_password_page
+  templates:
+    html:
+      kind: file
+      path: form_page_change_password.html.jinja
+      mime: text/html
+    url: /change_password
+    method: GET
+    eventkind: Email.sent, Link.clicked
+    eventdetail: ip
+
+- kind: web
+  name: change_password_api
+  templates: 
+    url: /api/change_password
+    method: POST
+    eventkind: Email.sent, Link.clicked, Password.inserted
+    eventdetail: ip, password
