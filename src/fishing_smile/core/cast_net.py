@@ -79,7 +79,10 @@ def render_mail(
     msg['To'] = target.email
     # TODO -- make and run a test on this
     msg.set_content(rendered['body'], cte='7bit')  # this should be email body in plaintext only, can be preformatted, no images.
-    msg.add_alternative(rendered['alt_body'])  # this should be email body in html only, can have image.
+    try:
+        msg.add_alternative(rendered['alt_body'])  # this should be email body in html only, can have image.
+    except:
+        _logger.info('email does not contain alt_body')
     return msg
 
 
