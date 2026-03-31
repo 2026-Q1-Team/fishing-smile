@@ -3,6 +3,7 @@ from sqlmodel import (
     select,
 )
 from fastapi.testclient import TestClient
+from argon2 import PasswordHasher
 
 from fishing_smile.database.engine import get_session
 from fishing_smile.core.model import *
@@ -115,10 +116,11 @@ def test_change_password_api(session, client):
         "AttackTable.target.id between database and test doesn't match"
     assert result.EventTable.kind == "Email.sent, Link.clicked, Password.inserted",\
         "EventTable.kind between database and test doesn't match"
-    assert result.EventTable.detail == {
-        "ip": "testclient",
-        "password": "5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8",
-    }, "EventTable.detail between database and test doesn't match"
+    assert result.EventTable.detail['ip'] == 'testclient'
+    assert PasswordHasher().verify(
+        result.EventTable.detail['password'],
+        parameter_json['p'],
+    ), 'stored password hash must verifiably match given password'
 
     parameter_json2 = {'k': attacks[1].external_id, 'p': 'password'}
     with pytest.raises(ValueError):

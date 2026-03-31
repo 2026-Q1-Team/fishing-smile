@@ -14,6 +14,7 @@ from pydantic import (
     Field,
 )
 from sqlmodel import Field, Session, select
+from argon2 import PasswordHasher
 
 from fishing_smile.settings import get_settings
 from fishing_smile.database.engine import get_session
@@ -106,10 +107,10 @@ for scheme_name in standard_schemes.schemes:
                         
                     event_detail = {}
                     if scheme_component.templates['eventdetail'].value == 'ip, password':
-                        hashed_password = hashlib.sha256(body.p.encode('utf8'))
+                        hashed_password = PasswordHasher().hash(body.p)
                         event_detail  = {
                             'ip': request.client.host,
-                            'password' : hashed_password.hexdigest(),
+                            'password' : hashed_password,
                         }
                     event = EventTable(
                         parent_attack_id = attack.id,
