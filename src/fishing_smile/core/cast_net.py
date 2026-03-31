@@ -93,8 +93,8 @@ def send_email(
     msg = render_mail(target, attack)
     with smtplib.SMTP("smtp.gmail.com", 587) as server:
         server.starttls()
-        with server.login(settings.cast.sender, settings.cast.password) as session:
-            session.send_message(msg)
+        server.login(settings.cast.sender, settings.cast.password)
+        server.send_message(msg)
 
 
 def cast_net(
