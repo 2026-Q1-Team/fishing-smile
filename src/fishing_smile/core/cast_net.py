@@ -113,6 +113,6 @@ def cast_net(
         try:
             send_email(target, attack)
             sent_count += 1
-        except:
+        except Exception:
             _logger.exception(f'Failed to send to {target.email}')
     _logger.info(f'Sent to {sent_count} email(s).')

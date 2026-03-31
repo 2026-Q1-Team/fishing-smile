@@ -32,6 +32,7 @@ def init():
     type = click.Choice(standard_schemes.schemes),
     # TODO: Pick better default. Or make it required option?
     default = 'generic_org_change_password',
+    show_default = True,
     help = 'Which attack scheme to use on targets',
 )
 @click.argument(
