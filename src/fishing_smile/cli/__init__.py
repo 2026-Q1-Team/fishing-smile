@@ -48,6 +48,7 @@ def cast_net(targets_csv_file, scheme_name):
     targets = pd.read_csv(
         targets_csv_file,
         usecols = (lambda col: col in TargetProfile.model_fields and col != 'id'),
+        dtype=str,
     )
     targets = [
         TargetProfile(**target._asdict())
