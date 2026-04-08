@@ -38,11 +38,12 @@ app.add_middleware(
 # Dynamic Endpoint Creation
 for scheme_name in standard_schemes.schemes:
     for component in standard_schemes.get(scheme_name).components:
-        if component.kind == 'web' and component.templates['method'].value == 'GET':
-            def create_endpoint(scheme_name):
+        if component.kind == 'web' and ( component.templates['method'].value == 'GET' or component.templates['method'].value == 'POST'):
+            def create_endpoint(scheme_name, component, method):
                 async def universal_endpoint(
-                    k: str,
                     request: Request,
+                    k: str,
+                    p: str | None = None,
                     session: Session = Depends(get_session),
                 ):
                     attack = session.exec(
@@ -63,84 +64,54 @@ for scheme_name in standard_schemes.schemes:
                     event_detail = {}
                     if component.templates['eventdetail'].value == 'ip':
                         event_detail  = {'ip': request.client.host} 
-                    event = EventTable(
-                        parent_attack_id = attack.id,
-                        kind = component.templates['eventkind'].value,
-                        detail = event_detail,
-                    )
-                    session.add(event)
-                    session.commit()
-
-                    scheme = attack.scheme
-                    html_component = scheme.components.first(kind = 'web')
-                    html_content = html_component.templates['html'].jinja.render(attack = attack)
-                    return HTMLResponse(content = html_content)
-                return universal_endpoint
-
-            app.add_api_route(
-                path= standard_schemes.get(scheme_name).components.first(kind = 'web').templates['url'].value,
-                endpoint=create_endpoint(scheme_name=scheme_name),
-                methods=["GET"],
-                response_class=HTMLResponse
-            )
-
-        elif component.kind == 'web' and component.templates['method'].value == 'POST':
-            class ChangePasswordApiBody(BaseModel):
-                k: str = Field(description = 'Key identifying attack instance (fishcast)')
-                p: str = Field(description = 'Old password phish target gave out')
-
-            def create_endpoint(scheme_component):
-                async def universal_endpoint(
-                    body: ChangePasswordApiBody,
-                    request: Request,
-                    session: Session = Depends(get_session),
-                ):
-                    attack = session.exec(
-                        select(AttackTable)
-                            .where(AttackTable.external_id == body.k)
-                    ).first()
-                    if attack == None:
-                        raise HTTPException(
-                            status_code = 404,
-                            detail = 'Key does not match existing session',
+                        event = EventTable(
+                            parent_attack_id = attack.id,
+                            kind = component.templates['eventkind'].value,
+                            detail = event_detail,
                         )
-                        
-                    event_detail = {}
-                    if scheme_component.templates['eventdetail'].value == 'ip, password':
-                        hashed_password = PasswordHasher().hash(body.p)
+                        session.add(event)
+                        session.commit()
+                    elif component.templates['eventdetail'].value == 'ip, password':
+                        hashed_password = PasswordHasher().hash(p)
                         event_detail  = {
                             'ip': request.client.host,
                             'password' : hashed_password,
                         }
-                    event = EventTable(
+                        event = EventTable(
                         parent_attack_id = attack.id,
-                        kind = str(scheme_component.templates['eventkind'].value),
+                        kind = str(component.templates['eventkind'].value),
                         detail = event_detail,
-                    )
-                    session.add(event)
-                    session.commit()
+                        )
+                        session.add(event)
+                        session.commit()
+                    
 
                     scheme = attack.scheme
-                    all_red_flags = []
-                    for component in scheme.components:
-                        all_red_flags.extend(component.red_flags)
+                    if method == 'GET':
+                        html_content = component.templates['html'].jinja.render(attack = attack)
+                        return HTMLResponse(content = html_content)
+                    elif method == 'POST':
+                        all_red_flags = []
+                        for comp in scheme.components:
+                            all_red_flags.extend(comp.red_flags)
 
-                    html_component = scheme.components.first(name ='form_page')
-                    html_content = html_component.templates['html'].jinja.render(
-                        scheme_name=scheme.name,
-                        description=scheme.description or "",
-                        red_flags=[
-                            {"name": rf.name, "explanation": rf.explanation}
-                            for rf in all_red_flags
-                        ],
-                    )
-                    return HTMLResponse(content=html_content)
+                        html_component = scheme.components.first(name ='form_page')
+                        html_content = html_component.templates['html'].jinja.render(
+                            scheme_name=scheme.name,
+                            description=scheme.description or "",
+                            red_flags=[
+                                {"name": rf.name, "explanation": rf.explanation}
+                                for rf in all_red_flags
+                            ],
+                        )
+                        return HTMLResponse(content=html_content)
                 return universal_endpoint
 
             app.add_api_route(
-                path= component.templates['url'].value,
-                endpoint=create_endpoint(scheme_component=component),
-                methods=["POST"],
-                response_class=HTMLResponse
+                path=  component.templates['url'].value,
+                endpoint=create_endpoint(scheme_name=scheme_name, component=component, method=component.templates['method'].value),
+                methods=[component.templates['method'].value],
+                response_class=HTMLResponse,
             )
+
 
