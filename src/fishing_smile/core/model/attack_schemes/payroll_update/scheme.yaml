@@ -13,10 +13,6 @@ components:
     body:
       kind: file
       path: payroll_email_body.txt.jinja
-    alt_body:
-      kind: file
-      path: payroll_email_alt_body.html.jinja
-      mime: text/html
 - kind: web
   name: payroll_update_page
   templates:

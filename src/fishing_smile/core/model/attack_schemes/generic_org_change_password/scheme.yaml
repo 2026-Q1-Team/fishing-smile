@@ -25,35 +25,13 @@ components:
       ควรตรวจสอบที่อยู่อีเมลผู้ส่งเสมอ ไม่ใช่แค่ชื่อที่แสดง
   templates:
     url: >-
-      {{ settings.cast.url }}/index.html?k={{ attack.external_id }}
+      {{ settings.cast.url }}/change_password?k={{ attack.external_id }}
     subject: >-
       Please change your {{ attack.target.company }} account password.
     body:
       kind: file
       path: bait_email_body.txt
       mime: text/plain
-- kind: html
-  name: form_page_change_password
-  templates:
-    url: /change_password
-    html:
-      kind: file
-      path: form_page_change_password.html.jinja
-      mime: text/html
-- kind: html
-  name: form_page
-  templates:
-    url: >-
-      {{ settings.cast.url }}/change_password
-    html:
-      kind: file
-      path: form_page.html.jinja
-      mime: text/html
-- kind: api
-  name: submit
-  templates:
-    url: >-
-      {{ settings.cast.url }}/api/change_password
 
 - kind: web
   name: change_password_page
