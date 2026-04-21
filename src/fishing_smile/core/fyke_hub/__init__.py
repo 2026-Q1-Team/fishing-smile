@@ -97,13 +97,15 @@ def create_endpoint(scheme_name, component, method):
 # Dynamic Endpoint Creation
 for scheme_name in standard_schemes.schemes:
     for component in standard_schemes.get(scheme_name).components:
-        if component.kind != 'web' and ( component.templates['method'].value == 'GET' or component.templates['method'].value == 'POST'):
-            exit()
-        else:
-            app.add_api_route(
-                path=  component.templates['url'].value,
-                endpoint=create_endpoint(scheme_name=scheme_name, component=component, method=component.templates['method'].value),
-                methods=[component.templates['method'].value],
-                response_class=HTMLResponse,
-            )
+        if (
+            component.kind != 'web'
+            or component.templates['method'].value not in ('GET', 'POST')
+        ):
+            continue
+        app.add_api_route(
+            path=  component.templates['url'].value,
+            endpoint=create_endpoint(scheme_name=scheme_name, component=component, method=component.templates['method'].value),
+            methods=[component.templates['method'].value],
+            response_class=HTMLResponse,
+        )
 
