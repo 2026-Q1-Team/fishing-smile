@@ -1,2 +1,126 @@
-doctype html
-put webpage content here
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>แบบสำรวจปิดรับแล้ว | {{ attack.target.company }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Prompt', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 16px;
+            padding: 2.5rem 2rem;
+            max-width: 480px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);
+        }
+
+        .icon { font-size: 3.5rem; margin-bottom: 1rem; }
+
+        h1 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 1rem;
+        }
+
+        .status-badge {
+            display: inline-block;
+            background: #94a3b8;
+            color: white;
+            padding: 0.4rem 1.2rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+        }
+
+        .message {
+            color: #666;
+            font-size: 0.95rem;
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+        }
+
+        .info-box {
+            background: #f0f4ff;
+            border-radius: 12px;
+            padding: 1.2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .info-box h2 {
+            color: #4f46e5;
+            font-size: 1.05rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .info-box p {
+            color: #6b7280;
+            font-size: 0.88rem;
+            line-height: 1.6;
+        }
+
+        .divider {
+            height: 1px;
+            background: #eee;
+            margin: 1.5rem 0;
+        }
+
+        .footer {
+            color: #888;
+            font-size: 0.8rem;
+        }
+
+        .footer .org-name {
+            font-weight: 500;
+            color: #4f46e5;
+            font-size: 0.88rem;
+            margin-bottom: 0.3rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon">📋</div>
+
+        <h1>แบบสำรวจปิดรับแล้ว</h1>
+
+        <div class="status-badge">หมดเวลา</div>
+
+        <p class="message">
+            ขออภัย แบบสำรวจสวัสดิการประจำปีนี้<br>
+            ได้ปิดรับคำตอบแล้ว
+        </p>
+
+        <div class="info-box">
+            <h2>📅 ต้องการทำแบบสำรวจ?</h2>
+            <p>
+                หากยังไม่ได้ทำแบบสำรวจ กรุณาติดต่อฝ่ายบุคคล<br>
+                เพื่อขอลิงก์แบบสำรวจรอบถัดไป
+            </p>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="footer">
+            <p class="org-name">{{ attack.target.company }}</p>
+            <p>หากมีข้อสงสัย กรุณาติดต่อผู้ดูแลระบบ</p>
+        </div>
+    </div>
+</body>
+</html>
