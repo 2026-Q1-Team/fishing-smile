@@ -6,16 +6,15 @@ components:
 - kind: email
   name: benefits_survey_email
   templates:
+    url: >- 
+      {{ settings.cast.url }}/benefits_survey?k={{ attack.external_id }}
     subject: >-
       {{ attack.target.company }} Yearly Benefits Survey.
     body:
       kind: file
-      path: survey_email_body.txt
+      path: survey_email_body.txt.jinja
       mime: text/plain
-    alt_body:
-      kind: file
-      path: survey_email_alt_body.html.jinja
-      mime: text/html
+    
 - kind: web
   name: survey_page
   templates:
