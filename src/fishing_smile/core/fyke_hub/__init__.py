@@ -36,21 +36,16 @@ def create_endpoint(scheme_name, component, method):
         body: CheckInputPayload | None = None,
         session: Session = Depends(get_session),
     ):
-        print(k)
         if k != None:
             attack = session.exec(
                 select(AttackTable)
                 .where(AttackTable.external_id == k)
             ).first()
         elif body != None:
-            #print(body.k)
-            #print(body.p)
             attack = session.exec(
                 select(AttackTable)
                 .where(AttackTable.external_id == body.k)
             ).first()
-            print("\n\n"+attack+"\n\n")
-            #print(scheme_name)
         if (
                 attack == None
                 or attack.scheme_name != scheme_name
@@ -109,11 +104,9 @@ def create_endpoint(scheme_name, component, method):
 
 
 for scheme_name in standard_schemes.schemes:
-    #print("\n"+scheme_name)
     webpage_path = Path(__file__).resolve().parent.parent / "model" / "attack_schemes" / scheme_name
     app.mount(f'/{scheme_name}', StaticFiles(directory=f'{webpage_path}'), name=f"/{scheme_name}")
     for component in standard_schemes.get(scheme_name).components:
-        #print(component)
         if (
             component.kind != 'web'
             or component.templates['method'].value not in ('GET', 'POST')

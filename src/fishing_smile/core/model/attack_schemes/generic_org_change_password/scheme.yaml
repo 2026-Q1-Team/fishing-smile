@@ -48,6 +48,10 @@ components:
 - kind: web
   name: change_password_api
   templates: 
+    html:
+        kind: file
+        path: form_page.html.jinja
+        mime: text/html
     url: /api/change_password
     method: POST
     eventkind: Email.sent, Link.clicked, Password.inserted
