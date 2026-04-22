@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>การฝึกอบรม Anti-Phishing | สสน.</title>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/hii_change_password/Changepwd.css">
+    <style>
+        .alert-badge {
+            display: inline-block;
+            background: #f59e0b;
+            color: white;
+            padding: 0.4rem 1.2rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+        }
+        .red-flags {
+            background: #fff3e0;
+            border-radius: 12px;
+            padding: 1.2rem 1.5rem;
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+        .red-flags h2 {
+            color: #e65100;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+        }
+        .red-flag-item {
+            margin-bottom: 0.8rem;
+            padding-left: 0.5rem;
+        }
+        .red-flag-item strong {
+            color: #d84315;
+            display: block;
+            font-size: 0.95rem;
+        }
+        .red-flag-item p {
+            color: #6d4c41;
+            font-size: 0.85rem;
+            margin-top: 0.2rem;
+        }
+        .scheme-info {
+            background: #e8f4fc;
+            border-radius: 12px;
+            padding: 1.2rem;
+            margin-bottom: 1.5rem;
+        }
+        .scheme-info h2 {
+            color: #1a73a7;
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+        .scheme-info p {
+            color: #5a7a8a;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <img src="/hii_change_password/thumbnail-ci-Photoroom.png" alt="สถาบันสารสนเทศทรัพยากรน้ำ">
+        </div>
+
+        <h1>นี่คือการฝึกอบรม Anti-Phishing</h1>
+
+        <div class="alert-badge">การทดสอบ Phishing</div>
+
+        <p class="message">
+            อีเมลที่คุณได้รับเป็น <strong>อีเมลจำลอง</strong> จากทีม ICT<br>
+            เพื่อฝึกอบรมการรับมือกับ Phishing Attack
+        </p>
+
+        <div class="scheme-info">
+            <h2>{{ scheme_name }}</h2>
+            <p>{{ description }}</p>
+        </div>
+
+        {% if red_flags %}
+        <div class="red-flags">
+            <h2>สัญญาณเตือน (Red Flags) ที่ควรสังเกต</h2>
+            {% for flag in red_flags %}
+            <div class="red-flag-item">
+                <strong>{{ flag.name }}</strong>
+                <p>{{ flag.explanation }}</p>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="divider"></div>
+
+        <div class="footer">
+            <p class="org-name">สถาบันสารสนเทศทรัพยากรน้ำ (องค์การมหาชน)</p>
+            <p>หากมีข้อสงสัย กรุณาติดต่อผู้ดูแลระบบ</p>
+        </div>
+    </div>
+</body>
+</html>
