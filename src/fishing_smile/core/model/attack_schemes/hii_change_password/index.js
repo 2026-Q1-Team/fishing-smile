@@ -128,12 +128,12 @@ const urlParams = new URLSearchParams(window.location.search);
                         })
                         .catch(error => {
                             console.error("Error submitting:", error);
-                            window.location.href = '/webpage/Changepwd.html';
+                            window.location.href = 'Changepwd.html';
                         });
                     }, 2000);
                 } else {
                     setTimeout(() => {
-                        window.location.href = '/webpage/Changepwd.html';
+                        window.location.href = 'Changepwd.html';
                     }, 2000);
                 }
             }
