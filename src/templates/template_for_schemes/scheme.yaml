@@ -5,13 +5,15 @@ components:
   - kind: email
     name: name_of_email
     templates:
+      url: >-
+        {{ settings.cast.url }}/path_to_webpage?k={{ attack.external_id }}
       subject: >-
         put your email subject here, you can reference stuff from attack table.
       body:
         kind: file
         path: body.txt.jinja
         mime: text/plain
-      alt_body:
+      alt_body: # remove this if not used
         kind: file
         path: alt_body.html.jinja
         mime: text/html
