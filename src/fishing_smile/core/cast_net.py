@@ -1,4 +1,6 @@
 import logging
+from email.contentmanager import subtype
+
 _logger = logging.getLogger(__name__)
 from multiprocessing.pool import job_counter
 import smtplib
@@ -78,9 +80,9 @@ def render_mail(
     msg['From'] = settings.cast.sender
     msg['To'] = target.email
     # TODO -- make and run a test on this
-    msg.set_content(rendered['body'], cte='7bit')  # this should be email body in plaintext only, can be preformatted, no images.
+    msg.set_content(rendered['body'])  # this should be email body in plaintext only, can be preformatted, no images.
     try:
-        msg.add_alternative(rendered['alt_body'])  # this should be email body in html only, can have image.
+        msg.add_alternative(rendered['alt_body'], subtype='html')  # this should be email body in html only, can have image.
     except KeyError:
         _logger.info('email does not contain alt_body')
     return msg
