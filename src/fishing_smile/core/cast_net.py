@@ -1,5 +1,4 @@
 import logging
-from email.contentmanager import subtype
 
 _logger = logging.getLogger(__name__)
 from multiprocessing.pool import job_counter
