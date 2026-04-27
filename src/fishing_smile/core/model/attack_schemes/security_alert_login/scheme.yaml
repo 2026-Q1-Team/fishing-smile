@@ -64,7 +64,7 @@ components:
   templates:
     html:
       kind: file
-      path: security_verify_page.html.jinja
+      path: reveal_page.html.jinja
       mime: text/html
     url: /api/account_security
     method: POST
