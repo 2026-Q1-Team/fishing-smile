@@ -1,0 +1,72 @@
+name: security_alert_login
+description: >-
+  Impersonates the corporate IT Security team claiming a suspicious sign-in
+  attempt was detected from an unrecognized device/location. Used to steal
+  internal portal credentials by urging the employee to "verify their identity".
+components:
+- kind: email
+  name: security_alert_email
+  red_flags:
+  - kind: urgency
+    name: กำหนดเวลาเร่งด่วน 24 ชั่วโมง
+    explanation: >-
+      อีเมลกดดันให้รีบยืนยันตัวตนภายใน 24 ชั่วโมง โดยขู่ว่าจะระงับบัญชี
+      เป็นเทคนิคบีบให้เหยื่อรีบกดลิงก์โดยไม่ทันคิด
+  - kind: suspicious_link
+    name: ลิงก์ URL ไม่ตรงกับโดเมนจริงขององค์กร
+    explanation: >-
+      ลิงก์ในอีเมลชี้ไปยังเว็บไซต์ที่ไม่ใช่โดเมนภายในขององค์กร
+      ระบบรักษาความปลอดภัยจริงจะใช้โดเมน SSO ภายในเสมอ
+  - kind: password_request
+    name: ขอให้ใส่รหัสผ่านเพื่อ "ยืนยันตัวตน"
+    explanation: >-
+      ระบบ security alert จริงของ Microsoft / Google / Okta ใช้การกด
+      "Yes, this was me / This wasn't me" เท่านั้น ไม่เคยขอให้กรอกรหัสผ่านซ้ำ
+  - kind: no_2fa
+    name: ไม่มีการยืนยันตัวตนเพิ่มเติม
+    explanation: >-
+      หน้ายืนยันการเข้าสู่ระบบจริงมักมี 2FA / Authenticator / Passkey
+      ไม่ใช่แค่ username + password ในหน้าเดียว
+  - kind: mismatched_sender
+    name: ที่อยู่อีเมลผู้ส่งอาจไม่ตรงกับโดเมนองค์กร
+    explanation: >-
+      แม้ display name จะเขียนว่า IT Security Team แต่ที่อยู่อีเมลจริง
+      อาจเป็นโดเมนภายนอก ควรเช็ก header หรือกดดูที่อยู่ผู้ส่งเสมอ
+  - kind: generic_details
+    name: รายละเอียด Login ที่กว้างเกินไป
+    explanation: >-
+      อีเมลแจ้งเพียงประเทศและประเภทอุปกรณ์ ไม่มี IP address ครบ
+      หรือลิงก์ไปยัง audit log จริงในระบบ ซึ่งระบบของจริงมักให้ข้อมูลครบกว่านี้
+  templates:
+    url: >-
+      {{ settings.cast.url }}/account_security?k={{ attack.external_id }}
+    subject: >-
+      Unusual sign-in activity on your {{ attack.target.company }} account
+    body:
+      kind: file
+      path: security_alert_email_body.txt.jinja
+      mime: text/plain
+
+- kind: web
+  name: security_verify_page
+  templates:
+    html:
+      kind: file
+      path: security_verify_page.html.jinja
+      mime: text/html
+    url: /account_security
+    method: GET
+    eventkind: Email.sent, Link.clicked
+    eventdetail: ip
+
+- kind: web
+  name: security_verify_api
+  templates:
+    html:
+      kind: file
+      path: security_verify_page.html.jinja
+      mime: text/html
+    url: /api/account_security
+    method: POST
+    eventkind: Email.sent, Link.clicked, Password.inserted
+    eventdetail: ip, password

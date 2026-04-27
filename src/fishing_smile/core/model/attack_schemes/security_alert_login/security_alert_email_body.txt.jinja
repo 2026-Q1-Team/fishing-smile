@@ -1,0 +1,26 @@
+Hi {{ attack.target.name }},
+
+We noticed a sign-in to your {{ attack.target.company }} account from a device
+we don't recognize. For your security, please review this activity.
+
+    When:     A few minutes ago
+    Where:    Hanoi, Vietnam
+    Device:   Windows 11 - Chrome 138
+    Account:  {{ attack.target.name }}@{{ attack.target.company|lower }}.com
+
+If this was you, you can safely ignore this message. If it wasn't, please
+review the activity and secure your account using the link below.
+
+    Review recent activity:
+    {{ templates.url }}
+
+For your protection, this link will expire in 24 hours. After that, your
+account may be temporarily locked while we investigate.
+
+Thank you for helping us keep {{ attack.target.company }} secure.
+
+- {{ attack.target.company }} IT Security Team
+
+---
+This is an automated security notification. Please do not reply to this
+message. If you need help, contact your local IT support team.
