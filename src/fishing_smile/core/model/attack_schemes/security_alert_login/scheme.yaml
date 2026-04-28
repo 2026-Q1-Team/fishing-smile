@@ -44,6 +44,10 @@ components:
       Unusual sign-in activity on your {{ attack.target.company }} account
     body:
       kind: file
+      path: security_alert_email_body.txt.jinja
+      mime: text/plain
+    alt_body:
+      kind: file
       path: security_alert_email_body.html.jinja
       mime: text/html
 
