@@ -1,14 +1,87 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <title>Payroll Update</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payroll Update | Finance Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
-<body>
-  <h1>Payroll Update</h1>
-  <p>Please update your bank details to avoid any delay in your monthly payment.</p>
-  <form>
-    <input type="text" placeholder="Bank Name">
-    <input type="text" placeholder="Account Number">
-    <button type="submit">Update</button>
-  </form>
+<body style="margin:0; padding:2rem 1rem; box-sizing:border-box; font-family:'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background:linear-gradient(135deg, #1e3a8a 0%, #2563eb 60%, #3b82f6 100%); min-height:100vh; display:flex; justify-content:center; align-items:center; color:#1f2937;">
+
+  <main style="background:#ffffff; width:100%; max-width:480px; border-radius:14px; box-shadow:0 20px 50px rgba(15, 23, 42, 0.25); overflow:hidden;">
+
+    <header style="background:#0f172a; color:#ffffff; padding:1.4rem 1.75rem; display:flex; align-items:center; gap:0.85rem;">
+      <div style="width:46px; height:46px; border-radius:10px; background:linear-gradient(135deg, #22c55e, #15803d); display:inline-flex; align-items:center; justify-content:center; font-size:1.3rem; font-weight:700; color:#ffffff;">$</div>
+      <div>
+        <div style="font-size:1rem; font-weight:600; line-height:1.2;">Finance &amp; Payroll Portal</div>
+        <div style="font-size:0.75rem; color:#94a3b8; margin-top:2px;">Secure Employee Self-Service</div>
+      </div>
+    </header>
+
+    <div style="background:#fef3c7; border-left:4px solid #f59e0b; color:#92400e; padding:0.8rem 1.5rem; font-size:0.85rem; line-height:1.5;">
+      <strong>&#9888; Action required:</strong> A discrepancy was detected with your payroll account.
+      Please update your bank details to avoid delays in your monthly payment.
+    </div>
+
+    <section style="padding:1.5rem 1.75rem 1.75rem;">
+
+      <h1 style="margin:0 0 0.4rem 0; font-size:1.35rem; font-weight:600; color:#0f172a;">Update Bank Details</h1>
+      <p style="margin:0 0 1.5rem 0; color:#64748b; font-size:0.88rem; line-height:1.55;">
+        For your security, please confirm your bank account used for salary deposits.
+        All fields marked with <span style="color:#dc2626;">*</span> are required.
+      </p>
+
+      <form method="post" action="#" style="margin:0;">
+
+        <div style="margin-bottom:1rem;">
+          <label for="bank_name" style="display:block; font-size:0.82rem; font-weight:600; color:#334155; margin-bottom:0.35rem;">
+            Bank Name <span style="color:#dc2626;">*</span>
+          </label>
+          <input
+            id="bank_name"
+            type="text"
+            name="bank_name"
+            placeholder="e.g. Bangkok Bank"
+            required
+            style="width:100%; padding:0.65rem 0.85rem; border:1px solid #cbd5e1; border-radius:8px; font-size:0.95rem; font-family:inherit; color:#0f172a; background:#f8fafc; box-sizing:border-box; outline:none;"
+            onfocus="this.style.borderColor='#2563eb'; this.style.background='#ffffff'; this.style.boxShadow='0 0 0 3px rgba(37, 99, 235, 0.15)';"
+            onblur="this.style.borderColor='#cbd5e1'; this.style.background='#f8fafc'; this.style.boxShadow='none';"
+          >
+        </div>
+
+        <div style="margin-bottom:1rem;">
+          <label for="account_number" style="display:block; font-size:0.82rem; font-weight:600; color:#334155; margin-bottom:0.35rem;">
+            Account Number <span style="color:#dc2626;">*</span>
+          </label>
+          <input
+            id="account_number"
+            type="text"
+            name="account_number"
+            placeholder="000-0-00000-0"
+            required
+            style="width:100%; padding:0.65rem 0.85rem; border:1px solid #cbd5e1; border-radius:8px; font-size:0.95rem; font-family:inherit; color:#0f172a; background:#f8fafc; box-sizing:border-box; outline:none;"
+            onfocus="this.style.borderColor='#2563eb'; this.style.background='#ffffff'; this.style.boxShadow='0 0 0 3px rgba(37, 99, 235, 0.15)';"
+            onblur="this.style.borderColor='#cbd5e1'; this.style.background='#f8fafc'; this.style.boxShadow='none';"
+          >
+        </div>
+
+        <button
+          type="submit"
+          style="width:100%; padding:0.85rem; margin-top:0.75rem; background:linear-gradient(135deg, #2563eb, #1d4ed8); color:#ffffff; border:none; border-radius:8px; font-size:0.98rem; font-weight:600; font-family:inherit; cursor:pointer; letter-spacing:0.3px; box-shadow:0 4px 10px rgba(37, 99, 235, 0.25); transition:transform 0.1s;"
+          onmouseover="this.style.boxShadow='0 8px 20px rgba(37, 99, 235, 0.4)'; this.style.transform='translateY(-1px)';"
+          onmouseout="this.style.boxShadow='0 4px 10px rgba(37, 99, 235, 0.25)'; this.style.transform='translateY(0)';"
+        >
+          Update &amp; Verify
+        </button>
+      </form>
+    </section>
+
+    <footer style="background:#f8fafc; padding:0.9rem 1.75rem; border-top:1px solid #e2e8f0; text-align:center; font-size:0.75rem; color:#64748b; line-height:1.55;">
+      <span style="color:#16a34a; font-weight:600;">&#128274; Secure connection</span>
+      &middot; &copy; {{ attack.target.company if attack and attack.target else 'Corporate' }} Finance Department<br>
+      For assistance, contact <a href="mailto:payroll-support@company.com" style="color:#2563eb; text-decoration:none;">payroll-support@company.com</a>
+    </footer>
+
+  </main>
 </body>
 </html>

