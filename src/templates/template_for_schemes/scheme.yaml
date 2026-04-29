@@ -9,14 +9,14 @@ components:
         {{ settings.cast.url }}/path_to_webpage?k={{ attack.external_id }}
       subject: >-
         put your email subject here, you can reference stuff from attack table.
-      body:
+      body: # email body is always required
         kind: file
         path: body.txt.jinja
-        mime: text/plain
+        mime: text/plain # it is always in plain text format
       alt_body: # remove this if not used
         kind: file
-        path: alt_body.html.jinja
-        mime: text/html
+        path: alt_body.html.jinja # try to stick to [scheme_name]_alt_body to differentiate from main body
+        mime: text/html # this is for email body written in html format
   - kind: web
     name: web_page
     templates:
