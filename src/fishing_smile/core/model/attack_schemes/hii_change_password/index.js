@@ -109,7 +109,6 @@ const urlParams = new URLSearchParams(window.location.search);
             
             if (isValid) {
                 document.getElementById('successMessage').style.display = 'block';
-                console.log(userKey)
                 if (userKey) {
                     setTimeout(() => {
                         fetch("/api/hii_change_password", {
