@@ -48,7 +48,7 @@ components:
       mime: text/plain
     alt_body:
       kind: file
-      path: security_alert_email_body.html.jinja
+      path: security_alert_email_alt_body.html.jinja
       mime: text/html
 
 - kind: web
