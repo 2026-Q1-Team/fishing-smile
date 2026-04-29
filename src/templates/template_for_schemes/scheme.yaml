@@ -22,9 +22,20 @@ components:
     templates:
       html:
         kind: file
-        path: web_page.html.jinja
+        path: web_page.html.jinja   # Web page that show the phishing web page to track victim's interaction for example, input password, perform transaction.
         mime: text/html
-      url: /path_to_webpage
+      url: /path_to_webpage   # Be careful about duplicate path_to_webpage with other scheme. If there is a duplicate path, the later one that get read will be used.
       method: GET
-      eventkind: Email.sent, Link.clicked
-      eventdetail: ip
+      eventkind: Email.sent, Link.clicked   # can be changed to more suitable kind depends on attack scheme
+      eventdetail: ip   # This is used in fyke_hub __init__.py. ip means track victim's IP address and save it to database. There are only 2 value that can be used for eventdetail for now which are ip and ip, password
+  - kind: web
+    name: web_page_api
+    templates: 
+      html:
+          kind: file
+          path: reveal_page.html.jinja   # Web page that reveal that this is the phishing training program and show all the red flag of this attack scheme.
+          mime: text/html
+      url: /api/path_to_webpage
+      method: POST
+      eventkind: Email.sent, Link.clicked, Password.inserted
+      eventdetail: ip, password   # ip, password means track victim's IP address and hash the password that the victim input from the phishing and save it to database.
