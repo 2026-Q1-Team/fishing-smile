@@ -2,9 +2,13 @@ from fastapi import (
     FastAPI,
     Depends,
     Request,
+    status,
 )
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import (
+    JSONResponse,
+    RedirectResponse,
+)
 from pydantic import BaseModel
 from datetime import datetime
 
@@ -160,3 +164,11 @@ async def contact_security_team_api(
     session.add(event)
     session.commit()
     return JSONResponse({"result" : "done"})  # can change to more suitable response later. 
+
+
+@app.get('/')
+async def default_page():
+    return RedirectResponse(
+        '/dashboard',
+        status_code = status.HTTP_308_PERMANENT_REDIRECT,
+    )
