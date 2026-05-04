@@ -196,3 +196,9 @@ def test_get_dashboard(session, client):
     assert data['campaigns'][0]['scheme_name'] == 'lucky_draw'
     assert data['tracking'][0]['email'] == 'jon.snow@nowhere.westeros.org'
     assert data['tracking'][0]['status'] == 'sent'
+
+
+def test_static_cache_control(session, client):
+    response = client.get('/dashboard/')
+    assert response.status_code == 200
+    assert 'max-age' in response.headers['Cache-Control']

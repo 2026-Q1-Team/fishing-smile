@@ -1,10 +1,9 @@
 let campaignData = {};
 let trackingData = [];
-const API_BASE = 'http://localhost:8001';
 
 async function fetchDashboardData() {
     try {
-        const response = await fetch(`${API_BASE}/api/dashboard`);
+        const response = await fetch(`/api/dashboard`);
         if (!response.ok) {
             throw new Error(`API error: ${response.status} ${response.statusText}`);
         }

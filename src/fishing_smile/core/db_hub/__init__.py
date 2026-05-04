@@ -1,3 +1,6 @@
+from pathlib import Path
+from datetime import datetime
+
 from fastapi import (
     FastAPI,
     Depends,
@@ -10,8 +13,6 @@ from fastapi.responses import (
     RedirectResponse,
 )
 from pydantic import BaseModel
-from datetime import datetime
-
 import sqlalchemy as sa
 from sqlmodel import (
     Field,
@@ -20,6 +21,7 @@ from sqlmodel import (
 )
 
 from fishing_smile.database.engine import get_session
+from fishing_smile.fastapi.staticfiles import CacheControlledStaticFiles
 from fishing_smile.core.model import *
 
 
@@ -169,6 +171,17 @@ async def contact_security_team_api(
 @app.get('/')
 async def default_page():
     return RedirectResponse(
-        '/dashboard',
+        '/dashboard/',
         status_code = status.HTTP_308_PERMANENT_REDIRECT,
     )
+
+
+app.mount(
+    '/',
+    CacheControlledStaticFiles(
+        directory = Path(__file__).parent / 'static',
+        html = True,
+        cache_control = 'max-age=3600',
+    ),
+    name = 'static',
+)
