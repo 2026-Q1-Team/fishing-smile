@@ -19,7 +19,7 @@ from fishing_smile.core.model import *
 def empty_database_session():
     connection = engine.connect()
     transaction = connection.begin()
-    with Session(bind = connection) as session:
+    with Session(bind = connection, join_transaction_mode = 'create_savepoint') as session:
         session.exec(delete(EventTable))
         session.exec(delete(AttackTable))
         session.exec(delete(TargetProfileTable))
