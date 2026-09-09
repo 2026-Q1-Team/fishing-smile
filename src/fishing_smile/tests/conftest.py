@@ -16,6 +16,7 @@ def empty_database_session():
         session.exec(delete(EventTable))
         session.exec(delete(AttackTable))
         session.exec(delete(TargetProfileTable))
+        session.commit()
         yield session
     transaction.rollback()
     connection.close()
